@@ -32,60 +32,63 @@ public class RobotContainer {
   private void defaultCommands() {
 
 
-    swerveSubsystem.setDefaultCommand(new SwerveJoystickCommand(
-      swerveSubsystem,
-
-      // Left Joystick Field Oriented
-      () -> -driverController.getRawAxis(OIConstants.leftStickY),
-      () -> driverController.getRawAxis(OIConstants.leftStickX),
-
-      //Right Joystick For Robot Centic
-      () -> -driverController.getRawAxis(OIConstants.rightStickY),
-      () -> driverController.getRawAxis(OIConstants.rightStickX),
-
-      // Triggers for turning
-      () -> driverController.getRawAxis(OIConstants.rightTrigger),
-      () -> driverController.getRawAxis(OIConstants.leftTrigger),
-
-      () -> !driverController.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx),
-
-      // // Speed Buttons
-      () -> driverController.getRawButton(OIConstants.aButton),
-      () -> driverController.getRawButton(OIConstants.bButton),
-      () -> driverController.getRawButton(OIConstants.xButton),
-      () -> driverController.getRawButton(OIConstants.yButton)
-
-    ));
-
-    // swerveSubsystem.setDefaultCommand(new SwerveAltJoystick(
+    // swerveSubsystem.setDefaultCommand(new SwerveJoystickCommand(
     //   swerveSubsystem,
+
     //   // Left Joystick Field Oriented
-    //   () -> (-MathUtil.clamp(-driverController.getLeftY(),-0.7,0.7)) 
-    //     - (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) 
-    //       *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftY(),-0.5,0.5),0.1))
-    //     + (driverController.getLeftTriggerAxis() *  MathUtil.clamp(-driverController.getLeftY(),-0.5,0.5)),
+    //   () -> -driverController.getRawAxis(OIConstants.leftStickY),
+    //   () -> driverController.getRawAxis(OIConstants.leftStickX),
 
-    //   () -> MathUtil.clamp(driverController.getLeftX(),-0.5,0.5) 
-    //     - (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) 
-    //       *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftX(),-0.5,0.5),0.1))
-    //     + (driverController.getLeftTriggerAxis() *  MathUtil.clamp(-driverController.getLeftX(),-0.5,0.5)),
+    //   //Right Joystick For Robot Centic
+    //   () -> -driverController.getRawAxis(OIConstants.rightStickY),
+    //   () -> driverController.getRawAxis(OIConstants.rightStickX),
 
-        
-    //   //right joystick turning
-    //   // () -> MathUtil.applyDeadband(MathUtil.clamp(-driverController.getRightX(),-0.5,0.5),0.1)
-    //   //   - (MathUtil.applyDeadband(driverController.getRightTriggerAxis(),0.1) *  MathUtil.applyDeadband(MathUtil.clamp(driverController.getRightX(),-0.5,0.5),0.1))
-    //   //   + (MathUtil.applyDeadband(driverController.getLeftTriggerAxis(),0.1) *  MathUtil.applyDeadband(MathUtil.clamp(driverController.getRightX(),-0.5,0.5),0.1)),
+    //   // Triggers for turning
+    //   () -> driverController.getRawAxis(OIConstants.rightTrigger),
+    //   () -> driverController.getRawAxis(OIConstants.leftTrigger),
 
-    //   () -> MathUtil.clamp(driverController.getRightX(), -0.5,0.5)
-    //   - (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) 
-    //   *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getRightX(),-0.5,0.5),0.1))
-    //   + (driverController.getLeftTriggerAxis() *  MathUtil.clamp(-driverController.getRightX(),-0.5,0.5)),
+    //   () -> !driverController.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx),
 
-    //   // Auto Turn
-    //   () -> driverController.getRightBumper(),
-    //   () -> driverController.getLeftBumper()
+    //   // // Speed Buttons
+    //   () -> driverController.getRawButton(OIConstants.aButton),
+    //   () -> driverController.getRawButton(OIConstants.bButton),
+    //   () -> driverController.getRawButton(OIConstants.xButton),
+    //   () -> driverController.getRawButton(OIConstants.yButton)
 
     // ));
+
+    swerveSubsystem.setDefaultCommand(new SwerveAltJoystick(
+      swerveSubsystem,
+      // Left Joystick Field Oriented
+      () -> (-MathUtil.clamp(-driverController.getLeftY(),-0.7,0.7)) 
+
+        - (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) 
+          *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftY(),-0.5,0.5),0.1))
+        + (driverController.getLeftTriggerAxis() *  MathUtil.clamp(-driverController.getLeftY(),-0.5,0.5)),
+
+      () -> MathUtil.clamp(driverController.getLeftX(),-0.5,0.5) 
+
+        - (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftX(),-0.5,0.5),0.1))
+        
+        + (driverController.getLeftTriggerAxis() *  MathUtil.clamp(-driverController.getLeftX(),-0.5,0.5)),
+
+        
+      //right joystick turning
+      // () -> MathUtil.applyDeadband(MathUtil.clamp(-driverController.getRightX(),-0.5,0.5),0.1)
+      //   - (MathUtil.applyDeadband(driverController.getRightTriggerAxis(),0.1) *  MathUtil.applyDeadband(MathUtil.clamp(driverController.getRightX(),-0.5,0.5),0.1))
+      //   + (MathUtil.applyDeadband(driverController.getLeftTriggerAxis(),0.1) *  MathUtil.applyDeadband(MathUtil.clamp(driverController.getRightX(),-0.5,0.5),0.1)),
+
+      () -> MathUtil.clamp(driverController.getRightX(), -0.5,0.5)
+      - (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) 
+      *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getRightX(),-0.5,0.5),0.1))
+      + (driverController.getLeftTriggerAxis() *  MathUtil.clamp(-driverController.getRightX(),-0.5,0.5)),
+      
+
+      // Auto Turn
+      () -> driverController.getRightBumper(),
+      () -> driverController.getLeftBumper()
+
+    ));
 
 
 

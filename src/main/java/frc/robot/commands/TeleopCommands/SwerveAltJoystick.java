@@ -43,8 +43,8 @@ public class SwerveAltJoystick extends Command {
     Supplier<Double> ySpdFunctionField, 
 
     Supplier<Double> turningSpdFunction,
-    Supplier<Boolean> leftSourceAngle,
-    Supplier<Boolean> rightSourceAngle
+    Supplier<Boolean> rightSourceAngle,
+    Supplier<Boolean> leftSourceAngle
 
   ) 
   {
@@ -104,7 +104,7 @@ public class SwerveAltJoystick extends Command {
     
     
     // turning
-    if (leftSourceAngle.get()) { //turn to left source
+    if (leftSourceAngle.get() == true) { //turn to left source
       
       thetaSpeed = leftStationRotController.calculate(swerveSubsystem.getHeading()) *Math.PI/180;    
       // thetaSpeed = MathUtil.applyDeadband(thetaSpeed, 0.1);
@@ -114,8 +114,8 @@ public class SwerveAltJoystick extends Command {
       // thetaSpeed = thetaSpeed * SwerveConstants.kMaxAngularSpeed;
 
     }
-    else if (rightSourceAngle.get()) { // turn to right source
-      thetaSpeed = rightStationRotController.calculate(swerveSubsystem.getHeading()) *Math.PI/180;    
+    else if (rightSourceAngle.get() == true) { // turn to right source
+      thetaSpeed = rightStationRotController.calculate(swerveSubsystem.getHeading()) * Math.PI/180;    
       // thetaSpeed = MathUtil.applyDeadband(thetaSpeed, 0.1);
       // thetaSpeed = turningLimiter.calculate(thetaSpeed);
       // thetaSpeed = Math.abs(thetaSpeed) > SwerveConstants.kDeadband ? thetaSpeed : 0.0;
@@ -124,7 +124,7 @@ public class SwerveAltJoystick extends Command {
 
     }
     else { // turning generic
-      double thetaSpeed = turningSpdFunction.get();
+      thetaSpeed = turningSpdFunction.get();
       thetaSpeed = turningLimiter.calculate(thetaSpeed);
       // thetaSpeed = Math.abs(thetaSpeed) > SwerveConstants.kDeadband ? thetaSpeed : 0.0;
       // thetaSpeed = Math.copySign(thetaSpeed * thetaSpeed, thetaSpeed);
@@ -165,11 +165,11 @@ public class SwerveAltJoystick extends Command {
 
   @Override
   public void end(boolean interrupted) {
-      swerveSubsystem.stopModules();
+    swerveSubsystem.stopModules();
   }
 
   @Override
   public boolean isFinished() {
-      return false;
+    return false;
   }
 }
