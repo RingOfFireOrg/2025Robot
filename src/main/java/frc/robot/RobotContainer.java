@@ -6,7 +6,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
+import frc.robot.commands.TeleopCommands.AprilTagLineup;
 import frc.robot.commands.TeleopCommands.SwerveAltJoystick;
 import frc.robot.commands.TeleopCommands.SwerveJoystickCommand;
 import frc.robot.commands.TeleopCommands.SwerveNewJoystick;
@@ -63,13 +65,11 @@ public class RobotContainer {
       () -> (-MathUtil.clamp(-driverController.getLeftY(),-0.7,0.7)) 
 
         - (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) 
-          *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftY(),-0.5,0.5),0.1))
+        *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftY(),-0.5,0.5),0.1))
         + (driverController.getLeftTriggerAxis() *  MathUtil.clamp(-driverController.getLeftY(),-0.5,0.5)),
 
       () -> MathUtil.clamp(-driverController.getLeftX(),-0.5,0.5) 
-
         - (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftX(),-0.5,0.5),0.1))
-        
         + (driverController.getLeftTriggerAxis() *  MathUtil.clamp(-driverController.getLeftX(),-0.5,0.5)),
 
         
@@ -89,9 +89,6 @@ public class RobotContainer {
       () -> driverController.getLeftBumper()
 
     ));
-
-
-
   }
 
  
@@ -109,6 +106,9 @@ public class RobotContainer {
 
   /* Create button Bindings*/
   private void configureButtonBindings() {
+
+    new JoystickButton(driverController, Constants.OIConstants.aButton)
+    .whileTrue(new AprilTagLineup(swerveSubsystem));
   
   } 
 

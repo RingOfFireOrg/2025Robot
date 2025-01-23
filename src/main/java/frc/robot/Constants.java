@@ -191,8 +191,7 @@ public final class Constants {
     }
 
 
-
-    public static final class VisionConstants {
+    public static final class TagAngles {
         public static final String NoteCamera = "limelight-notecam";
         public static final String AprilTagCamera = "limelight-tag";
 
@@ -200,6 +199,20 @@ public final class Constants {
         public static final double NoteTranslationModifier = 30;
         public static final double NoteRotationModifeier= 35;
     }
+
+    class Tag {
+        private int tagNum;
+        private int angle;
+        public Tag(int tagNum, int angle) {
+            this.tagNum = tagNum;
+            this.angle = angle;
+        }
+    }
+
+    public static final class VisionConstants {
+        public static final String TagCamera = "limelight-tag";
+
+    };
 
 
 

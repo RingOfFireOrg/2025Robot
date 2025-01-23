@@ -30,6 +30,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.IDConstants;
+import frc.robot.LimelightHelpers;
 
 import com.studica.frc.AHRS;
 import com.pathplanner.lib.config.RobotConfig;
@@ -86,7 +87,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
 
 
-    StructArrayPublisher<SwerveModuleState> publisher = NetworkTableInstance.getDefault().getStructArrayTopic("MyStates", SwerveModuleState.struct).publish();
 
     private final SwerveDriveOdometry odometer = new SwerveDriveOdometry(
         DriveConstants.kDriveKinematics, getRotation2d(),
@@ -254,6 +254,7 @@ public class SwerveSubsystem extends SubsystemBase {
     public void periodic() {
         odometer.update(getRotation2d(), getSwerveModulePosition());
         
+        SmartDashboard.putNumber("tagcamera_X", (100 - LimelightHelpers.getTA(Constants.VisionConstants.TagCamera))/150);
         SmartDashboard.putNumber("swerve_Robot Heading", getHeading());
         SmartDashboard.putNumber("swerve_Robot Theta", getPose().getRotation().getDegrees());
         SmartDashboard.putNumber("swerve_FL Robot Tranlsation", frontLeft.getDrivePosition());
@@ -357,6 +358,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
   
     /* ------------------------------------- */
+
+
+    
 }
     
     
