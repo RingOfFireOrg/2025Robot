@@ -10,12 +10,15 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.LimelightHelpers;
+import frc.robot.LimelightHelpers.LimelightTarget_Fiducial;
 import frc.robot.subsystems.SwerveSubsystem;
 
 public class AprilTagLineup extends Command {
@@ -23,10 +26,11 @@ public class AprilTagLineup extends Command {
   private final SwerveSubsystem swerveSubsystem;
   //HashMap<int a, int b> hashmap = new HashMap<>();
   private PIDController tagTurnController = new PIDController(3, 0, 0.5); 
-  private PIDController tagForwardController = new PIDController(2, 0, 0.3); 
+  private PIDController tagForwardController = new PIDController(7, 0, 0.3); 
   
   private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
   double ySpeed = 0;
+  int tagNum;
 
   public AprilTagLineup(SwerveSubsystem swerveSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -39,9 +43,10 @@ public class AprilTagLineup extends Command {
     tagTurnController.enableContinuousInput(0, 360);
     tagTurnController.setTolerance(3);
 
-    tagForwardController.enableContinuousInput(0, 100);
-    tagForwardController.setTolerance(4);
-    tagForwardController.setSetpoint(13);
+    //tagForwardController.enableContinuousInput(0, 100);
+    tagForwardController.setSetpoint(14);
+
+    tagForwardController.setTolerance(0.5);
 
 
   }
@@ -49,38 +54,45 @@ public class AprilTagLineup extends Command {
   @Override
   public void initialize() {
     tagTurnController.setSetpoint(0);
+    // for (LimelightTarget_Fiducial target: result.targets_Fiducials) {
+    //   if (target.fiducialID == 7) {
+    //     // Do your stuff here
+    //   }
+
+    // }
+   // tagNum = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tid").getDouble(<default value>);
+
   }
 
   @Override
   public void execute() {
+    SmartDashboard.putBoolean("Setpoint", tagForwardController.atSetpoint());
+    SmartDashboard.putNumber("tagforwardNum", LimelightHelpers.getTA(Constants.VisionConstants.TagCamera));
+    SmartDashboard.putNumber("SetpointNum", tagForwardController.getSetpoint());
 
 
-        
-    double xSpeed = 0; //(100 - LimelightHelpers.getTA(Constants.VisionConstants.TagCamera))/100 ;// / 20;
-    
-
-    
-
+    double xSpeed = 0;
     double turningSpeed = tagTurnController.calculate(swerveSubsystem.getHeading()) *Math.PI/180;
-    
     double ySpeed = LimelightHelpers.getTX(Constants.VisionConstants.TagCamera)/40;
     ySpeed = MathUtil.clamp(ySpeed, -0.15, 0.15);
     if (tagTurnController.atSetpoint()) {
-      xSpeed = tagForwardController.calculate(LimelightHelpers.getTA(Constants.VisionConstants.TagCamera));
-      xSpeed = MathUtil.clamp(xSpeed, -0.15, 0.15);
+      if (!tagForwardController.atSetpoint()) {
+        xSpeed = tagForwardController.calculate(LimelightHelpers.getTA(Constants.VisionConstants.TagCamera));
+        xSpeed = MathUtil.clamp(xSpeed, -0.2, 0.2); 
+      }
     }
 
-
-
-    
-    
-    
-    xSpeed = Math.abs(xSpeed) > OIConstants.kDeadband ? xSpeed : 0.0;
-    ySpeed = Math.abs(ySpeed) > OIConstants.kDeadband ? ySpeed : 0.0;
-    turningSpeed = Math.abs(turningSpeed) > OIConstants.kDeadband ? turningSpeed : 0.0;
     turningSpeed = MathUtil.clamp(turningSpeed, -0.3, 0.3);
 
-    xSpeed = xLimiter.calculate(xSpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
+
+    
+    
+    
+    xSpeed = Math.abs(xSpeed) > 0.1 ? xSpeed : 0.0;
+    ySpeed = Math.abs(ySpeed) > OIConstants.kDeadband ? ySpeed : 0.0;
+    turningSpeed = Math.abs(turningSpeed) > OIConstants.kDeadband ? turningSpeed : 0.0;
+
+    //xSpeed = xLimiter.calculate(xSpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
     ySpeed = yLimiter.calculate(ySpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
     turningSpeed = turningLimiter.calculate(turningSpeed)
             * DriveConstants.kTeleDriveMaxAngularSpeedRadiansPerSecond;
@@ -106,6 +118,11 @@ public class AprilTagLineup extends Command {
     // }
     // else {
     //   return false;
+    // }
+    // if (tagTurnController.atSetpoint()) {
+    //   if (tagForwardController.atSetpoint()) {
+    //     return true;
+    //   }
     // }
     return false;
   }
