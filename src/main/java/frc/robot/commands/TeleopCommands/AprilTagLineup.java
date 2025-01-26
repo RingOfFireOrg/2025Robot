@@ -30,7 +30,7 @@ public class AprilTagLineup extends Command {
   
   private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
   double ySpeed = 0;
-  int tagNum;
+  double tagNum;
 
   public AprilTagLineup(SwerveSubsystem swerveSubsystem) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -46,7 +46,7 @@ public class AprilTagLineup extends Command {
     //tagForwardController.enableContinuousInput(0, 100);
     tagForwardController.setSetpoint(14);
 
-    tagForwardController.setTolerance(0.5);
+    tagForwardController.setTolerance(2);
 
 
   }
@@ -54,13 +54,29 @@ public class AprilTagLineup extends Command {
   @Override
   public void initialize() {
     tagTurnController.setSetpoint(0);
+    tagForwardController.setSetpoint(14);
+
     // for (LimelightTarget_Fiducial target: result.targets_Fiducials) {
     //   if (target.fiducialID == 7) {
     //     // Do your stuff here
     //   }
 
     // }
-   // tagNum = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tid").getDouble(<default value>);
+    tagNum = NetworkTableInstance.getDefault().getTable("limelight-tag").getEntry("tid").getDouble(0);
+    if (tagNum==17) {
+      tagTurnController.setSetpoint(0);
+
+    }
+    else if (tagNum == 21) {
+      tagTurnController.setSetpoint(300);
+
+    }
+    else {
+      tagTurnController.setSetpoint(0);
+    }
+
+
+
 
   }
 
@@ -76,11 +92,15 @@ public class AprilTagLineup extends Command {
     double ySpeed = LimelightHelpers.getTX(Constants.VisionConstants.TagCamera)/40;
     ySpeed = MathUtil.clamp(ySpeed, -0.15, 0.15);
     if (tagTurnController.atSetpoint()) {
-      if (!tagForwardController.atSetpoint()) {
-        xSpeed = tagForwardController.calculate(LimelightHelpers.getTA(Constants.VisionConstants.TagCamera));
+      if (LimelightHelpers.getTA(Constants.VisionConstants.TagCamera) != 0) {
+        xSpeed = tagForwardController.calculate(LimelightHelpers.getTA(Constants.VisionConstants.TagCamera))/15;
         xSpeed = MathUtil.clamp(xSpeed, -0.2, 0.2); 
-      }
     }
+     if ( tagForwardController.atSetpoint()) {
+      xSpeed = 0;
+     }
+    }
+    SmartDashboard.putNumber("xSpeed Camera", xSpeed);
 
     turningSpeed = MathUtil.clamp(turningSpeed, -0.3, 0.3);
 
@@ -88,7 +108,7 @@ public class AprilTagLineup extends Command {
     
     
     
-    xSpeed = Math.abs(xSpeed) > 0.1 ? xSpeed : 0.0;
+    xSpeed = Math.abs(xSpeed) > 0.05 ? xSpeed : 0.0;
     ySpeed = Math.abs(ySpeed) > OIConstants.kDeadband ? ySpeed : 0.0;
     turningSpeed = Math.abs(turningSpeed) > OIConstants.kDeadband ? turningSpeed : 0.0;
 

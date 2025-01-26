@@ -63,12 +63,11 @@ public class RobotContainer {
       swerveSubsystem,
       // Left Joystick Field Oriented
       () -> (-MathUtil.clamp(-driverController.getLeftY(),-0.7,0.7)) 
-
         - (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) 
         *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftY(),-0.5,0.5),0.1))
         + (driverController.getLeftTriggerAxis() *  MathUtil.clamp(-driverController.getLeftY(),-0.5,0.5)),
 
-      () -> MathUtil.clamp(-driverController.getLeftX(),-0.5,0.5) 
+      () -> MathUtil.clamp(-driverController.getLeftX(),-0.7,0.7) 
         - (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftX(),-0.5,0.5),0.1))
         + (driverController.getLeftTriggerAxis() *  MathUtil.clamp(-driverController.getLeftX(),-0.5,0.5)),
 

@@ -252,6 +252,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+
+        SmartDashboard.putNumber("LEANLEANLEAN", NetworkTableInstance.getDefault().getTable("limelight-tag").getEntry("tid").getDouble(0));
+
         odometer.update(getRotation2d(), getSwerveModulePosition());
         
         SmartDashboard.putNumber("tagcamera_X", (100 - LimelightHelpers.getTA(Constants.VisionConstants.TagCamera))/150);
