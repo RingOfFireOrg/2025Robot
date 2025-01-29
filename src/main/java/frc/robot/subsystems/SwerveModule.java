@@ -3,10 +3,12 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -63,8 +65,8 @@ public class SwerveModule {
     );
 
 
-    SparkMaxConfig driveConfig  = new SparkMaxConfig();
-    SparkMaxConfig turnConfig  = new SparkMaxConfig();
+    SparkMaxConfig driveConfig = new SparkMaxConfig();
+    SparkMaxConfig turnConfig = new SparkMaxConfig();
 
     public SwerveModule(int driveMotorId, int turningMotorId, boolean driveMotorReversed, boolean turningMotorReversed,
             int absoluteEncoderId, double absoluteEncoderOffset, boolean absoluteEncoderReversed) {
@@ -82,17 +84,13 @@ public class SwerveModule {
 
         driveConfig.smartCurrentLimit(40);
         driveConfig.inverted(driveMotorReversed);
+        driveConfig.idleMode(SparkBaseConfig.IdleMode.kBrake);
         driveMotor.configure(driveConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
         turnConfig.smartCurrentLimit(40);
         turnConfig.inverted(turningMotorReversed);
         turningMotor.configure(turnConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-        // turningMotor.setSmartCurrentLimit(40);
 
-        // driveMotor.burnFlash();
-        // driveMotor.configure(null, null, null)
-        // turningMotor.burnFlash();
-        // //turningMotor.setSmartCurrentLimit(40);
 
 
         // driveMotor.setInverted(driveMotorReversed);
@@ -247,10 +245,12 @@ public class SwerveModule {
 
     public void brake(boolean doBrake){
         if(doBrake){
-            //TODO:
+            driveConfig.idleMode(SparkBaseConfig.IdleMode.kBrake);
+            driveMotor.configure(driveConfig,SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
         }
         else{
-            //driveMotor.setIdleMode(CANSparkMax.IdleMode.kCoast);
+            driveConfig.idleMode(SparkBaseConfig.IdleMode.kCoast);
+            driveMotor.configure(driveConfig,SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
         }
         
     }

@@ -49,6 +49,10 @@ public final class Constants {
 
         //wrong order but fix it in offseason becuase it works rn
         public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
+            // new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
+            // new Translation2d(-kWheelBase / 2, -kTrackWidth / 2),
+            // new Translation2d(kWheelBase / 2, kTrackWidth / 2),
+            // new Translation2d(kWheelBase / 2, -kTrackWidth / 2)
             new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
             new Translation2d(kWheelBase / 2, kTrackWidth / 2),
             new Translation2d(-kWheelBase / 2, -kTrackWidth / 2),
@@ -89,8 +93,8 @@ public final class Constants {
         public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 3;
         public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 4;
 
-        public static final PIDConstants translationConstants = new PIDConstants(5.0, 0.0, 0.0);
-        public static final PIDConstants rotationConstants = new PIDConstants(5.0, 0.0, 0.0);
+        public static final PIDConstants translationConstants = new PIDConstants(5.0, 0.0, 0.5);
+        public static final PIDConstants rotationConstants = new PIDConstants(5.0, 0.0, 0.5);
     }
 
     public static final class SwerveConstants {

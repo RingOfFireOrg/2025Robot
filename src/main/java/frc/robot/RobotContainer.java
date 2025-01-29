@@ -1,5 +1,7 @@
 package frc.robot;
 
+import com.pathplanner.lib.commands.PathPlannerAuto;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -62,30 +64,21 @@ public class RobotContainer {
     swerveSubsystem.setDefaultCommand(new SwerveAltJoystick(
       swerveSubsystem,
       // Left Joystick Field Oriented
-      () -> (-MathUtil.clamp(-driverController.getLeftY(),-0.7,0.7)) 
-        - (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) 
-        *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftY(),-0.5,0.5),0.1))
-        + (driverController.getLeftTriggerAxis() *  MathUtil.clamp(-driverController.getLeftY(),-0.5,0.5)),
+      () -> (-MathUtil.clamp(driverController.getLeftY(),-0.7,0.7)) 
+        - (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftY(),-0.7,0.7),0.1))
+        + (driverController.getLeftTriggerAxis() *  MathUtil.clamp(-driverController.getLeftY(),-0.7,0.7)),
 
       () -> MathUtil.clamp(-driverController.getLeftX(),-0.7,0.7) 
-        - (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftX(),-0.5,0.5),0.1))
-        + (driverController.getLeftTriggerAxis() *  MathUtil.clamp(-driverController.getLeftX(),-0.5,0.5)),
+        - (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftX(),-0.7,0.7),0.1))
+        + (driverController.getLeftTriggerAxis() *  MathUtil.clamp(-driverController.getLeftX(),-0.7,0.7)),
 
         
-      //right joystick turning
-      // () -> MathUtil.applyDeadband(MathUtil.clamp(-driverController.getRightX(),-0.5,0.5),0.1)
-      //   - (MathUtil.applyDeadband(driverController.getRightTriggerAxis(),0.1) *  MathUtil.applyDeadband(MathUtil.clamp(driverController.getRightX(),-0.5,0.5),0.1))
-      //   + (MathUtil.applyDeadband(driverController.getLeftTriggerAxis(),0.1) *  MathUtil.applyDeadband(MathUtil.clamp(driverController.getRightX(),-0.5,0.5),0.1)),
+
 
       () -> MathUtil.clamp(driverController.getRightX(), -0.5,0.5)
       - (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) 
       *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getRightX(),-0.5,0.5),0.1))
-      + (driverController.getLeftTriggerAxis() *  MathUtil.clamp(-driverController.getRightX(),-0.5,0.5)),
-      
-
-      // Auto Turn
-      () -> driverController.getRightBumper(),
-      () -> driverController.getLeftBumper()
+      + (driverController.getLeftTriggerAxis() *  MathUtil.clamp(-driverController.getRightX(),-0.5,0.5))
 
     ));
   }
@@ -117,8 +110,11 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
 
     /* Run no Auto */
-    return new InstantCommand();
-
+    //return new InstantCommand();
+    return new PathPlannerAuto("test1auto")
+    //.andThen(new AprilTagLineup(swerveSubsystem))
+//    .andThen(new PathPlannerAuto("part2"))
+    ;
  
   }
 
