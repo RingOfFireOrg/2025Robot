@@ -34,7 +34,7 @@ public class AprilTagLineup extends Command {
     this.yLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
     this.turningLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
     tagTurnController.enableContinuousInput(0, 360);
-    tagTurnController.setTolerance(3);
+    tagTurnController.setTolerance(5);
 
     tagForwardController.setSetpoint(14);
     tagForwardController.setTolerance(2);
@@ -49,29 +49,11 @@ public class AprilTagLineup extends Command {
     tagNum = NetworkTableInstance.getDefault().getTable("limelight-tag").getEntry("tid").getDouble(0);
 
 
-
-
-    if (tagNum == 18 || tagNum == 7) {
+    if (tagNum==17) {
       tagTurnController.setSetpoint(0);
 
     }
-    else if (tagNum == 19 || tagNum == 6) {
-      tagTurnController.setSetpoint(60);
-
-    }
-    else if (tagNum == 20 || tagNum == 11) {
-      tagTurnController.setSetpoint(120);
-
-    }
-    else if (tagNum == 21 || tagNum == 10) {
-      tagTurnController.setSetpoint(180);
-
-    }
-    else if (tagNum == 22 || tagNum == 9) {
-      tagTurnController.setSetpoint(240);
-
-    }
-    else if (tagNum == 17 || tagNum == 8) {
+    else if (tagNum == 21) {
       tagTurnController.setSetpoint(300);
 
     }
@@ -79,11 +61,40 @@ public class AprilTagLineup extends Command {
       tagTurnController.setSetpoint(0);
     }
 
+    // if (tagNum == 18 || tagNum == 7) {
+    //   tagTurnController.setSetpoint(0);
+
+    // }
+    // else if (tagNum == 19 || tagNum == 6) {
+    //   tagTurnController.setSetpoint(60);
+
+    // }
+    // else if (tagNum == 20 || tagNum == 11) {
+    //   tagTurnController.setSetpoint(120);
+
+    // }
+    // else if (tagNum == 21 || tagNum == 10) {
+    //   tagTurnController.setSetpoint(180);
+
+    // }
+    // else if (tagNum == 22 || tagNum == 9) {
+    //   tagTurnController.setSetpoint(240);
+
+    // }
+    // else if (tagNum == 17 || tagNum == 8) {
+    //   tagTurnController.setSetpoint(300);
+
+    // }
+    // else {
+    //   tagTurnController.setSetpoint(0);
+    // }
+
 
   }
 
   @Override
   public void execute() {
+    SmartDashboard.putNumber("SetpointAngle", tagTurnController.getSetpoint());
     SmartDashboard.putBoolean("Setpoint", tagForwardController.atSetpoint());
     SmartDashboard.putNumber("tagforwardNum", LimelightHelpers.getTA(Constants.VisionConstants.TagCamera));
     SmartDashboard.putNumber("SetpointNum", tagForwardController.getSetpoint());
@@ -106,14 +117,12 @@ public class AprilTagLineup extends Command {
 
     turningSpeed = MathUtil.clamp(turningSpeed, -0.3, 0.3);
 
-
-    
-    
     
     xSpeed = Math.abs(xSpeed) > 0.05 ? xSpeed : 0.0;
     ySpeed = Math.abs(ySpeed) > OIConstants.kDeadband ? ySpeed : 0.0;
     turningSpeed = Math.abs(turningSpeed) > OIConstants.kDeadband ? turningSpeed : 0.0;
 
+    
     //xSpeed = xLimiter.calculate(xSpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
     ySpeed = yLimiter.calculate(ySpeed) * DriveConstants.kTeleDriveMaxSpeedMetersPerSecond;
     turningSpeed = turningLimiter.calculate(turningSpeed)
@@ -146,12 +155,12 @@ public class AprilTagLineup extends Command {
     //     return true;
     //   }
     // }
-    if (tagTurnController.atSetpoint()) {
+    // if (tagTurnController.atSetpoint()) {
 
-     if ( tagForwardController.atSetpoint()) {
-      return true;
-     }
-    }
+    //  if ( tagForwardController.atSetpoint()) {
+    //   return true;
+    //  }
+    // }
     return false;
   }
 }

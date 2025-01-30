@@ -88,6 +88,8 @@ public class SwerveAltJoystick extends Command {
       // thetaSpeed = Math.abs(thetaSpeed) > SwerveConstants.kDeadband ? thetaSpeed : 0.0;
       // thetaSpeed = Math.copySign(thetaSpeed * thetaSpeed, thetaSpeed);
       // thetaSpeed = thetaSpeed * SwerveConstants.kMaxAngularSpeed;
+      thetaSpeed = MathUtil.clamp(thetaSpeed, 0.4, 0.4);
+
 
     }
     else if (driveController.getRightBumperButton() == true) { // turn to right source
@@ -97,6 +99,7 @@ public class SwerveAltJoystick extends Command {
       // thetaSpeed = Math.abs(thetaSpeed) > SwerveConstants.kDeadband ? thetaSpeed : 0.0;
       // thetaSpeed = Math.copySign(thetaSpeed * thetaSpeed, thetaSpeed);
       // thetaSpeed = thetaSpeed * SwerveConstants.kMaxAngularSpeed;
+      thetaSpeed = MathUtil.clamp(thetaSpeed, 0.4, 0.4);
 
     }
     else { // turning generic

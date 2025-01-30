@@ -49,14 +49,19 @@ public final class Constants {
 
         //wrong order but fix it in offseason becuase it works rn
         public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
-            // new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
-            // new Translation2d(-kWheelBase / 2, -kTrackWidth / 2),
             // new Translation2d(kWheelBase / 2, kTrackWidth / 2),
-            // new Translation2d(kWheelBase / 2, -kTrackWidth / 2)
-            new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
-            new Translation2d(kWheelBase / 2, kTrackWidth / 2),
+            // new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
+            // new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
+            // new Translation2d(-kWheelBase / 2, -kTrackWidth / 2)
+            new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
             new Translation2d(-kWheelBase / 2, -kTrackWidth / 2),
-            new Translation2d(-kWheelBase / 2, kTrackWidth / 2)
+            new Translation2d(kWheelBase / 2, kTrackWidth / 2),
+            new Translation2d(kWheelBase / 2, -kTrackWidth / 2)
+           
+            // new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
+            // new Translation2d(kWheelBase / 2, kTrackWidth / 2),
+            // new Translation2d(-kWheelBase / 2, -kTrackWidth / 2),
+            // new Translation2d(-kWheelBase / 2, kTrackWidth / 2)
         );
 
         public static final boolean kFrontLeftTurningEncoderReversed = false;
@@ -64,9 +69,9 @@ public final class Constants {
         public static final boolean kFrontRightTurningEncoderReversed = false;
         public static final boolean kBackRightTurningEncoderReversed = false;
 
-        public static final boolean kFrontLeftDriveEncoderReversed = false;
+        public static final boolean kFrontLeftDriveEncoderReversed = true;
         public static final boolean kBackLeftDriveEncoderReversed = false;
-        public static final boolean kFrontRightDriveEncoderReversed = false;
+        public static final boolean kFrontRightDriveEncoderReversed = true;
         public static final boolean kBackRightDriveEncoderReversed = false;
 
         public static final boolean kFrontLeftDriveAbsoluteEncoderReversed = true;
@@ -74,8 +79,8 @@ public final class Constants {
         public static final boolean kFrontRightDriveAbsoluteEncoderReversed = true;
         public static final boolean kBackRightDriveAbsoluteEncoderReversed = true;
 
-        public static final double kFrontLeftDriveOffsetDegrees= (180); //offset in degrees - CanCoder 9
-        public static final double kFrontRightDriveOffsetDegrees= (-180+74 + 90 +180); //offset in degrees - CanCoder 10
+        public static final double kFrontLeftDriveOffsetDegrees= (-4.5); //offset in degrees - CanCoder 9
+        public static final double kFrontRightDriveOffsetDegrees= (-180+74 + 90 +180 +180+7); //offset in degrees - CanCoder 10
         public static final double kBackLeftDriveOffsetDegrees= (30+118+180); //offset in degrees - CanCoder 11
         public static final double kBackRightDriveOffsetDegrees= (-26); //offset in degrees - CanCoder 12
 
@@ -93,8 +98,8 @@ public final class Constants {
         public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 3;
         public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 4;
 
-        public static final PIDConstants translationConstants = new PIDConstants(5.0, 0.0, 0.5);
-        public static final PIDConstants rotationConstants = new PIDConstants(5.0, 0.0, 0.5);
+        public static final PIDConstants translationConstants = new PIDConstants(1.0, 0.0, 0.5);
+        public static final PIDConstants rotationConstants = new PIDConstants(0.5, 0.0, 0.1);
     }
 
     public static final class SwerveConstants {

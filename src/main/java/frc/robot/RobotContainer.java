@@ -68,17 +68,17 @@ public class RobotContainer {
         - (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftY(),-0.7,0.7),0.1))
         + (driverController.getLeftTriggerAxis() *  MathUtil.clamp(-driverController.getLeftY(),-0.7,0.7)),
 
-      () -> MathUtil.clamp(-driverController.getLeftX(),-0.7,0.7) 
+      () -> MathUtil.clamp(driverController.getLeftX(),-0.7,0.7) 
         - (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftX(),-0.7,0.7),0.1))
-        + (driverController.getLeftTriggerAxis() *  MathUtil.clamp(-driverController.getLeftX(),-0.7,0.7)),
+        + (driverController.getLeftTriggerAxis() *  MathUtil.clamp(driverController.getLeftX(),-0.7,0.7)),
 
         
 
 
       () -> MathUtil.clamp(driverController.getRightX(), -0.5,0.5)
-      - (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) 
+      + (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) 
       *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getRightX(),-0.5,0.5),0.1))
-      + (driverController.getLeftTriggerAxis() *  MathUtil.clamp(-driverController.getRightX(),-0.5,0.5))
+      - (driverController.getLeftTriggerAxis() *  MathUtil.clamp(-driverController.getRightX(),-0.5,0.5))
 
     ));
   }
@@ -111,7 +111,7 @@ public class RobotContainer {
 
     /* Run no Auto */
     //return new InstantCommand();
-    return new PathPlannerAuto("test1auto")
+    return new PathPlannerAuto("part1")
     //.andThen(new AprilTagLineup(swerveSubsystem))
 //    .andThen(new PathPlannerAuto("part2"))
     ;
