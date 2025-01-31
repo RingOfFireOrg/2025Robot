@@ -82,8 +82,9 @@ public class SwerveSubsystem extends SubsystemBase {
     );
     
     //private final AHRS gyro = new AHRS(SerialPort.Port.kOnboard);
-    private final AHRS gyro = new AHRS(AHRS.NavXComType.kUSB1);
+    private AHRS gyro = new AHRS(AHRS.NavXComType.kUSB1);
     ShuffleboardTab generateAutoTab = Shuffleboard.getTab("Generate Auto");
+    
 
 
 
@@ -149,7 +150,7 @@ public class SwerveSubsystem extends SubsystemBase {
               this::driveRobotRelative,   
               new PPHolonomicDriveController(
                 Constants.DriveConstants.translationConstants,
-                Constants.DriveConstants.translationConstants
+                Constants.DriveConstants.rotationConstants
               ),
               config,
               () -> {

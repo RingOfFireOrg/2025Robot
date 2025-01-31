@@ -49,19 +49,25 @@ public final class Constants {
 
         //wrong order but fix it in offseason becuase it works rn
         public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
-            // new Translation2d(kWheelBase / 2, kTrackWidth / 2),
-            // new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
-            // new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
-            // new Translation2d(-kWheelBase / 2, -kTrackWidth / 2)
-            new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
-            new Translation2d(-kWheelBase / 2, -kTrackWidth / 2),
-            new Translation2d(kWheelBase / 2, kTrackWidth / 2),
-            new Translation2d(kWheelBase / 2, -kTrackWidth / 2)
-           
-            // new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
-            // new Translation2d(kWheelBase / 2, kTrackWidth / 2),
-            // new Translation2d(-kWheelBase / 2, -kTrackWidth / 2),
-            // new Translation2d(-kWheelBase / 2, kTrackWidth / 2)
+            // new Translation2d(kWheelBase / 2, -kTrackWidth / 2),   // Front Right
+            // new Translation2d(kWheelBase / 2, kTrackWidth / 2),    // Front Left
+            // new Translation2d(-kWheelBase / 2, -kTrackWidth / 2),  //Back Right
+            // new Translation2d(-kWheelBase / 2, kTrackWidth / 2)    // Back Left
+
+            // new Translation2d(kWheelBase / 2, kTrackWidth / 2),    // Front Left
+            // new Translation2d(kWheelBase / 2, -kTrackWidth / 2),   // Front Right
+            // new Translation2d(-kWheelBase / 2, kTrackWidth / 2),   // Back Left
+            // new Translation2d(-kWheelBase / 2, -kTrackWidth / 2)  //Back Right
+
+            // new Translation2d(-kWheelBase / 2, -kTrackWidth / 2),  //Back Right
+            // new Translation2d(-kWheelBase / 2, kTrackWidth / 2),   // Back Left
+            // new Translation2d(kWheelBase / 2, -kTrackWidth / 2),   // Front Right
+            // new Translation2d(kWheelBase / 2, kTrackWidth / 2)   // Front Left
+
+            new Translation2d(-kWheelBase / 2, kTrackWidth / 2),   //Back Left
+            new Translation2d(-kWheelBase / 2, -kTrackWidth / 2),  //Back Right
+            new Translation2d(kWheelBase / 2, kTrackWidth / 2),    //Front Left
+            new Translation2d(kWheelBase / 2, -kTrackWidth / 2)    //Front Right
         );
 
         public static final boolean kFrontLeftTurningEncoderReversed = false;
@@ -99,7 +105,7 @@ public final class Constants {
         public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 4;
 
         public static final PIDConstants translationConstants = new PIDConstants(1.0, 0.0, 0.5);
-        public static final PIDConstants rotationConstants = new PIDConstants(0.5, 0.0, 0.1);
+        public static final PIDConstants rotationConstants = new PIDConstants(1, 0.0, 0.1);
     }
 
     public static final class SwerveConstants {
