@@ -76,19 +76,19 @@ public final class Constants {
         public static final boolean kBackRightTurningEncoderReversed = false;
 
         public static final boolean kFrontLeftDriveEncoderReversed = true;
-        public static final boolean kBackLeftDriveEncoderReversed = false;
+        public static final boolean kBackLeftDriveEncoderReversed = true;
         public static final boolean kFrontRightDriveEncoderReversed = true;
-        public static final boolean kBackRightDriveEncoderReversed = false;
+        public static final boolean kBackRightDriveEncoderReversed = true;
 
         public static final boolean kFrontLeftDriveAbsoluteEncoderReversed = true;
         public static final boolean kBackLeftDriveAbsoluteEncoderReversed = true;
         public static final boolean kFrontRightDriveAbsoluteEncoderReversed = true;
         public static final boolean kBackRightDriveAbsoluteEncoderReversed = true;
 
-        public static final double kFrontLeftDriveOffsetDegrees= (-4.5); //offset in degrees - CanCoder 9
+        public static final double kFrontLeftDriveOffsetDegrees= (-4.5 ); //offset in degrees - CanCoder 9
         public static final double kFrontRightDriveOffsetDegrees= (-180+74 + 90 +180 +180+7); //offset in degrees - CanCoder 10
-        public static final double kBackLeftDriveOffsetDegrees= (30+118+180); //offset in degrees - CanCoder 11
-        public static final double kBackRightDriveOffsetDegrees= (-26); //offset in degrees - CanCoder 12
+        public static final double kBackLeftDriveOffsetDegrees= (30+118+180 +180); //offset in degrees - CanCoder 11
+        public static final double kBackRightDriveOffsetDegrees= (-26+180); //offset in degrees - CanCoder 12
 
         public static final double kFrontLeftDriveAbsoluteEncoderOffsetRad =  Math.toRadians(kFrontLeftDriveOffsetDegrees);
         public static final double kFrontRightDriveAbsoluteEncoderOffsetRad = Math.toRadians(kFrontRightDriveOffsetDegrees);
