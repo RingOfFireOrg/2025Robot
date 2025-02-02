@@ -71,7 +71,7 @@ public class SwerveJoystickCommand extends Command {
     public void execute() {
         /* Reset Gyro Button (Not created as a trigger so the Swerve Drive Command does not get intrerrupted while driving) */
         if(driveController.getRawButton(7) == true) {
-            swerveSubsystem.fieldCentricReset();
+            swerveSubsystem.zeroHeading();
         }
 
         if(aButton.get() == true) {

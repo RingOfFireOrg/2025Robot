@@ -112,7 +112,7 @@ public class RobotContainer {
     /* Run no Auto */
     //return new InstantCommand();
     return new PathPlannerAuto("part1")
-    //.andThen(new AprilTagLineup(swerveSubsystem))
+    .andThen(new AprilTagLineup(swerveSubsystem))
 //    .andThen(new PathPlannerAuto("part2"))
     ;
  

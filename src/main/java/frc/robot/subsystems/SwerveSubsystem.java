@@ -4,6 +4,7 @@ package frc.robot.subsystems;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.util.FlippingUtil;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
@@ -83,6 +84,7 @@ public class SwerveSubsystem extends SubsystemBase {
     
     //private final AHRS gyro = new AHRS(SerialPort.Port.kOnboard);
     private AHRS gyro = new AHRS(AHRS.NavXComType.kUSB1);
+    private double gyroFlip = -1;
     ShuffleboardTab generateAutoTab = Shuffleboard.getTab("Generate Auto");
     
 
@@ -139,9 +141,10 @@ public class SwerveSubsystem extends SubsystemBase {
         //         },
         //         this 
         // );
+        //FlippingUtil.symmetryType.kMirrored;
         try{
             RobotConfig config = RobotConfig.fromGUISettings();
-      
+            
             // Configure AutoBuilder
             AutoBuilder.configure(
               this::getPose, 
@@ -182,13 +185,19 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public double getHeading() {
+        //return Rotation2d.fromDegrees(-gyro.getYaw());
+
         double temp = (gyro.getAngle() % 360);
+        
         if(temp < 0) {
             temp = temp + 360; 
         }
         return temp;
     }
 
+    public Rotation2d getHeadingr2d() {
+        return Rotation2d.fromDegrees(-gyro.getYaw());
+    }
 
 
     // ---------------------------------------------------------------------------------------------------------------
@@ -199,7 +208,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public void resetPose(Pose2d pose) {
         //odometer.resetPosition(getRotation2d(),getSwerveModulePosition(),pose);
-        odometer.resetPosition(new Rotation2d(Math.toRadians(gyro.getYaw())),getSwerveModulePosition(),pose); 
+        odometer.resetPosition(new Rotation2d(Math.toRadians(gyroFlip * gyro.getYaw())),getSwerveModulePosition(),pose); 
         
     }
 
@@ -223,16 +232,12 @@ public class SwerveSubsystem extends SubsystemBase {
 
     // ---------------------------------------------------------------------------------------------------------------
 
-    public void fieldCentricReset() {
-        gyro.reset();
-    }
 
-    public AHRS getGyro() {
-        return gyro;
-    }
 
     public Rotation2d getRotation2d() {
-        return Rotation2d.fromDegrees(getHeading());
+        //return Rotation2d.fromDegrees(getHeading());
+        return Rotation2d.fromDegrees(-gyro.getYaw());
+
     }
 
     public void resetOdometry(Pose2d pose) {

@@ -49,45 +49,45 @@ public class AprilTagLineup extends Command {
     tagNum = NetworkTableInstance.getDefault().getTable("limelight-tag").getEntry("tid").getDouble(0);
 
 
-    if (tagNum==17) {
-      tagTurnController.setSetpoint(0);
-
-    }
-    else if (tagNum == 21) {
-      tagTurnController.setSetpoint(300);
-
-    }
-    else {
-      tagTurnController.setSetpoint(0);
-    }
-
-    // if (tagNum == 18 || tagNum == 7) {
+    // if (tagNum==17) {
     //   tagTurnController.setSetpoint(0);
 
     // }
-    // else if (tagNum == 19 || tagNum == 6) {
-    //   tagTurnController.setSetpoint(60);
-
-    // }
-    // else if (tagNum == 20 || tagNum == 11) {
-    //   tagTurnController.setSetpoint(120);
-
-    // }
-    // else if (tagNum == 21 || tagNum == 10) {
-    //   tagTurnController.setSetpoint(180);
-
-    // }
-    // else if (tagNum == 22 || tagNum == 9) {
-    //   tagTurnController.setSetpoint(240);
-
-    // }
-    // else if (tagNum == 17 || tagNum == 8) {
+    // else if (tagNum == 21) {
     //   tagTurnController.setSetpoint(300);
 
     // }
     // else {
     //   tagTurnController.setSetpoint(0);
     // }
+
+    if (tagNum == 18 || tagNum == 7) {
+      tagTurnController.setSetpoint(0);
+
+    }
+    else if (tagNum == 19 || tagNum == 6) {
+      tagTurnController.setSetpoint(60);
+
+    }
+    else if (tagNum == 20 || tagNum == 11) {
+      tagTurnController.setSetpoint(120);
+
+    }
+    else if (tagNum == 21 || tagNum == 10) {
+      tagTurnController.setSetpoint(180);
+
+    }
+    else if (tagNum == 22 || tagNum == 9) {
+      tagTurnController.setSetpoint(240);
+
+    }
+    else if (tagNum == 17 || tagNum == 8) {
+      tagTurnController.setSetpoint(300);
+
+    }
+    else {
+      tagTurnController.setSetpoint(0);
+    }
 
 
   }
@@ -115,8 +115,9 @@ public class AprilTagLineup extends Command {
     }
     SmartDashboard.putNumber("xSpeed Camera", xSpeed);
 
-    turningSpeed = MathUtil.clamp(turningSpeed, -0.3, 0.3);
+    turningSpeed = -MathUtil.clamp(turningSpeed, -0.3, 0.3);
 
+    ySpeed = -ySpeed;
     
     xSpeed = Math.abs(xSpeed) > 0.05 ? xSpeed : 0.0;
     ySpeed = Math.abs(ySpeed) > OIConstants.kDeadband ? ySpeed : 0.0;
@@ -155,12 +156,12 @@ public class AprilTagLineup extends Command {
     //     return true;
     //   }
     // }
-    // if (tagTurnController.atSetpoint()) {
+    if (tagTurnController.atSetpoint()) {
 
-    //  if ( tagForwardController.atSetpoint()) {
-    //   return true;
-    //  }
-    // }
+     if ( tagForwardController.atSetpoint()) {
+      return true;
+     }
+    }
     return false;
   }
 }

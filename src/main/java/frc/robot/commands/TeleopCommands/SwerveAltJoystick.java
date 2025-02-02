@@ -77,13 +77,13 @@ public class SwerveAltJoystick extends Command {
   public void execute() {
 
     if(driveController.getRawButton(7) == true) {
-      swerveSubsystem.fieldCentricReset();
+      swerveSubsystem.zeroHeading();
     }
 
     // turning
     if (driveController.getLeftBumperButton() == true) { //turn to left source
       
-      thetaSpeed = leftStationRotController.calculate(swerveSubsystem.getHeading()) *Math.PI/180;    
+      thetaSpeed = -leftStationRotController.calculate(swerveSubsystem.getHeading()) *Math.PI/180;    
       // thetaSpeed = MathUtil.applyDeadband(thetaSpeed, 0.1);
       // thetaSpeed = turningLimiter.calculate(thetaSpeed);
       // thetaSpeed = Math.abs(thetaSpeed) > SwerveConstants.kDeadband ? thetaSpeed : 0.0;
@@ -94,7 +94,7 @@ public class SwerveAltJoystick extends Command {
 
     }
     else if (driveController.getRightBumperButton() == true) { // turn to right source
-      thetaSpeed = rightStationRotController.calculate(swerveSubsystem.getHeading()) * Math.PI/180;    
+      thetaSpeed =- rightStationRotController.calculate(swerveSubsystem.getHeading()) * Math.PI/180;    
       // thetaSpeed = MathUtil.applyDeadband(thetaSpeed, 0.1);
       // thetaSpeed = turningLimiter.calculate(thetaSpeed);
       // thetaSpeed = Math.abs(thetaSpeed) > SwerveConstants.kDeadband ? thetaSpeed : 0.0;
@@ -104,7 +104,7 @@ public class SwerveAltJoystick extends Command {
 
     }
     else { // turning generic
-      thetaSpeed = turningSpdFunction.get();
+      thetaSpeed = -turningSpdFunction.get();
       thetaSpeed = turningLimiter.calculate(thetaSpeed);
       // thetaSpeed = Math.abs(thetaSpeed) > SwerveConstants.kDeadband ? thetaSpeed : 0.0;
       thetaSpeed = Math.copySign(thetaSpeed * thetaSpeed, thetaSpeed);
@@ -113,7 +113,7 @@ public class SwerveAltJoystick extends Command {
 
    // double thetaSpeed = turningSpdFunction.get();
 
-    double xSpeed = xSpdFunctionField.get() / 2; 
+    double xSpeed = -xSpdFunctionField.get() / 2; 
     xSpeed = (1 / (1 - SwerveConstants.kDeadband)) * (xSpeed + ( -Math.signum(xSpeed) * SwerveConstants.kDeadband));
     double ySpeed = ySpdFunctionField.get() / 2;
     ySpeed = (1 / (1 - SwerveConstants.kDeadband)) * (ySpeed + ( -Math.signum(ySpeed) * SwerveConstants.kDeadband));

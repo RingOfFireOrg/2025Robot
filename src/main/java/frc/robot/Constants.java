@@ -54,36 +54,36 @@ public final class Constants {
             // new Translation2d(-kWheelBase / 2, -kTrackWidth / 2),  //Back Right
             // new Translation2d(-kWheelBase / 2, kTrackWidth / 2)    // Back Left
 
-            // new Translation2d(kWheelBase / 2, kTrackWidth / 2),    // Front Left
-            // new Translation2d(kWheelBase / 2, -kTrackWidth / 2),   // Front Right
-            // new Translation2d(-kWheelBase / 2, kTrackWidth / 2),   // Back Left
-            // new Translation2d(-kWheelBase / 2, -kTrackWidth / 2)  //Back Right
+            new Translation2d(kWheelBase / 2, kTrackWidth / 2),    // Front Left
+            new Translation2d(kWheelBase / 2, -kTrackWidth / 2),   // Front Right
+            new Translation2d(-kWheelBase / 2, kTrackWidth / 2),   // Back Left
+            new Translation2d(-kWheelBase / 2, -kTrackWidth / 2)  //Back Right
 
             // new Translation2d(-kWheelBase / 2, -kTrackWidth / 2),  //Back Right
             // new Translation2d(-kWheelBase / 2, kTrackWidth / 2),   // Back Left
             // new Translation2d(kWheelBase / 2, -kTrackWidth / 2),   // Front Right
             // new Translation2d(kWheelBase / 2, kTrackWidth / 2)   // Front Left
 
-            new Translation2d(-kWheelBase / 2, kTrackWidth / 2),   //Back Left
-            new Translation2d(-kWheelBase / 2, -kTrackWidth / 2),  //Back Right
-            new Translation2d(kWheelBase / 2, kTrackWidth / 2),    //Front Left
-            new Translation2d(kWheelBase / 2, -kTrackWidth / 2)    //Front Right
+            // new Translation2d(-kWheelBase / 2, kTrackWidth / 2),   //Back Left
+            // new Translation2d(-kWheelBase / 2, -kTrackWidth / 2),  //Back Right
+            // new Translation2d(kWheelBase / 2, kTrackWidth / 2),    //Front Left
+            // new Translation2d(kWheelBase / 2, -kTrackWidth / 2)    //Front Right
         );
 
-        public static final boolean kFrontLeftTurningEncoderReversed = false;
-        public static final boolean kBackLeftTurningEncoderReversed = false;
-        public static final boolean kFrontRightTurningEncoderReversed = false;
-        public static final boolean kBackRightTurningEncoderReversed = false;
+        public static final boolean kFrontLeftTurningEncoderReversed = true;
+        public static final boolean kBackLeftTurningEncoderReversed = true;
+        public static final boolean kFrontRightTurningEncoderReversed = true;
+        public static final boolean kBackRightTurningEncoderReversed = true;
 
         public static final boolean kFrontLeftDriveEncoderReversed = true;
         public static final boolean kBackLeftDriveEncoderReversed = true;
         public static final boolean kFrontRightDriveEncoderReversed = true;
         public static final boolean kBackRightDriveEncoderReversed = true;
 
-        public static final boolean kFrontLeftDriveAbsoluteEncoderReversed = true;
-        public static final boolean kBackLeftDriveAbsoluteEncoderReversed = true;
-        public static final boolean kFrontRightDriveAbsoluteEncoderReversed = true;
-        public static final boolean kBackRightDriveAbsoluteEncoderReversed = true;
+        public static final boolean kFrontLeftDriveAbsoluteEncoderReversed = false;
+        public static final boolean kBackLeftDriveAbsoluteEncoderReversed = false;
+        public static final boolean kFrontRightDriveAbsoluteEncoderReversed = false;
+        public static final boolean kBackRightDriveAbsoluteEncoderReversed = false;
 
         public static final double kFrontLeftDriveOffsetDegrees= (-4.5 ); //offset in degrees - CanCoder 9
         public static final double kFrontRightDriveOffsetDegrees= (-180+74 + 90 +180 +180+7); //offset in degrees - CanCoder 10

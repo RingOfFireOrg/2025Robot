@@ -90,7 +90,7 @@ public class SwerveNewJoystick extends Command {
     @Override
     public void execute() {
       if(driveController.getRawButton(7) == true) {
-        swerveSubsystem.fieldCentricReset();
+        swerveSubsystem.zeroHeading();
       }
 
       if(aButton.get() == true) {
