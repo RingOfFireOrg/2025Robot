@@ -115,7 +115,7 @@ public class AprilTagLineup extends Command {
     }
     SmartDashboard.putNumber("xSpeed Camera", xSpeed);
 
-    turningSpeed = -MathUtil.clamp(turningSpeed, -0.3, 0.3);
+    turningSpeed = MathUtil.clamp(turningSpeed, -0.3, 0.3);
 
     ySpeed = -ySpeed;
     

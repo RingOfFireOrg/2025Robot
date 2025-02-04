@@ -113,7 +113,7 @@ public class SwerveAltJoystick extends Command {
 
    // double thetaSpeed = turningSpdFunction.get();
 
-    double xSpeed = -xSpdFunctionField.get() / 2; 
+    double xSpeed = xSpdFunctionField.get() / 2; 
     xSpeed = (1 / (1 - SwerveConstants.kDeadband)) * (xSpeed + ( -Math.signum(xSpeed) * SwerveConstants.kDeadband));
     double ySpeed = ySpdFunctionField.get() / 2;
     ySpeed = (1 / (1 - SwerveConstants.kDeadband)) * (ySpeed + ( -Math.signum(ySpeed) * SwerveConstants.kDeadband));
