@@ -31,6 +31,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.IDConstants;
+import frc.robot.Constants.OIConstants;
 import frc.robot.LimelightHelpers;
 
 import com.studica.frc.AHRS;
@@ -280,6 +281,7 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("swerve_FR Heading", frontRight.returnDriveMotorTemp());
         SmartDashboard.putNumber("swerve_BL Heading", backLeft.returnDriveMotorTemp());
         SmartDashboard.putNumber("swerve_BR Heading", backRight.returnDriveMotorTemp());
+        
 
         
     }
@@ -326,6 +328,7 @@ public class SwerveSubsystem extends SubsystemBase {
         };
     }    
 
+    
 
     public void driveForward(SwerveModuleState[] desiredStates) {
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
@@ -350,7 +353,18 @@ public class SwerveSubsystem extends SubsystemBase {
             backRight.brake(false);
         }
     }
+    public void dPadDrive(double xSpeed, double ySpeed) {
+        double turningSpeed = 0;
 
+        xSpeed = Math.abs(xSpeed) > OIConstants.kDeadband ? xSpeed : 0.0;
+        ySpeed = Math.abs(ySpeed) > OIConstants.kDeadband ? ySpeed : 0.0;
+
+        ChassisSpeeds chassisSpeeds;
+        chassisSpeeds = new ChassisSpeeds(xSpeed, ySpeed, turningSpeed);
+        SwerveModuleState[] moduleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
+
+        setModuleStates(moduleStates); 
+    }
     public void drive(SwerveModuleState... desiredStates) {
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
         frontLeft.setDesiredState(desiredStates[0]);

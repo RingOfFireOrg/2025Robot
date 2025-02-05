@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.TeleopCommands.AprilTagLineup;
 import frc.robot.commands.TeleopCommands.SwerveAltJoystick;
@@ -101,6 +102,15 @@ public class RobotContainer {
 
     new JoystickButton(driverController, Constants.OIConstants.aButton)
     .whileTrue(new AprilTagLineup(swerveSubsystem));
+
+    new POVButton(driverController, 0)
+    .whileTrue(new InstantCommand(() -> swerveSubsystem.dPadDrive(0.2,0)));
+    new POVButton(driverController, 90)
+    .whileTrue(new InstantCommand(() -> swerveSubsystem.dPadDrive(0,0.2)));
+    new POVButton(driverController, 180)
+    .whileTrue(new InstantCommand(() -> swerveSubsystem.dPadDrive(-0.2,0)));
+    new POVButton(driverController, 270)
+    .whileTrue(new InstantCommand(() -> swerveSubsystem.dPadDrive(0,-0.2)));
   
   } 
 
