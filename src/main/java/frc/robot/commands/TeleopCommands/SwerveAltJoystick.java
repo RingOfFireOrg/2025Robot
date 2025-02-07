@@ -53,8 +53,8 @@ public class SwerveAltJoystick extends Command {
     this.xLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
     this.yLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
     this.turningLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
-    leftStationRotController.setSetpoint(225);
-    rightStationRotController.setSetpoint(315);
+    leftStationRotController.setSetpoint(125);
+    rightStationRotController.setSetpoint(225);
 
     leftStationRotController.enableContinuousInput(0, 360);
     leftStationRotController.setTolerance(2);
@@ -84,9 +84,9 @@ public class SwerveAltJoystick extends Command {
     if (driveController.getLeftBumperButton() == true) { //turn to left source
       
       thetaSpeed = -leftStationRotController.calculate(swerveSubsystem.getHeading()) *Math.PI/180;    
-      // thetaSpeed = MathUtil.applyDeadband(thetaSpeed, 0.1);
-      // thetaSpeed = turningLimiter.calculate(thetaSpeed);
-      // thetaSpeed = Math.abs(thetaSpeed) > SwerveConstants.kDeadband ? thetaSpeed : 0.0;
+      thetaSpeed = MathUtil.applyDeadband(thetaSpeed, 0.1);
+      thetaSpeed = turningLimiter.calculate(thetaSpeed);
+      thetaSpeed = Math.abs(thetaSpeed) > SwerveConstants.kDeadband ? thetaSpeed : 0.0;
       // thetaSpeed = Math.copySign(thetaSpeed * thetaSpeed, thetaSpeed);
       // thetaSpeed = thetaSpeed * SwerveConstants.kMaxAngularSpeed;
       //thetaSpeed = MathUtil.clamp(thetaSpeed, 0.4, 0.4);
@@ -95,9 +95,9 @@ public class SwerveAltJoystick extends Command {
     }
     else if (driveController.getRightBumperButton() == true) { // turn to right source
       thetaSpeed =- rightStationRotController.calculate(swerveSubsystem.getHeading()) * Math.PI/180;    
-      // thetaSpeed = MathUtil.applyDeadband(thetaSpeed, 0.1);
-      // thetaSpeed = turningLimiter.calculate(thetaSpeed);
-      // thetaSpeed = Math.abs(thetaSpeed) > SwerveConstants.kDeadband ? thetaSpeed : 0.0;
+      thetaSpeed = MathUtil.applyDeadband(thetaSpeed, 0.1);
+      thetaSpeed = turningLimiter.calculate(thetaSpeed);
+      thetaSpeed = Math.abs(thetaSpeed) > SwerveConstants.kDeadband ? thetaSpeed : 0.0;
       // thetaSpeed = Math.copySign(thetaSpeed * thetaSpeed, thetaSpeed);
       // thetaSpeed = thetaSpeed * SwerveConstants.kMaxAngularSpeed;
       //thetaSpeed = MathUtil.clamp(thetaSpeed, 0.4, 0.4);
@@ -115,8 +115,10 @@ public class SwerveAltJoystick extends Command {
 
     double xSpeed = xSpdFunctionField.get() / 2; 
     xSpeed = (1 / (1 - SwerveConstants.kDeadband)) * (xSpeed + ( -Math.signum(xSpeed) * SwerveConstants.kDeadband));
+
     double ySpeed = ySpdFunctionField.get() / 2;
     ySpeed = (1 / (1 - SwerveConstants.kDeadband)) * (ySpeed + ( -Math.signum(ySpeed) * SwerveConstants.kDeadband));
+    
 
     xSpeed = xLimiter.calculate(xSpeed);
     ySpeed = yLimiter.calculate(ySpeed);

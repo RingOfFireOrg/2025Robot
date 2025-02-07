@@ -34,7 +34,7 @@ public class AprilTagLineup extends Command {
     this.yLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
     this.turningLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
     tagTurnController.enableContinuousInput(0, 360);
-    tagTurnController.setTolerance(5);
+    tagTurnController.setTolerance(3);
 
     tagForwardController.setSetpoint(14);
     tagForwardController.setTolerance(2);
@@ -104,6 +104,7 @@ public class AprilTagLineup extends Command {
     double turningSpeed = tagTurnController.calculate(swerveSubsystem.getHeading()) *Math.PI/180;
     double ySpeed = LimelightHelpers.getTX(Constants.VisionConstants.TagCamera)/40;
     ySpeed = MathUtil.clamp(ySpeed, -0.15, 0.15);
+    
     if (tagTurnController.atSetpoint()) {
       if (LimelightHelpers.getTA(Constants.VisionConstants.TagCamera) != 0) {
         xSpeed = tagForwardController.calculate(LimelightHelpers.getTA(Constants.VisionConstants.TagCamera))/15;
@@ -115,7 +116,7 @@ public class AprilTagLineup extends Command {
     }
     SmartDashboard.putNumber("xSpeed Camera", xSpeed);
 
-    turningSpeed = MathUtil.clamp(turningSpeed, -0.3, 0.3);
+    turningSpeed = -MathUtil.clamp(turningSpeed, -0.3, 0.3);
 
     ySpeed = -ySpeed;
     
@@ -157,7 +158,6 @@ public class AprilTagLineup extends Command {
     //   }
     // }
     if (tagTurnController.atSetpoint()) {
-
      if ( tagForwardController.atSetpoint()) {
       return true;
      }

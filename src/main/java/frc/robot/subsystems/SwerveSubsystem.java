@@ -4,11 +4,7 @@ package frc.robot.subsystems;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.util.FlippingUtil;
-import com.pathplanner.lib.util.PathPlannerLogging;
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -16,14 +12,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -35,7 +25,6 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.LimelightHelpers;
 
 import com.studica.frc.AHRS;
-import com.pathplanner.lib.config.RobotConfig;
 
 
 public class SwerveSubsystem extends SubsystemBase {
@@ -86,23 +75,7 @@ public class SwerveSubsystem extends SubsystemBase {
     //private final AHRS gyro = new AHRS(SerialPort.Port.kOnboard);
     private AHRS gyro = new AHRS(AHRS.NavXComType.kUSB1);
     private double gyroFlip = -1;
-    ShuffleboardTab generateAutoTab = Shuffleboard.getTab("Generate Auto");
-    
-
-
-
-
-    private final SwerveDriveOdometry odometer = new SwerveDriveOdometry(
-        DriveConstants.kDriveKinematics, getRotation2d(),
-        getSwerveModulePosition());
-
-    private final PIDController yController = new PIDController(AutoConstants.kPYController, 0.0, 0.0);
-    private final PIDController xController = new PIDController(AutoConstants.kPXController, 0.0, 0.0);
-    private final PIDController thetaController = new PIDController(AutoConstants.kPThetaController,0.0, 0.0);
-
-
-
-
+    private final SwerveDriveOdometry odometer = new SwerveDriveOdometry(DriveConstants.kDriveKinematics, getRotation2d(), getSwerveModulePosition());
 
     public SwerveSubsystem() {
 
@@ -114,35 +87,6 @@ public class SwerveSubsystem extends SubsystemBase {
             }
         }).start();
 
-        // RobotConfig config = RobotConfig.fromGUISettings(); 
-        // try{
-        //     config = RobotConfig.fromGUISettings();
-        // } catch (Exception e) {
-        //     // Handle exception as needed
-        //     e.printStackTrace();
-        // }
-
-        // // Configure AutoBuilder last
-        // AutoBuilder.configure(
-        //         this::getPose, // Robot pose supplier
-        //         this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
-        //         this::getRobotRelativeSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-        //         (speeds, feedforwards) -> driveRobotRelative(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
-        //         new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
-        //                 Constants.DriveConstants.translationConstants,
-        //                 Constants.DriveConstants.rotationConstants),
-        //         config, // The robot configuration
-        //         () -> {
-
-        //         var alliance = DriverStation.getAlliance();
-        //         if (alliance.isPresent()) {
-        //             return alliance.get() == DriverStation.Alliance.Red;
-        //         }
-        //         return false;
-        //         },
-        //         this 
-        // );
-        //FlippingUtil.symmetryType.kMirrored;
         try{
             RobotConfig config = RobotConfig.fromGUISettings();
             
@@ -158,10 +102,6 @@ public class SwerveSubsystem extends SubsystemBase {
               ),
               config,
               () -> {
-                  // Boolean supplier that controls when the path will be mirrored for the red alliance
-                  // This will flip the path being followed to the red side of the field.
-                  // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-      
                   var alliance = DriverStation.getAlliance();
                   if (alliance.isPresent()) {
                       return alliance.get() == DriverStation.Alliance.Red;
@@ -196,9 +136,6 @@ public class SwerveSubsystem extends SubsystemBase {
         return temp;
     }
 
-    public Rotation2d getHeadingr2d() {
-        return Rotation2d.fromDegrees(-gyro.getYaw());
-    }
 
 
     // ---------------------------------------------------------------------------------------------------------------
@@ -224,13 +161,6 @@ public class SwerveSubsystem extends SubsystemBase {
         setModuleStates(moduleStates);
     }
 
-    public void driveRobotRelative2(ChassisSpeeds speeds) { 
-        var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
-        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
-        setModuleStates(swerveModuleStates);
-
-    }
-
     // ---------------------------------------------------------------------------------------------------------------
 
 
@@ -245,17 +175,6 @@ public class SwerveSubsystem extends SubsystemBase {
         odometer.resetPosition(getRotation2d(),getSwerveModulePosition(),pose);
     }
 
-    public PIDController getxController() {
-        return xController;
-    }
-
-    public PIDController getyController() {
-        return yController;
-    }
-
-    public PIDController getThetaController() {
-        return thetaController;
-    }
 
     @Override
     public void periodic() {
@@ -299,13 +218,6 @@ public class SwerveSubsystem extends SubsystemBase {
         frontRight.setDesiredState(desiredStates[1]);
         backLeft.setDesiredState(desiredStates[2]);
         backRight.setDesiredState(desiredStates[3]);
-    }
-
-    public void runModuleState(SwerveModuleState[] desiredStates) {
-        frontLeft.runDesiredState(desiredStates[0]);
-        frontRight.runDesiredState(desiredStates[1]);
-        backLeft.runDesiredState(desiredStates[2]);
-        backRight.runDesiredState(desiredStates[3]);
     }
 
     public SwerveModulePosition[] getSwerveModulePosition() {
@@ -353,9 +265,9 @@ public class SwerveSubsystem extends SubsystemBase {
             backRight.brake(false);
         }
     }
+    
     public void dPadDrive(double xSpeed, double ySpeed) {
         double turningSpeed = 0;
-
         xSpeed = Math.abs(xSpeed) > OIConstants.kDeadband ? xSpeed : 0.0;
         ySpeed = Math.abs(ySpeed) > OIConstants.kDeadband ? ySpeed : 0.0;
 
@@ -365,6 +277,10 @@ public class SwerveSubsystem extends SubsystemBase {
 
         setModuleStates(moduleStates); 
     }
+    public Command dPadDriveCMD(double xSpeed, double ySpeed) {
+        return this.run(() -> dPadDrive(xSpeed, ySpeed));
+    }
+
     public void drive(SwerveModuleState... desiredStates) {
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
         frontLeft.setDesiredState(desiredStates[0]);

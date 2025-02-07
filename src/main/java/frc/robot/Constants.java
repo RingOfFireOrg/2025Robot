@@ -41,33 +41,16 @@ public final class Constants {
     }
 
     public static final class DriveConstants {
-
         /* Distance between right and left wheels */
         public static final double kTrackWidth =  Units.inchesToMeters(22.75); 
         /* Distance between front and back wheels */
         public static final double kWheelBase = Units.inchesToMeters(22.75); 
 
-        //wrong order but fix it in offseason becuase it works rn
         public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
-            // new Translation2d(kWheelBase / 2, -kTrackWidth / 2),   // Front Right
-            // new Translation2d(kWheelBase / 2, kTrackWidth / 2),    // Front Left
-            // new Translation2d(-kWheelBase / 2, -kTrackWidth / 2),  //Back Right
-            // new Translation2d(-kWheelBase / 2, kTrackWidth / 2)    // Back Left
-
             new Translation2d(kWheelBase / 2, kTrackWidth / 2),    // Front Left
             new Translation2d(kWheelBase / 2, -kTrackWidth / 2),   // Front Right
             new Translation2d(-kWheelBase / 2, kTrackWidth / 2),   // Back Left
             new Translation2d(-kWheelBase / 2, -kTrackWidth / 2)  //Back Right
-
-            // new Translation2d(-kWheelBase / 2, -kTrackWidth / 2),  //Back Right
-            // new Translation2d(-kWheelBase / 2, kTrackWidth / 2),   // Back Left
-            // new Translation2d(kWheelBase / 2, -kTrackWidth / 2),   // Front Right
-            // new Translation2d(kWheelBase / 2, kTrackWidth / 2)   // Front Left
-
-            // new Translation2d(-kWheelBase / 2, kTrackWidth / 2),   //Back Left
-            // new Translation2d(-kWheelBase / 2, -kTrackWidth / 2),  //Back Right
-            // new Translation2d(kWheelBase / 2, kTrackWidth / 2),    //Front Left
-            // new Translation2d(kWheelBase / 2, -kTrackWidth / 2)    //Front Right
         );
 
         public static final boolean kFrontLeftTurningEncoderReversed = true;
@@ -141,9 +124,9 @@ public final class Constants {
 
         public static final double kDriveBaseRadius = Units.inchesToMeters(15.909905);
 
-        public static final double kPXController = 0.75; //multiplier for controller PID control
-        public static final double kPYController = 0.75; //multiplier for controller PID control
-        public static final double kPThetaController = 1.75; //multiplier for controller PID control
+        public static final double kPXController = 0.75; 
+        public static final double kPYController = 0.75; 
+        public static final double kPThetaController = 1.75; 
 
 
     }
@@ -153,44 +136,6 @@ public final class Constants {
         public static final int driverControllerPort = 0;
         public static final int operatorControllerPort = 1;
         public static final int climberControllerPort = 2; 
-
-        //  Axis 
-        public static final int leftStickX = 0;
-        public static final int leftStickY = 1;
-        public static final int rightStickX = 4;
-        public static final int rightStickY = 5;
-
-        public static final int leftTrigger = 2;  
-        public static final int rightTrigger = 3; 
-
-        // Buttons
-        public static final int aButton = 1;
-        public static final int bButton = 2;
-        public static final int xButton = 3;
-        public static final int yButton = 4;
-
-        public static final int leftBumper = 5;
-        public static final int rightBumper = 6;
-
-        public static final int backButton = 7;
-        public static final int startButton = 8;
-
-        //Dpad ID and Angles
-
-        public static final int DPadId = 0; 
-        
-        public static final int dPadUp = 0;
-        public static final int dPadUpRight = 45;
-        public static final int dPadRight = 90;
-        public static final int dPadDownRight = 135;
-        public static final int dPadDown = 180;
-        public static final int dPadDownLeft = 225;
-        public static final int dPadLeft = 270;        
-        public static final int dPadUpLeft = 315;
-
-
-        public static final int kDriverFieldOrientedButtonIdx = 6;
-        public static final int kResetDirectionButton = 4;
 
         public static final double kDeadband = 0.05;
     }
@@ -207,22 +152,11 @@ public final class Constants {
 
 
     public static final class TagAngles {
-        public static final String NoteCamera = "limelight-notecam";
         public static final String AprilTagCamera = "limelight-tag";
 
-
-        public static final double NoteTranslationModifier = 30;
-        public static final double NoteRotationModifeier= 35;
     }
 
-    class Tag {
-        private int tagNum;
-        private int angle;
-        public Tag(int tagNum, int angle) {
-            this.tagNum = tagNum;
-            this.angle = angle;
-        }
-    }
+
 
     public static final class VisionConstants {
         public static final String TagCamera = "limelight-tag";

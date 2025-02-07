@@ -12,12 +12,9 @@ import com.revrobotics.spark.config.SparkBaseConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DriveConstants;
@@ -36,33 +33,9 @@ public class SwerveModule {
     private final CANcoder absoluteEncoder;
     private final boolean absoluteEncoderReversed;
     private final double absoluteEncoderOffsetRad;
-
     private int encId;
 
-    private final PIDController drivePIDController = new PIDController(
-        2,
-        0,
-        0
-    );
-    private final ProfiledPIDController  turnPPIDController = new ProfiledPIDController (
-        2,
-        0,
-        0,
-        new TrapezoidProfile.Constraints(3 * Math.PI, 6 * Math.PI)
 
-    );
-
-    private final SimpleMotorFeedforward driveFeedforward = new SimpleMotorFeedforward(
-        0.1, 
-        0, 
-        0
-    );
-
-    private final SimpleMotorFeedforward azimuthFeedForward = new SimpleMotorFeedforward(
-        0, 
-        0, 
-        0
-    );
 
 
     SparkMaxConfig driveConfig = new SparkMaxConfig();
@@ -79,9 +52,7 @@ public class SwerveModule {
         driveMotor = new SparkMax(driveMotorId, MotorType.kBrushless);
         turningMotor = new SparkMax(turningMotorId, MotorType.kBrushless);
 
-        
-        //testMotor = new CANSparkMax(absoluteEncoderId, null);
-
+    
         driveConfig.smartCurrentLimit(40);
         driveConfig.inverted(driveMotorReversed);
         driveConfig.idleMode(SparkBaseConfig.IdleMode.kBrake);
@@ -91,20 +62,8 @@ public class SwerveModule {
         turnConfig.inverted(turningMotorReversed);
         turningMotor.configure(turnConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
-
-
-        // driveMotor.setInverted(driveMotorReversed);
-        // turningMotor.setInverted(turningMotorReversed);
-
         driveEncoder = driveMotor.getEncoder();
         turningEncoder = turningMotor.getEncoder();
-
-        //set to coast;
-
-
-        // driveMotor.setInverted(driveMotorReversed);
-        // turningMotor.setInverted(turningMotorReversed);
-
 
         //turningEncoder.setIntegratedSensorPosition(absoluteEncoder., timeoutMs)
 
@@ -112,8 +71,6 @@ public class SwerveModule {
 
         turningPidController = new PIDController(ModuleConstants.kPTurning, 0, 0);
         turningPidController.enableContinuousInput(-Math.PI, Math.PI);
-
-        turnPPIDController.enableContinuousInput(-Math.PI, Math.PI);
 
 
         resetEncoders();
@@ -132,10 +89,7 @@ public class SwerveModule {
     }
 
     public double getAbsoluteEncoderRad() {
-
-
         double angle = absoluteEncoder.getAbsolutePosition().getValueAsDouble()  * (2*Math.PI);
-         
         angle -= absoluteEncoderOffsetRad;
         return angle * (absoluteEncoderReversed ? -1.0 : 1.0);
     }
@@ -155,88 +109,18 @@ public class SwerveModule {
         SmartDashboard.putNumber("degrees_Swerve[" + encId + "] state", Units.radiansToDegrees(getAbsoluteEncoderRad()));
         SmartDashboard.putNumber("Module[" + encId + "]", state.angle.getDegrees());
         SmartDashboard.putNumber("swerve_[" + encId + "] Velocity", driveMotor.getEncoder().getVelocity());
-   
 
         if (Math.abs(state.speedMetersPerSecond) < 0.001) {
             stop();
             return;
         }
+
         state = SwerveModuleState.optimize(state, getState().angle);
 
-
-                        
         driveMotor.set(state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
         turningMotor.set(turningPidController.calculate(getTurningPosition(), state.angle.getRadians()));
 
     }
-
-    public void runDesiredState(SwerveModuleState state) {
-
-        SmartDashboard.putNumber("Swerve[" + encId + "] state", getAbsoluteEncoderRad());
-        SmartDashboard.putNumber("degrees_Swerve[" + encId + "] state", Units.radiansToDegrees(getAbsoluteEncoderRad()));
-        SmartDashboard.putNumber("Module[" + encId + "]", state.angle.getDegrees());
-        SmartDashboard.putNumber("swerve_[" + encId + "] Velocity", driveMotor.getEncoder().getVelocity());
-   
-
-        if (Math.abs(state.speedMetersPerSecond) < 0.001) {
-            stop();
-            return;
-        }
-
-        state = SwerveModuleState.optimize(state, getState().angle);
-
-    
-
-        // driveMotor.set(state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
-        // turningMotor.set(turningPidController.calculate(getTurningPosition(), state.angle.getRadians()));
-        double velocityRadPerSec = (state.speedMetersPerSecond * Math.cos(turnPPIDController.getPositionError())) / Units.inchesToMeters(4.0);;
-        final double driveVoltage =
-            drivePIDController.calculate(Units.rotationsPerMinuteToRadiansPerSecond(driveEncoder.getVelocity()) / 0.14814814814, velocityRadPerSec)
-                 + driveFeedforward.calculate(state.speedMetersPerSecond);
-
-        final double turningVoltage =
-            turnPPIDController.calculate(getState().angle.getRadians(), state.angle.getRadians())
-                + azimuthFeedForward.calculate(turnPPIDController.getSetpoint().velocity);
-
-        SmartDashboard.putNumber("swerve_["+encId+"] driving voltage", driveVoltage);
-        SmartDashboard.putNumber("swerve_["+encId+"] turning voltage", turningVoltage);
-        driveMotor.setVoltage(driveVoltage);
-        turningMotor.setVoltage(turningVoltage);
-    }
-
-    public void setDesiredStatePID(SwerveModuleState state) {
-        //double angle = absoluteEncoder.getAbsolutePosition();
-        double driveVelocity = getDriveVelocity();
-        double turningPosition = getTurningPosition();
-
-        SmartDashboard.putNumber("Swerve[" + encId + "] state", getAbsoluteEncoderRad());
-        SmartDashboard.putNumber("Module[" + encId + "]", state.angle.getDegrees());
-        SmartDashboard.putNumber("swerve_[" + encId + "] Velocity", driveMotor.getEncoder().getVelocity());
-   
-
-        if (Math.abs(state.speedMetersPerSecond) < 0.001) {
-            stop();
-            return;
-        }
-        // state = SwerveModuleState.optimize(state, getState().angle);
-
-        // driveMotor.set(state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
-        // turningMotor.set(turningPidController.calculate(getTurningPosition(), state.angle.getRadians()));
-        final double driveVoltage =
-            drivePIDController.calculate(driveVelocity, state.speedMetersPerSecond)
-                 + driveFeedforward.calculate(state.speedMetersPerSecond);
-
-        final double turningVoltage =
-            turnPPIDController.calculate(turningPosition, state.angle.getRadians())
-                + azimuthFeedForward.calculate(turnPPIDController.getSetpoint().velocity);
-
-        SmartDashboard.putNumber("swerve_["+encId+"] driving voltage", driveVoltage);
-        SmartDashboard.putNumber("swerve_["+encId+"] turning voltage", turningVoltage);
-        driveMotor.setVoltage(driveVoltage);
-        turningMotor.setVoltage(turningVoltage);
-    }
-
-
 
     public void stop() {
         driveMotor.set(0);

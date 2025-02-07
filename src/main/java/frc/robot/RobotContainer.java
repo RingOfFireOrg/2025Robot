@@ -21,11 +21,8 @@ import frc.robot.subsystems.SwerveSubsystem;
 public class RobotContainer {
   public SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
 
-
   private XboxController driverController = new XboxController(OIConstants.driverControllerPort);
   private CommandXboxController operatorController = new CommandXboxController(OIConstants.operatorControllerPort);
-  //private XboxController climberController = new XboxController(OIConstants.climberControllerPort); 
-
 
   public RobotContainer() {
     defaultCommands();
@@ -35,7 +32,6 @@ public class RobotContainer {
 
   /* Sets default commands for each subsystem */
   private void defaultCommands() {
-
 
     // swerveSubsystem.setDefaultCommand(new SwerveJoystickCommand(
     //   swerveSubsystem,
@@ -64,67 +60,52 @@ public class RobotContainer {
 
     swerveSubsystem.setDefaultCommand(new SwerveAltJoystick(
       swerveSubsystem,
-      // Left Joystick Field Oriented
-      () -> (-MathUtil.clamp(driverController.getLeftY(),-0.7,0.7)) 
-        - (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftY(),-0.7,0.7),0.1))
-        + (driverController.getLeftTriggerAxis() *  MathUtil.clamp(-driverController.getLeftY(),-0.7,0.7)),
 
-      () -> MathUtil.clamp(-driverController.getLeftX(),-0.7,0.7) 
-        - (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftX(),-0.7,0.7),0.1))
-        + (driverController.getLeftTriggerAxis() *  MathUtil.clamp(-driverController.getLeftX(),-0.7,0.7)),
+      () -> (-MathUtil.clamp(driverController.getLeftY(),-0.5,0.5)) 
+      - (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftY(),-0.5,0.5),0.1))
+      + (MathUtil.applyDeadband(driverController.getLeftTriggerAxis(), 0.1)  *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftY(),-0.5,0.5),0.1)),
 
+      () -> MathUtil.clamp(-driverController.getLeftX(),-0.5,0.5) 
+      - (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftX(),-0.5,0.5),0.1))
+      + (MathUtil.applyDeadband(driverController.getLeftTriggerAxis(), 0.1)  *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftX(),-0.5,0.5),0.1)),
         
-
-
-      () -> MathUtil.clamp(driverController.getRightX(), -0.5,0.5)
-      + (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) 
-      *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getRightX(),-0.5,0.5),0.1))
-      - (driverController.getLeftTriggerAxis() *  MathUtil.clamp(-driverController.getRightX(),-0.5,0.5))
+      () -> MathUtil.clamp(driverController.getRightX(), -0.3,0.3)
+      + (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getRightX(),-0.3,0.3),0.1))
+      - (MathUtil.applyDeadband(driverController.getLeftTriggerAxis(), 0.1)  *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getRightX(),-0.3,0.3),0.1))
 
     ));
   }
-
- 
-
-
-
-
-
-
-
-
-
-
 
 
   /* Create button Bindings*/
   private void configureButtonBindings() {
 
-    new JoystickButton(driverController, Constants.OIConstants.aButton)
+    new JoystickButton(driverController, XboxController.Button.kA.value)
     .whileTrue(new AprilTagLineup(swerveSubsystem));
 
     new POVButton(driverController, 0)
-    .whileTrue(new InstantCommand(() -> swerveSubsystem.dPadDrive(0.2,0)));
+    .whileTrue(swerveSubsystem.dPadDriveCMD(0.2, 0) );
     new POVButton(driverController, 90)
-    .whileTrue(new InstantCommand(() -> swerveSubsystem.dPadDrive(0,0.2)));
+    .whileTrue(swerveSubsystem.dPadDriveCMD(0, -0.2) );
     new POVButton(driverController, 180)
-    .whileTrue(new InstantCommand(() -> swerveSubsystem.dPadDrive(-0.2,0)));
+    .whileTrue(swerveSubsystem.dPadDriveCMD(-0.2, 0) );
     new POVButton(driverController, 270)
-    .whileTrue(new InstantCommand(() -> swerveSubsystem.dPadDrive(0,-0.2)));
+    .whileTrue(swerveSubsystem.dPadDriveCMD(0, 0.2));
   
+    
   } 
 
 
   
 
   public Command getAutonomousCommand() {
-
     /* Run no Auto */
     //return new InstantCommand();
+    
     return new PathPlannerAuto("part1")
     // created named command to get end effector and algae intake up
     .andThen(new AprilTagLineup(swerveSubsystem))
-//    .andThen(new PathPlannerAuto("part2"))
+    //.andThen(new PathPlannerAuto("part2"))
     ;
  
   }
