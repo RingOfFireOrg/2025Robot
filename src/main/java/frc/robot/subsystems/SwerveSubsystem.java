@@ -139,10 +139,21 @@ public class SwerveSubsystem extends SubsystemBase {
             DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder", e.getStackTrace());
           }
       
-        //   // Set up custom logging to add the current path to a field 2d widget
-        PathPlannerLogging.setLogActivePathCallback((poses) -> field.getObject("path").setPoses(poses));
-    
-        SmartDashboard.putData("Field", field);
+        
+        // Logging callback for current robot pose
+        PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
+            field.setRobotPose(pose);
+        });
+
+        // Logging callback for target robot pose
+        PathPlannerLogging.setLogTargetPoseCallback((pose) -> {
+            field.getObject("target pose").setPose(pose);
+        });
+
+        // Logging callback for the active path, this is sent as a list of poses
+        PathPlannerLogging.setLogActivePathCallback((poses) -> {
+            field.getObject("path").setPoses(poses);
+        });
     }
 
     public void zeroHeading() {
