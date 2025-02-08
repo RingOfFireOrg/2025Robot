@@ -97,6 +97,7 @@ public final class Constants {
         public static final double kTrackWidth =  Units.inchesToMeters(22.75); 
         /* Distance between front and back wheels */
         public static final double kWheelBase = Units.inchesToMeters(22.75); 
+
         public static final double kDriveBaseRadius = Math.hypot(kTrackWidth / 2.0, kWheelBase / 2.0);
        
         public static final double kMaxSpeed = Units.feetToMeters(15.1);
@@ -108,6 +109,11 @@ public final class Constants {
 
         public static final double kDriveMotorGearRatio = 1 / 6.75; //L2
         public static final double kTurningMotorGearRatio = 1 / (150/7);
+
+        public static final double forwardMult = 0.7;
+        public static final double strafeMult = 0.7;
+        public static final double turnMult = 0.7;
+
     }
 
 
@@ -138,6 +144,8 @@ public final class Constants {
         public static final int climberControllerPort = 2; 
 
         public static final double kDeadband = 0.05;
+        public static final double controllerDeadband = 0.2;
+
     }
 
     public static final class LEDConstants {
@@ -149,14 +157,6 @@ public final class Constants {
         public static int[] CryoTechPurple = {115, 76, 245}; 
 
     }
-
-
-    public static final class TagAngles {
-        public static final String AprilTagCamera = "limelight-tag";
-
-    }
-
-
 
     public static final class VisionConstants {
         public static final String TagCamera = "limelight-tag";

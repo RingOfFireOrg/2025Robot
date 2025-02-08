@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.TeleopCommands.AprilTagLineup;
 import frc.robot.commands.TeleopCommands.SwerveAltJoystick;
 import frc.robot.commands.TeleopCommands.SwerveJoystickCommand;
@@ -61,17 +62,17 @@ public class RobotContainer {
     swerveSubsystem.setDefaultCommand(new SwerveAltJoystick(
       swerveSubsystem,
 
-      () -> (-MathUtil.clamp(driverController.getLeftY(),-0.5,0.5)) 
-      - (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftY(),-0.5,0.5),0.1))
-      + (MathUtil.applyDeadband(driverController.getLeftTriggerAxis(), 0.1)  *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftY(),-0.5,0.5),0.1)),
+      () -> (-MathUtil.clamp(driverController.getLeftY(),-SwerveConstants.forwardMult,SwerveConstants.forwardMult)) 
+      - (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftY(),-SwerveConstants.forwardMult,SwerveConstants.forwardMult),0.1))
+      + (MathUtil.applyDeadband(driverController.getLeftTriggerAxis(), 0.1)  *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftY(),-SwerveConstants.forwardMult,SwerveConstants.forwardMult),0.1)),
 
-      () -> MathUtil.clamp(-driverController.getLeftX(),-0.5,0.5) 
-      - (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftX(),-0.5,0.5),0.1))
-      + (MathUtil.applyDeadband(driverController.getLeftTriggerAxis(), 0.1)  *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftX(),-0.5,0.5),0.1)),
+      () -> MathUtil.clamp(-driverController.getLeftX(),-SwerveConstants.strafeMult,SwerveConstants.strafeMult) 
+      - (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftX(),-SwerveConstants.strafeMult,SwerveConstants.strafeMult),0.1))
+      + (MathUtil.applyDeadband(driverController.getLeftTriggerAxis(), 0.1)  *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftX(),-SwerveConstants.strafeMult,SwerveConstants.strafeMult),0.1)),
         
-      () -> MathUtil.clamp(driverController.getRightX(), -0.3,0.3)
-      + (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getRightX(),-0.3,0.3),0.1))
-      - (MathUtil.applyDeadband(driverController.getLeftTriggerAxis(), 0.1)  *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getRightX(),-0.3,0.3),0.1))
+      () -> MathUtil.clamp(driverController.getRightX(), -SwerveConstants.turnMult,SwerveConstants.turnMult)
+      + (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getRightX(),-SwerveConstants.turnMult,SwerveConstants.turnMult),0.1))
+      - (MathUtil.applyDeadband(driverController.getLeftTriggerAxis(), 0.1)  *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getRightX(),-SwerveConstants.turnMult,SwerveConstants.turnMult),0.1))
 
     ));
   }
@@ -84,7 +85,7 @@ public class RobotContainer {
     .whileTrue(new AprilTagLineup(swerveSubsystem));
 
     new POVButton(driverController, 0)
-    .whileTrue(swerveSubsystem.dPadDriveCMD(0.2, 0) );
+    .whileTrue(swerveSubsystem.dPadDriveCMD(0.2, 0));
     new POVButton(driverController, 90)
     .whileTrue(swerveSubsystem.dPadDriveCMD(0, -0.2) );
     new POVButton(driverController, 180)
