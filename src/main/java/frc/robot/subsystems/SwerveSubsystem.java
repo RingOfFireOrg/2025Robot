@@ -135,9 +135,10 @@ public class SwerveSubsystem extends SubsystemBase {
               },
               this
             );
-          }catch(Exception e){
+        } 
+        catch(Exception e){
             DriverStation.reportError("Failed to load PathPlanner config and configure AutoBuilder", e.getStackTrace());
-          }
+        }
       
         
         // Logging callback for current robot pose
@@ -181,7 +182,12 @@ public class SwerveSubsystem extends SubsystemBase {
     }
 
     public Pose2d getPose() {
-        return odometer.getPoseMeters();
+
+
+        /* ---------------------------------------- */
+        //return odometer.getPoseMeters();
+        return m_poseEstimator.getEstimatedPosition();
+        /* ---------------------------------------- */
     }
 
     public void resetPose(Pose2d pose) {
@@ -219,6 +225,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
         odometer.update(getRotation2d(), getSwerveModulePosition());
         updateOdometry();
+
+        
         SmartDashboard.putNumber("tagcamera_X", (100 - LimelightHelpers.getTA(Constants.VisionConstants.TagCamera))/150);
         SmartDashboard.putNumber("swerve_Robot Heading", getHeading());
         SmartDashboard.putNumber("swerve_Robot Theta", getPose().getRotation().getDegrees());
