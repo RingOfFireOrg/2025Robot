@@ -1,4 +1,6 @@
 package frc.robot;
+import java.util.HashMap;
+
 import com.pathplanner.lib.config.PIDConstants;
 
 import edu.wpi.first.math.geometry.Translation2d;
@@ -155,6 +157,50 @@ public final class Constants {
 
         public static int[] CryoTechBlue = {44, 2, 186}; 
         public static int[] CryoTechPurple = {115, 76, 245}; 
+
+    }
+
+    public static final class FieldConstants {
+        public static enum ReefLetters {
+            AB_front,
+            CD_rightFront,
+            EF_rightBack,
+            GH_back,
+            IJ_backleft,
+            KL_backRight
+        }
+
+        public static final HashMap<Double, ReefLetters> tagToReefSide = new HashMap<>();
+        static {
+            tagToReefSide.put((double) 18,ReefLetters.AB_front);
+            tagToReefSide.put((double) 17,ReefLetters.CD_rightFront);
+            tagToReefSide.put((double) 22,ReefLetters.EF_rightBack);
+            tagToReefSide.put((double) 21,ReefLetters.GH_back);
+            tagToReefSide.put((double) 20,ReefLetters.IJ_backleft);
+            tagToReefSide.put((double) 19,ReefLetters.KL_backRight);
+
+            tagToReefSide.put((double) 10,ReefLetters.AB_front);
+            tagToReefSide.put((double) 9,ReefLetters.CD_rightFront);
+            tagToReefSide.put((double) 8,ReefLetters.EF_rightBack);
+            tagToReefSide.put((double) 7,ReefLetters.GH_back);
+            tagToReefSide.put((double) 6,ReefLetters.IJ_backleft);
+            tagToReefSide.put((double) 11,ReefLetters.KL_backRight);
+
+        }
+
+        public static final HashMap<ReefLetters, String> pathFindHashMap = new HashMap<>();
+        static {
+            pathFindHashMap.put(ReefLetters.AB_front, "pf_AD Front");
+            pathFindHashMap.put(ReefLetters.CD_rightFront, "pf_CD RightFront");
+            pathFindHashMap.put(ReefLetters.EF_rightBack, "pf_EF RightBack");
+            pathFindHashMap.put(ReefLetters.GH_back, "pf_HG Back");
+            pathFindHashMap.put(ReefLetters.IJ_backleft, "pf_JI LeftBack");
+            pathFindHashMap.put(ReefLetters.KL_backRight, "pf_LK LeftFront");
+
+        }
+
+
+
 
     }
 

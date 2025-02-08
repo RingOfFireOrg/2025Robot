@@ -55,10 +55,10 @@ public class SwerveAltJoystick extends Command {
     leftStationRotController.setSetpoint(125);
     rightStationRotController.setSetpoint(225);
 
-    leftStationRotController.enableContinuousInput(0, 360);
+    leftStationRotController.enableContinuousInput(-180, 180);
     leftStationRotController.setTolerance(2);
     
-    rightStationRotController.enableContinuousInput(0, 360);
+    rightStationRotController.enableContinuousInput(-180, 180);
     rightStationRotController.setTolerance(2);
 
     addRequirements(swerveSubsystem);
@@ -77,7 +77,6 @@ public class SwerveAltJoystick extends Command {
     // // turning
     // if (driveController.getLeftBumperButton() == true) { //turn to left source
       
-    //   thetaSpeed = -leftStationRotController.calculate(swerveSubsystem.getHeading()) *Math.PI/180;    
     //   thetaSpeed = MathUtil.applyDeadband(thetaSpeed, 0.1);
     //   thetaSpeed = turningLimiter.calculate(thetaSpeed);
     //   thetaSpeed = Math.abs(thetaSpeed) > SwerveConstants.kDeadband ? thetaSpeed : 0.0;
@@ -88,7 +87,6 @@ public class SwerveAltJoystick extends Command {
 
     // }
     // else if (driveController.getRightBumperButton() == true) { // turn to right source
-    //   thetaSpeed =- rightStationRotController.calculate(swerveSubsystem.getHeading()) * Math.PI/180;    
     //   thetaSpeed = MathUtil.applyDeadband(thetaSpeed, 0.1);
     //   thetaSpeed = turningLimiter.calculate(thetaSpeed);
     //   thetaSpeed = Math.abs(thetaSpeed) > SwerveConstants.kDeadband ? thetaSpeed : 0.0;
@@ -119,6 +117,7 @@ public class SwerveAltJoystick extends Command {
       xSpeed *= -1.0;
       ySpeed *= -1.0;
     }
+    
     if (driveController.getLeftBumperButton() == true) {
       if (AllianceCheck.isBlue()) {
         leftStationRotController.setSetpoint(125);
@@ -126,7 +125,7 @@ public class SwerveAltJoystick extends Command {
       else {
         leftStationRotController.setSetpoint(125+180);
       }
-      thetaSpeed = -leftStationRotController.calculate(swerveSubsystem.getHeading()) *Math.PI/180;   
+      thetaSpeed = -leftStationRotController.calculate(swerveSubsystem.getPoseYaw()) *Math.PI/180;   
     }
     else if  (driveController.getRightBumperButton() == true) {
       if (AllianceCheck.isBlue()) {
@@ -135,7 +134,7 @@ public class SwerveAltJoystick extends Command {
       else {
         rightStationRotController.setSetpoint(250+180);
       }
-      thetaSpeed = -rightStationRotController.calculate(swerveSubsystem.getHeading()) * Math.PI/180;    
+      thetaSpeed = -rightStationRotController.calculate(swerveSubsystem.getPoseYaw()) * Math.PI/180;    
     }
 
 

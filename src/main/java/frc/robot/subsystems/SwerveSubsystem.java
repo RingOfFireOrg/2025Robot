@@ -158,6 +158,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
     public void zeroHeading() {
         gyro.reset();
+        gyro.zeroYaw();
     }
     
     public Command resetGyro() {
@@ -168,21 +169,26 @@ public class SwerveSubsystem extends SubsystemBase {
         return gyro;
     }
 
-    public double getHeading() {
-        //return Rotation2d.fromDegrees(-gyro.getYaw());
-        double temp = (gyro.getAngle() % 360);
-        if(temp < 0) {temp = temp + 360;}
-        return temp;
+    // public double getHeading() {
+    //     //return Rotation2d.fromDegrees(-gyro.getYaw());
+    //     double temp = (gyro.getAngle() % 360);
+    //     if(temp < 0) {temp = temp + 360;}
+    //     return temp;
+    // }
+
+    public double getPoseYaw() {
+        // odometer.getPoseMeters().getRotation().getDegrees();
+        // new Pose2d(odometer.getPoseMeters().getX(),odometer.getPoseMeters().getY(), getRotation2d());
+        return odometer.getPoseMeters().getRotation().getDegrees();
+        
+
     }
 
     public Rotation2d getRotation2d() {
-        //return Rotation2d.fromDegrees(getHeading());
         return Rotation2d.fromDegrees(-gyro.getYaw());
     }
 
     public Pose2d getPose() {
-
-
         /* ---------------------------------------- */
         //return odometer.getPoseMeters();
         return m_poseEstimator.getEstimatedPosition();
@@ -226,10 +232,10 @@ public class SwerveSubsystem extends SubsystemBase {
         updateOdometry();
 
         
-        SmartDashboard.putNumber("tagcamera_X", (100 - LimelightHelpers.getTA(Constants.VisionConstants.TagCamera))/150);
-        SmartDashboard.putNumber("swerve_Robot Heading", getHeading());
-        SmartDashboard.putNumber("swerve_Robot Theta", getPose().getRotation().getDegrees());
-
+        // SmartDashboard.putNumber("tagcamera_X", (100 - LimelightHelpers.getTA(Constants.VisionConstants.TagCamera))/150);
+        SmartDashboard.putNumber("swerve_Robot Heading", gyro.getAngle());
+        SmartDashboard.putNumber("pose_estimate Heading", getPose().getRotation().getDegrees());
+        SmartDashboard.putNumber("pose_odometer Heading", odometer.getPoseMeters().getRotation().getDegrees());
 
 
         //SmartDashboard.putData("Swerve Pose", m_poseEstimator.getEstimatedPosition());

@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.SwerveConstants;
 import frc.robot.commands.AprilTagLineup;
@@ -38,7 +39,6 @@ public class RobotContainer {
   public RobotContainer() {
     defaultCommands();
     configureButtonBindings();
-
   }
 
   /* Sets default commands for each subsystem */
@@ -132,33 +132,35 @@ public class RobotContainer {
     String pathName;
     PathPlannerPath path;
 
-    if (tagNum == 18 || tagNum == 10) {
-      pathName = "pf_AD Front";
+    // if (tagNum == 18 || tagNum == 10) {
+    //   pathName = "pf_AD Front";
 
-    }
-    else if (tagNum == 19 || tagNum == 9) {
-      pathName = "pf_LK LeftFront";
+    // }
+    // else if (tagNum == 19 || tagNum == 9) {
+    //   pathName = "pf_LK LeftFront";
 
-    }
-    else if (tagNum == 20 || tagNum == 8) {
-      pathName = "pf_JI LeftBack";
+    // }
+    // else if (tagNum == 20 || tagNum == 8) {
+    //   pathName = "pf_JI LeftBack";
 
-    }
-    else if (tagNum == 21 || tagNum == 7) {
-      pathName = "pf_HG Back";
+    // }
+    // else if (tagNum == 21 || tagNum == 7) {
+    //   pathName = "pf_HG Back";
 
-    }
-    else if (tagNum == 22 || tagNum == 6) {
-      pathName = "pf_EF RightBack";
+    // }
+    // else if (tagNum == 22 || tagNum == 6) {
+    //   pathName = "pf_EF RightBack";
 
-    }
-    else if (tagNum == 17 || tagNum == 11) {
-      pathName = "pf_CD RightFront";
+    // }
+    // else if (tagNum == 17 || tagNum == 11) {
+    //   pathName = "pf_CD RightFront";
 
-    }
-    else {
-      pathName = " ";
-    }
+    // }
+    // else {
+    //   pathName = " ";
+    // }
+
+    pathName =  FieldConstants.pathFindHashMap.get(FieldConstants.tagToReefSide.get(tagNum));
 
     try {
       path = PathPlannerPath.fromPathFile(pathName);

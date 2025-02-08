@@ -33,7 +33,7 @@ public class AprilTagLineup extends Command {
     this.xLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
     this.yLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
     this.turningLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
-    tagTurnController.enableContinuousInput(0, 360);
+    tagTurnController.enableContinuousInput(-180, 180);
     tagTurnController.setTolerance(3.5);
 
     tagForwardController.setSetpoint(14);
@@ -65,11 +65,11 @@ public class AprilTagLineup extends Command {
 
     }
     else if (tagNum == 22 || tagNum == 6) {
-      tagTurnController.setSetpoint(240);
+      tagTurnController.setSetpoint(-120);
 
     }
     else if (tagNum == 17 || tagNum == 11) {
-      tagTurnController.setSetpoint(300);
+      tagTurnController.setSetpoint(-60);
 
     }
     else {
@@ -88,7 +88,7 @@ public class AprilTagLineup extends Command {
 
 
     double xSpeed = 0;
-    double turningSpeed = tagTurnController.calculate(swerveSubsystem.getHeading()) *Math.PI/180;
+    double turningSpeed = tagTurnController.calculate(swerveSubsystem.getPoseYaw()) *Math.PI/180;
     double ySpeed = LimelightHelpers.getTX(Constants.VisionConstants.TagCamera)/40;
     ySpeed = MathUtil.clamp(ySpeed, -0.15, 0.15);
     
