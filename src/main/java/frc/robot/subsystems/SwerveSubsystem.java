@@ -82,7 +82,6 @@ public class SwerveSubsystem extends SubsystemBase {
         DriveConstants.kBackRightDriveAbsoluteEncoderReversed
     );
     
-    //private final AHRS gyro = new AHRS(SerialPort.Port.kOnboard);
     private AHRS gyro = new AHRS(AHRS.NavXComType.kUSB1);
     private double gyroFlip = -1;
     //private BuiltInAccelerometer builtInAccelerometer = new BuiltInAccelerometer();

@@ -1,4 +1,4 @@
-package frc.robot.commands.TeleopCommands;
+package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -34,7 +34,7 @@ public class AprilTagLineup extends Command {
     this.yLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAccelerationUnitsPerSecond);
     this.turningLimiter = new SlewRateLimiter(DriveConstants.kTeleDriveMaxAngularAccelerationUnitsPerSecond);
     tagTurnController.enableContinuousInput(0, 360);
-    tagTurnController.setTolerance(3);
+    tagTurnController.setTolerance(3.5);
 
     tagForwardController.setSetpoint(14);
     tagForwardController.setTolerance(2);
@@ -48,40 +48,27 @@ public class AprilTagLineup extends Command {
     tagForwardController.setSetpoint(14);
     tagNum = NetworkTableInstance.getDefault().getTable("limelight-tag").getEntry("tid").getDouble(0);
 
-
-    // if (tagNum==17) {
-    //   tagTurnController.setSetpoint(0);
-
-    // }
-    // else if (tagNum == 21) {
-    //   tagTurnController.setSetpoint(300);
-
-    // }
-    // else {
-    //   tagTurnController.setSetpoint(0);
-    // }
-
-    if (tagNum == 18 || tagNum == 7) {
+    if (tagNum == 18 || tagNum == 10) {
       tagTurnController.setSetpoint(0);
 
     }
-    else if (tagNum == 19 || tagNum == 6) {
+    else if (tagNum == 19 || tagNum == 9) {
       tagTurnController.setSetpoint(60);
 
     }
-    else if (tagNum == 20 || tagNum == 11) {
+    else if (tagNum == 20 || tagNum == 8) {
       tagTurnController.setSetpoint(120);
 
     }
-    else if (tagNum == 21 || tagNum == 10) {
+    else if (tagNum == 21 || tagNum == 7) {
       tagTurnController.setSetpoint(180);
 
     }
-    else if (tagNum == 22 || tagNum == 9) {
+    else if (tagNum == 22 || tagNum == 6) {
       tagTurnController.setSetpoint(240);
 
     }
-    else if (tagNum == 17 || tagNum == 8) {
+    else if (tagNum == 17 || tagNum == 11) {
       tagTurnController.setSetpoint(300);
 
     }

@@ -1,8 +1,18 @@
 package frc.robot;
 
+import java.io.IOException;
+
+import org.json.simple.parser.ParseException;
+
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.util.FileVersionException;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -12,8 +22,8 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.SwerveConstants;
-import frc.robot.commands.TeleopCommands.AprilTagLineup;
-import frc.robot.commands.TeleopCommands.SwerveAltJoystick;
+import frc.robot.commands.AprilTagLineup;
+import frc.robot.commands.SwerveAltJoystick;
 import frc.robot.commands.TeleopCommands.SwerveJoystickCommand;
 import frc.robot.commands.TeleopCommands.SwerveNewJoystick;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -82,16 +92,20 @@ public class RobotContainer {
   private void configureButtonBindings() {
 
     new JoystickButton(driverController, XboxController.Button.kA.value)
-    .whileTrue(new AprilTagLineup(swerveSubsystem));
+      .whileTrue(new AprilTagLineup(swerveSubsystem));
+
+    new JoystickButton(driverController, XboxController.Button.kY.value)
+      .whileTrue(AutoBuilder.pathfindThenFollowPath(pathName(),new PathConstraints( 3.0, 4.0,
+      Units.degreesToRadians(540), Units.degreesToRadians(720))));
 
     new POVButton(driverController, 0)
-    .whileTrue(swerveSubsystem.dPadDriveCMD(0.2, 0));
+      .whileTrue(swerveSubsystem.dPadDriveCMD(0.2, 0));
     new POVButton(driverController, 90)
-    .whileTrue(swerveSubsystem.dPadDriveCMD(0, -0.2) );
+     .whileTrue(swerveSubsystem.dPadDriveCMD(0, -0.2) );
     new POVButton(driverController, 180)
-    .whileTrue(swerveSubsystem.dPadDriveCMD(-0.2, 0) );
+     .whileTrue(swerveSubsystem.dPadDriveCMD(-0.2, 0) );
     new POVButton(driverController, 270)
-    .whileTrue(swerveSubsystem.dPadDriveCMD(0, 0.2));
+     .whileTrue(swerveSubsystem.dPadDriveCMD(0, 0.2));
   
     
   } 
@@ -113,6 +127,49 @@ public class RobotContainer {
 
 
 
+  public PathPlannerPath pathName() {
+    double tagNum = NetworkTableInstance.getDefault().getTable("limelight-tag").getEntry("tid").getDouble(0);
+    String pathName;
+    PathPlannerPath path;
+
+    if (tagNum == 18 || tagNum == 10) {
+      pathName = "pf_AD Front";
+
+    }
+    else if (tagNum == 19 || tagNum == 9) {
+      pathName = "pf_LK LeftFront";
+
+    }
+    else if (tagNum == 20 || tagNum == 8) {
+      pathName = "pf_JI LeftBack";
+
+    }
+    else if (tagNum == 21 || tagNum == 7) {
+      pathName = "pf_HG Back";
+
+    }
+    else if (tagNum == 22 || tagNum == 6) {
+      pathName = "pf_EF RightBack";
+
+    }
+    else if (tagNum == 17 || tagNum == 11) {
+      pathName = "pf_CD RightFront";
+
+    }
+    else {
+      pathName = " ";
+    }
+
+    try {
+      path = PathPlannerPath.fromPathFile(pathName);
+      return path;
+    } 
+    catch (FileVersionException | IOException | ParseException e) {
+      e.printStackTrace();
+    }
+
+    return null;
+  }
 
 
 

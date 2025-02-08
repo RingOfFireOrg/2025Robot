@@ -1,6 +1,8 @@
-package frc.robot.commands.TeleopCommands;
+package frc.robot.commands;
 
 import java.util.function.Supplier;
+
+import frc.lib.util.AllianceCheck;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -18,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.SwerveConstants;
+import frc.robot.Robot;
 import frc.robot.subsystems.SwerveSubsystem;
 
 public class SwerveAltJoystick extends Command {
@@ -111,11 +114,27 @@ public class SwerveAltJoystick extends Command {
     xSpeed = (1 / (1 - OIConstants.controllerDeadband)) * (xSpeed + ( -Math.signum(xSpeed) * OIConstants.controllerDeadband));
     ySpeed = (1 / (1 - OIConstants.controllerDeadband)) * (ySpeed + ( -Math.signum(ySpeed) * OIConstants.controllerDeadband));
     thetaSpeed = (1 / (1 - OIConstants.controllerDeadband)) * (ySpeed + ( -Math.signum(ySpeed) * OIConstants.controllerDeadband));
-
+   
+    if (!AllianceCheck.isBlue()) {
+      xSpeed *= -1.0;
+      ySpeed *= -1.0;
+    }
     if (driveController.getLeftBumperButton() == true) {
+      if (AllianceCheck.isBlue()) {
+        leftStationRotController.setSetpoint(125);
+      }
+      else {
+        leftStationRotController.setSetpoint(125+180);
+      }
       thetaSpeed = -leftStationRotController.calculate(swerveSubsystem.getHeading()) *Math.PI/180;   
     }
     else if  (driveController.getRightBumperButton() == true) {
+      if (AllianceCheck.isBlue()) {
+        rightStationRotController.setSetpoint(250);
+      }
+      else {
+        rightStationRotController.setSetpoint(250+180);
+      }
       thetaSpeed = -rightStationRotController.calculate(swerveSubsystem.getHeading()) * Math.PI/180;    
     }
 

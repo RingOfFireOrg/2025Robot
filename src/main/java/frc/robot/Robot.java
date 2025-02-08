@@ -3,6 +3,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.lib.util.AllianceCheck;
 import frc.robot.subsystems.SwerveSubsystem;
 
 public class Robot extends TimedRobot {
@@ -14,7 +15,6 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     m_robotContainer = new RobotContainer();    
-    m_robotContainer.swerveSubsystem.getGyro().setAngleAdjustment(180);
 
   }
 
@@ -37,9 +37,12 @@ public class Robot extends TimedRobot {
 
   }
 
-  @Override
+  @Override 
   public void autonomousInit() {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    if (!AllianceCheck.isBlue()) {
+      m_robotContainer.swerveSubsystem.getGyro().setAngleAdjustment(180); 
+    }
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
