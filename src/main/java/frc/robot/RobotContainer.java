@@ -72,17 +72,21 @@ public class RobotContainer {
     swerveSubsystem.setDefaultCommand(new SwerveAltJoystick(
       swerveSubsystem,
 
-      () -> (-MathUtil.clamp(driverController.getLeftY(),-SwerveConstants.forwardMult,SwerveConstants.forwardMult)) 
-      - (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftY(),-SwerveConstants.forwardMult,SwerveConstants.forwardMult),0.1))
-      + (MathUtil.applyDeadband(driverController.getLeftTriggerAxis(), 0.1)  *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftY(),-SwerveConstants.forwardMult,SwerveConstants.forwardMult),0.1)),
+      () -> driverController.getLeftY(),
+      () -> driverController.getLeftX(),
+      () ->driverController.getRightX()
 
-      () -> MathUtil.clamp(-driverController.getLeftX(),-SwerveConstants.strafeMult,SwerveConstants.strafeMult) 
-      - (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftX(),-SwerveConstants.strafeMult,SwerveConstants.strafeMult),0.1))
-      + (MathUtil.applyDeadband(driverController.getLeftTriggerAxis(), 0.1)  *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftX(),-SwerveConstants.strafeMult,SwerveConstants.strafeMult),0.1)),
+      // () -> (-MathUtil.clamp(driverController.getLeftY(),-SwerveConstants.forwardMult,SwerveConstants.forwardMult)) 
+      // - (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftY(),-SwerveConstants.forwardMult,SwerveConstants.forwardMult),0.1))
+      // + (MathUtil.applyDeadband(driverController.getLeftTriggerAxis(), 0.1)  *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftY(),-SwerveConstants.forwardMult,SwerveConstants.forwardMult),0.1)),
+
+      // () -> MathUtil.clamp(-driverController.getLeftX(),-SwerveConstants.strafeMult,SwerveConstants.strafeMult) 
+      // - (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftX(),-SwerveConstants.strafeMult,SwerveConstants.strafeMult),0.1))
+      // + (MathUtil.applyDeadband(driverController.getLeftTriggerAxis(), 0.1)  *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getLeftX(),-SwerveConstants.strafeMult,SwerveConstants.strafeMult),0.1)),
         
-      () -> MathUtil.clamp(driverController.getRightX(), -SwerveConstants.turnMult,SwerveConstants.turnMult)
-      + (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getRightX(),-SwerveConstants.turnMult,SwerveConstants.turnMult),0.1))
-      - (MathUtil.applyDeadband(driverController.getLeftTriggerAxis(), 0.1)  *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getRightX(),-SwerveConstants.turnMult,SwerveConstants.turnMult),0.1))
+      // () -> MathUtil.clamp(driverController.getRightX(), -SwerveConstants.turnMult,SwerveConstants.turnMult)
+      // + (MathUtil.applyDeadband(driverController.getRightTriggerAxis(), 0.1) *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getRightX(),-SwerveConstants.turnMult,SwerveConstants.turnMult),0.1))
+      // - (MathUtil.applyDeadband(driverController.getLeftTriggerAxis(), 0.1)  *  MathUtil.applyDeadband(MathUtil.clamp(-driverController.getRightX(),-SwerveConstants.turnMult,SwerveConstants.turnMult),0.1))
 
     ));
   }
@@ -94,18 +98,18 @@ public class RobotContainer {
     new JoystickButton(driverController, XboxController.Button.kA.value)
       .whileTrue(new AprilTagLineup(swerveSubsystem));
 
-    new JoystickButton(driverController, XboxController.Button.kY.value)
-      .whileTrue(AutoBuilder.pathfindThenFollowPath(pathName(),new PathConstraints( 3.0, 4.0,
-      Units.degreesToRadians(540), Units.degreesToRadians(720))));
+    // new JoystickButton(driverController, XboxController.Button.kY.value)
+    //   .whileTrue(AutoBuilder.pathfindThenFollowPath(pathName(),new PathConstraints( 3.0, 4.0,
+    //   Units.degreesToRadians(540), Units.degreesToRadians(720))));
 
-    new POVButton(driverController, 0)
-      .whileTrue(swerveSubsystem.dPadDriveCMD(0.2, 0));
-    new POVButton(driverController, 90)
-     .whileTrue(swerveSubsystem.dPadDriveCMD(0, -0.2) );
-    new POVButton(driverController, 180)
-     .whileTrue(swerveSubsystem.dPadDriveCMD(-0.2, 0) );
-    new POVButton(driverController, 270)
-     .whileTrue(swerveSubsystem.dPadDriveCMD(0, 0.2));
+    // new POVButton(driverController, 0)
+    //   .whileTrue(swerveSubsystem.dPadDriveCMD(0.2, 0));
+    // new POVButton(driverController, 90)
+    //  .whileTrue(swerveSubsystem.dPadDriveCMD(0, -0.2) );
+    // new POVButton(driverController, 180)
+    //  .whileTrue(swerveSubsystem.dPadDriveCMD(-0.2, 0) );
+    // new POVButton(driverController, 270)
+    //  .whileTrue(swerveSubsystem.dPadDriveCMD(0, 0.2));
   
     
   } 

@@ -25,6 +25,7 @@ public class SwerveNewJoystick extends Command {
     private final Supplier<Boolean> aButton, bButton, xButton, yButton;
 
     private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
+    @SuppressWarnings("unused")
     private final SlewRateLimiter xLimiterOLD, yLimiterOLD, turningLimiterOLD;
     private final XboxController driveController = new XboxController(0);
     private double speedDivide = 2;

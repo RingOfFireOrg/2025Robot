@@ -40,9 +40,9 @@ public class Robot extends TimedRobot {
   @Override 
   public void autonomousInit() {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-    if (!AllianceCheck.isBlue()) {
-      m_robotContainer.swerveSubsystem.getGyro().setAngleAdjustment(180); 
-    }
+    // if (!AllianceCheck.isBlue()) {
+    //   m_robotContainer.swerveSubsystem.getGyro().setAngleAdjustment(180); 
+    // }
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
