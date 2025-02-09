@@ -4,7 +4,10 @@ package frc.robot.subsystems;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -12,6 +15,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -22,6 +26,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.IDConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.LimelightHelpers;
 
 import com.studica.frc.AHRS;
@@ -76,6 +81,20 @@ public class SwerveSubsystem extends SubsystemBase {
     private AHRS gyro = new AHRS(AHRS.NavXComType.kUSB1);
     private double gyroFlip = -1;
     private final SwerveDriveOdometry odometer = new SwerveDriveOdometry(DriveConstants.kDriveKinematics, getRotation2d(), getSwerveModulePosition());
+    private final SwerveDrivePoseEstimator m_poseEstimator =
+        new SwerveDrivePoseEstimator(
+            DriveConstants.kDriveKinematics,
+            gyro.getRotation2d(),
+            new SwerveModulePosition[] {
+                frontLeft.getPosition(),
+                frontRight.getPosition(),
+                backLeft.getPosition(),
+                backRight.getPosition()
+            },
+            new Pose2d(),
+            VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
+            VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)));
+
 
     public SwerveSubsystem() {
 
@@ -118,11 +137,12 @@ public class SwerveSubsystem extends SubsystemBase {
         //   PathPlannerLogging.setLogActivePathCallback((poses) -> field.getObject("path").setPoses(poses));
       
         //   SmartDashboard.putData("Field", field);
-        }
+    }
     
 
     public void zeroHeading() {
         gyro.reset();
+        gyro.zeroYaw();
     }
 
     public double getHeading() {
@@ -140,13 +160,14 @@ public class SwerveSubsystem extends SubsystemBase {
 
     // ---------------------------------------------------------------------------------------------------------------
     public Pose2d getPose() {
-        SmartDashboard.putString( "swerve_Get Pose meters ", odometer.getPoseMeters().toString()); 
-        return odometer.getPoseMeters();
+        //return odometer.getPoseMeters();
+        return m_poseEstimator.getEstimatedPosition();
     }
 
     public void resetPose(Pose2d pose) {
         //odometer.resetPosition(getRotation2d(),getSwerveModulePosition(),pose);
         odometer.resetPosition(new Rotation2d(Math.toRadians(gyroFlip * gyro.getYaw())),getSwerveModulePosition(),pose); 
+        m_poseEstimator.resetPose(pose);
         
     }
 
@@ -166,14 +187,15 @@ public class SwerveSubsystem extends SubsystemBase {
 
 
     public Rotation2d getRotation2d() {
-        //return Rotation2d.fromDegrees(getHeading());
+        //return Rotation2d.fromDegrees(getHeaing());
         return Rotation2d.fromDegrees(-gyro.getYaw());
 
     }
 
-    public void resetOdometry(Pose2d pose) {
-        odometer.resetPosition(getRotation2d(),getSwerveModulePosition(),pose);
-    }
+    //2/9 - nothing was using it
+    // public void resetOdometry(Pose2d pose) {
+    //     odometer.resetPosition(getRotation2d(),getSwerveModulePosition(),pose);
+    // }
 
 
     @Override
@@ -182,7 +204,8 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("LEANLEANLEAN", NetworkTableInstance.getDefault().getTable("limelight-tag").getEntry("tid").getDouble(0));
 
         odometer.update(getRotation2d(), getSwerveModulePosition());
-        
+        updateOdometry();
+
         SmartDashboard.putNumber("tagcamera_X", (100 - LimelightHelpers.getTA(Constants.VisionConstants.TagCamera))/150);
         SmartDashboard.putNumber("swerve_Robot Heading", getHeading());
         SmartDashboard.putNumber("swerve_Robot Theta", getPose().getRotation().getDegrees());
@@ -191,15 +214,6 @@ public class SwerveSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("swerve_BL Robot Tranlsation", backLeft.getDrivePosition());
         SmartDashboard.putNumber("swerve_BR Robot Tranlsation", backRight.getDrivePosition());
 
-        SmartDashboard.putNumber("swerve_FL Motor Temp", frontLeft.returnDriveMotorTemp());
-        SmartDashboard.putNumber("swerve_FR Motor Temp", frontRight.returnDriveMotorTemp());
-        SmartDashboard.putNumber("swerve_BL Motor Temp", backLeft.returnDriveMotorTemp());
-        SmartDashboard.putNumber("swerve_BR Motor Temp", backRight.returnDriveMotorTemp());
-
-        SmartDashboard.putNumber("swerve_FL Heading", frontLeft.getTurningPosition());
-        SmartDashboard.putNumber("swerve_FR Heading", frontRight.returnDriveMotorTemp());
-        SmartDashboard.putNumber("swerve_BL Heading", backLeft.returnDriveMotorTemp());
-        SmartDashboard.putNumber("swerve_BR Heading", backRight.returnDriveMotorTemp());
         
 
         
@@ -299,7 +313,69 @@ public class SwerveSubsystem extends SubsystemBase {
     /* ------------------------------------- */
 
 
+    public void updateOdometry() {
+        m_poseEstimator.update(
+            gyro.getRotation2d(),
+            new SwerveModulePosition[] {
+              frontLeft.getPosition(),
+              frontRight.getPosition(),
+              backLeft.getPosition(),
+              backRight.getPosition()
+            }
+        );
     
+    
+        boolean useMegaTag2 = true; //set to false to use MegaTag1
+        boolean doRejectUpdate = false;
+        if(useMegaTag2 == false)
+        {
+          LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue(VisionConstants.TagCamera);
+          
+          if(mt1.tagCount == 1 && mt1.rawFiducials.length == 1)
+          {
+            if(mt1.rawFiducials[0].ambiguity > .7)
+            {
+              doRejectUpdate = true;
+            }
+            if(mt1.rawFiducials[0].distToCamera > 3)
+            {
+              doRejectUpdate = true;
+            }
+          }
+          if(mt1.tagCount == 0)
+          {
+            doRejectUpdate = true;
+          }
+    
+          if(!doRejectUpdate)
+          {
+            m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.5,.5,9999999));
+            m_poseEstimator.addVisionMeasurement(
+                mt1.pose,
+                mt1.timestampSeconds);
+          }
+        }
+        else if (useMegaTag2 == true)
+        {
+          LimelightHelpers.SetRobotOrientation("limelight", m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+          LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(VisionConstants.TagCamera);
+          if(Math.abs(gyro.getRate()) > 720) 
+          {
+            doRejectUpdate = true;
+          }
+          if(mt2.tagCount == 0)
+          {
+            doRejectUpdate = true;
+          }
+          if(!doRejectUpdate)
+          {
+            m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,9999999));
+            m_poseEstimator.addVisionMeasurement(
+                mt2.pose,
+                mt2.timestampSeconds);
+          }
+        }
+      }
 }
     
     
