@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Swerve;
+package frc.robot.subsystems.Swerve.Modules;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
-import frc.robot.subsystems.Swerve.ModuleIO.ModuleIOInputs;
+import frc.robot.subsystems.Swerve.Modules.ModuleIO.ModuleIOInputs;
 
 import org.littletonrobotics.junction.Logger;
 

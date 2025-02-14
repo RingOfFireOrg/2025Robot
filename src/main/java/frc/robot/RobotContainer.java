@@ -18,9 +18,9 @@ import frc.robot.commands.TeleopCommands.SwerveAltJoystick;
 import frc.robot.commands.TeleopCommands.SwerveJoystickCommand;
 import frc.robot.commands.TeleopCommands.SwerveNewJoystick;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.subsystems.Swerve.ModuleIO;
-import frc.robot.subsystems.Swerve.ModuleIOSparkMax;
 import frc.robot.subsystems.Swerve.Swerve;
+import frc.robot.subsystems.Swerve.Modules.ModuleIO;
+import frc.robot.subsystems.Swerve.Modules.ModuleIOSparkMax;
 
 
 public class RobotContainer {
@@ -73,10 +73,11 @@ public class RobotContainer {
         ));
           break;
       case SIM :
+
       case REPLAY :
       default:
-        // Replayed robot, disable IO implementations
-        swerve =
+
+      swerve =
             new Swerve(
                 new ModuleIO() {},
                 new ModuleIO() {},
