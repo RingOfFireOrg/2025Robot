@@ -4,6 +4,7 @@ import com.pathplanner.lib.config.PIDConstants;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotBase;
 
 public final class Constants {
 
@@ -52,6 +53,8 @@ public final class Constants {
             new Translation2d(-kWheelBase / 2, kTrackWidth / 2),   // Back Left
             new Translation2d(-kWheelBase / 2, -kTrackWidth / 2)  //Back Right
         );
+
+        
 
         public static final boolean kFrontLeftTurningEncoderReversed = true;
         public static final boolean kBackLeftTurningEncoderReversed = true;
@@ -151,11 +154,14 @@ public final class Constants {
     }
 
 
-    public static final class TagAngles {
-        public static final String AprilTagCamera = "limelight-tag";
-
+    public static final Mode simMode = Mode.SIM;
+    public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
+  
+    public static enum Mode {
+      REAL,  
+      SIM,
+      REPLAY
     }
-
 
 
     public static final class VisionConstants {

@@ -10,23 +10,83 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.IDConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.TeleopCommands.AprilTagLineup;
 import frc.robot.commands.TeleopCommands.SwerveAltJoystick;
 import frc.robot.commands.TeleopCommands.SwerveJoystickCommand;
 import frc.robot.commands.TeleopCommands.SwerveNewJoystick;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.Swerve.ModuleIO;
+import frc.robot.subsystems.Swerve.ModuleIOSparkMax;
+import frc.robot.subsystems.Swerve.Swerve;
 
 
 public class RobotContainer {
   public SwerveSubsystem swerveSubsystem = new SwerveSubsystem();
+  private final Swerve swerve;
 
   private XboxController driverController = new XboxController(OIConstants.driverControllerPort);
   private CommandXboxController operatorController = new CommandXboxController(OIConstants.operatorControllerPort);
 
   public RobotContainer() {
+    switch (Constants.currentMode) { 
+      case REAL:
+      swerve =
+      new Swerve(
+        new ModuleIOSparkMax(
+          IDConstants.frontLeftDriveMotor,
+          IDConstants.frontLeftTurnMotor,
+          DriveConstants.kFrontLeftDriveEncoderReversed,
+          DriveConstants.kFrontLeftTurningEncoderReversed,
+          IDConstants.frontLeftCANcoder,
+          DriveConstants.kFrontLeftDriveAbsoluteEncoderOffsetRad,
+          DriveConstants.kFrontLeftDriveAbsoluteEncoderReversed
+        ),
+        new ModuleIOSparkMax(
+            IDConstants.frontRightDriveMotor,
+            IDConstants.frontRightTurnMotor,
+            DriveConstants.kFrontRightDriveEncoderReversed,
+            DriveConstants.kFrontRightTurningEncoderReversed,
+            IDConstants.frontRightCANcoder,
+            DriveConstants.kFrontRightDriveAbsoluteEncoderOffsetRad,
+            DriveConstants.kFrontRightDriveAbsoluteEncoderReversed
+        ),
+        new ModuleIOSparkMax(
+          IDConstants.backLeftDriveMotor,
+          IDConstants.backLeftTurnMotor,
+          DriveConstants.kBackLeftDriveEncoderReversed,
+          DriveConstants.kBackLeftTurningEncoderReversed,
+          IDConstants.backLeftCANcoder,
+          DriveConstants.kBackLeftDriveAbsoluteEncoderOffsetRad,
+          DriveConstants.kBackLeftDriveAbsoluteEncoderReversed
+        ),
+        new ModuleIOSparkMax(
+          IDConstants.backRightDriveMotor,
+          IDConstants.backRightTurnMotor,
+          DriveConstants.kBackRightDriveEncoderReversed,
+          DriveConstants.kBackRightTurningEncoderReversed,
+          IDConstants.backRightCANcoder,
+          DriveConstants.kBackRightDriveAbsoluteEncoderOffsetRad,
+          DriveConstants.kBackRightDriveAbsoluteEncoderReversed
+        ));
+          break;
+      case SIM :
+      case REPLAY :
+      default:
+        // Replayed robot, disable IO implementations
+        swerve =
+            new Swerve(
+                new ModuleIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {},
+                new ModuleIO() {});
+        break;
+    }
     defaultCommands();
     configureButtonBindings();
+    
 
   }
 
