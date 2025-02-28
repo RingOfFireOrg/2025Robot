@@ -16,6 +16,8 @@ package frc.robot;
 import static frc.robot.subsystems.vision.VisionConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -141,6 +143,10 @@ public class RobotContainer {
             drive.sysIdDynamic(SysIdRoutine.Direction.kReverse)
         );
 
+        // autoChooser.addOption("rightSideAuto",
+        //     new PathPlannerAuto("Auto Name", true);
+        // );
+
         // Configure the button bindings
         configureButtonBindings();
     }
@@ -155,8 +161,6 @@ public class RobotContainer {
             () -> -MathUtil.applyDeadband(MathUtil.clamp(driver.getRightX(),-0.5,0.5), 0.1))
         );
 
-
-
         //Reset gyro / odometry
         final Runnable resetGyro = Constants.currentMode == Constants.Mode.SIM
             ? () -> drive.resetOdometry(
@@ -170,7 +174,10 @@ public class RobotContainer {
 
         if (Constants.currentMode == Constants.Mode.REAL) {
             elevator.setDefaultCommand(elevator.runTeleop(() -> driver.getLeftTriggerAxis(), ()-> driver.getRightTriggerAxis()));
-            driver.povUp().whileTrue(elevator.setHeight(30));
+            driver.povUp().whileTrue(elevator.setHeight(120));
+            driver.povLeft().whileTrue(elevator.setHeight(30));
+            driver.povDown().whileTrue(elevator.setHeight(0));
+
 
         }         
         else if (Constants.currentMode == Constants.Mode.SIM) {

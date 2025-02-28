@@ -15,6 +15,7 @@ import edu.wpi.first.units.measure.MutAngularVelocity;
 import edu.wpi.first.units.measure.MutVoltage;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
@@ -41,34 +42,44 @@ public class ElevatorIOReal implements ElevatorIO {
     private final RelativeEncoder encoder;
     private SparkMaxConfig config = new SparkMaxConfig();
     private SparkClosedLoopController closedLoopController;
-    ElevatorFeedforward feedforward = new ElevatorFeedforward(0.1, 0.1, 0.1, 0.1);
+    ElevatorFeedforward feedforward = new ElevatorFeedforward(0.0, 0.0, 0.0, 0.0);
 
     MutVoltage appliedVoltage = Volts.mutable(0);
     MutAngle angle = Radians.mutable(0);
     MutAngularVelocity velocity = RadiansPerSecond.mutable(0);
 
-    private TrapezoidProfile profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(5, 10));
+    private TrapezoidProfile profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(10, 20));
     private TrapezoidProfile.State goal = new TrapezoidProfile.State();
     private TrapezoidProfile.State setpoint = new TrapezoidProfile.State();
     private SysIdRoutine routine;
-    
+    public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM;
+
     //public static final int elevatorCanIDleft = 14;
     public static final int elevatorCanID/*right*/ = 15;
 
     public ElevatorIOReal() {
+        kP = 0.5; 
+        kI = 0;
+        kD = 0; 
+        kIz = 0; 
+        kFF = 0.000015; 
+        kMaxOutput = 1; 
+        kMinOutput = -1;
+        maxRPM = 5700;
+
         elevatorMotor = new SparkMax(elevatorCanID, MotorType.kBrushless);
         config
             //.inverted(false)
             .idleMode(IdleMode.kBrake)
             .smartCurrentLimit(40)
-            .closedLoopRampRate(0.5);
+            ;//.closedLoopRampRate(0.5);
 
         config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-            .p(5)
-            .i(0)
-            .d(0.9)
-            .velocityFF(0)
-            .outputRange(-0.8, 0.8);
+            .p(kP)
+            .i(kI)
+            .d(kD)
+            .velocityFF(kFF)
+            .outputRange(-0.8, 1);
 
         config.encoder.positionConversionFactor(1);
         //config.encoder.velocityConversionFactor(1);
@@ -77,6 +88,14 @@ public class ElevatorIOReal implements ElevatorIO {
 
         encoder = elevatorMotor.getEncoder();
         closedLoopController = elevatorMotor.getClosedLoopController();
+
+        SmartDashboard.putNumber("P Gain", kP);
+        SmartDashboard.putNumber("I Gain", kI);
+        SmartDashboard.putNumber("D Gain", kD);
+        SmartDashboard.putNumber("I Zone", kIz);
+        SmartDashboard.putNumber("Feed Forward", kFF);
+        SmartDashboard.putNumber("Max Output", kMaxOutput);
+        SmartDashboard.putNumber("Min Output", kMinOutput);
 
         // routine = new SysIdRoutine(
         //     new SysIdRoutine.Config(),
@@ -95,6 +114,46 @@ public class ElevatorIOReal implements ElevatorIO {
 
         Logger.recordOutput("ElevatorPosition", elevatorMotor.getEncoder().getPosition());
         Logger.recordOutput("referenceposi", setpoint.position);
+        double p = SmartDashboard.getNumber("P Gain", 0);
+        double i = SmartDashboard.getNumber("I Gain", 0);
+        double d = SmartDashboard.getNumber("D Gain", 0);
+        double iz = SmartDashboard.getNumber("I Zone", 0);
+        double ff = SmartDashboard.getNumber("Feed Forward", 0);
+        double max = SmartDashboard.getNumber("Max Output", 0);
+        double min = SmartDashboard.getNumber("Min Output", 0);
+    
+        // if PID coefficients on SmartDashboard have changed, write new values to controller
+        if((p != kP)) { 
+            config.closedLoop.p(p); 
+            kP = p; 
+            elevatorMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+
+        }
+        if((i != kI)) { 
+            config.closedLoop.i(i); 
+            kI = i; 
+            elevatorMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+
+        }
+        if((d != kD)) { 
+            config.closedLoop.d(d); 
+            kD = d; 
+            elevatorMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+
+        }
+        // if((iz != kIz)) { m_pidController.setIZone(iz); kIz = iz; 
+        
+        // }
+        if((ff != kFF)) { config.closedLoop.velocityFF(ff); kFF = ff; 
+            elevatorMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+
+        }
+        // if((max != kMaxOutput) || (min != kMinOutput)) { 
+        //   m_pidController.setOutputRange(min, max); 
+        //   kMinOutput = min; kMaxOutput = max; 
+        // }
+
+
 
     }
 
