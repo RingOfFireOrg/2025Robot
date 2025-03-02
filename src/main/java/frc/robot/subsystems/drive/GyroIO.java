@@ -11,27 +11,20 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package frc.robot;
+package frc.robot.subsystems.drive;
 
-import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.math.geometry.Rotation2d;
+import org.littletonrobotics.junction.AutoLog;
 
-
-public final class Constants {
-    public static final Mode simMode = Mode.SIM;
-    public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
-
-    public static enum Mode {
-        /** Running on a real robot. */
-        REAL,
-
-        /** Running a physics simulator. */
-        SIM,
-
-        /** Replaying from a log file. */
-        REPLAY
+public interface GyroIO {
+    @AutoLog
+    public static class GyroIOInputs {
+        public boolean connected = false;
+        public Rotation2d yawPosition = new Rotation2d();
+        public double yawVelocityRadPerSec = 0.0;
+        public double[] odometryYawTimestamps = new double[] {};
+        public Rotation2d[] odometryYawPositions = new Rotation2d[] {};
     }
 
-    public static class OIConstants {
-        public static final double controllerDeadband = 0.1;
-    }
+    public default void updateInputs(GyroIOInputs inputs) {}
 }
