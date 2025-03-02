@@ -21,6 +21,7 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -32,6 +33,7 @@ import frc.robot.subsystems.Elevator.ElevatorIOReal;
 import frc.robot.subsystems.Elevator.ElevatorIOSim;
 import frc.robot.subsystems.EndEffector.EndEffector;
 import frc.robot.subsystems.EndEffector.EndEffectorIO;
+import frc.robot.subsystems.EndEffector.EndEffectorIOReal;
 import frc.robot.subsystems.EndEffector.EndEffectorIOSim;
 import frc.robot.subsystems.drive.*;
 import frc.robot.subsystems.vision.*;
@@ -67,6 +69,7 @@ public class RobotContainer {
                     (pose) -> {
                 });
                 elevator = new Elevator(new ElevatorIOReal());
+                EndEffector = new EndEffector(new EndEffectorIOReal());
 
                 // this.vision = new Vision(
                 //     drive,
@@ -177,6 +180,7 @@ public class RobotContainer {
             driver.povUp().whileTrue(elevator.setHeight(120));
             driver.povLeft().whileTrue(elevator.setHeight(30));
             driver.povDown().whileTrue(elevator.setHeight(0));
+            EndEffector.setDefaultCommand(EndEffector.runTeleop(() -> operator.getLeftTriggerAxis(), ()-> operator.getRightTriggerAxis(), () -> operator.getLeftY()));
 
 
         }         
@@ -188,6 +192,15 @@ public class RobotContainer {
             //     AutoBuilder.pathfindThenFollowPath(PathPlannerPath.fromPathFile("toReed"),constraints));
             // } 
             // catch (FileVersionException | IOException | ParseException e) {e.printStackTrace();}
+
+            // driver.axisGreaterThan(XboxController.Axis.kLeftTrigger.value, 0.1)
+            // .whileTrue(claw.moveElevatorUpCommand())
+            // .onFalse(claw.holdElevatorPositionCommand());
+
+            
+            
+            
+            // driver.leftTrigger().whileTrue(getAutonomousCommand());
     
         }
 

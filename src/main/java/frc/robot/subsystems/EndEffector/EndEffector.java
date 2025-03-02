@@ -33,10 +33,10 @@ public class EndEffector extends SubsystemBase {
     return run(() -> io.setAngle(angle));
   }
 
-  public Command runTeleop(DoubleSupplier forward, DoubleSupplier reverse) {
+  public Command runTeleop(DoubleSupplier forward, DoubleSupplier reverse, DoubleSupplier eject) {
     return runEnd(
-      () -> io.setVoltage((forward.getAsDouble() - reverse.getAsDouble()) * 12.0),
-      () -> io.setVoltage(0.0)
+      () -> io.setVoltageEject((forward.getAsDouble() - reverse.getAsDouble()) * 12.0, eject.getAsDouble() * 12.0),
+      () -> io.setVoltageEject(0.0,0.0)
     );
   }
 

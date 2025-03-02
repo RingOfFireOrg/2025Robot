@@ -22,6 +22,8 @@ public interface EndEffectorIO {
   public default void updateInputs(EndEffectorIOInputs inputs) {}
 
   public default void setVoltage(double volts) {}
+  public default void setVoltageEject(double volts, double eject) {}
+
 
   public default void setAngle(double angle) {}
 
