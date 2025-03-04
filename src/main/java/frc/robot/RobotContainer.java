@@ -159,9 +159,9 @@ public class RobotContainer {
         drive.setDefaultCommand(DriveCommands.joystickDrive
         (
             drive,
-            () -> MathUtil.applyDeadband(MathUtil.clamp(driver.getLeftY(),-0.5,0.5), 0.1),
-            () -> MathUtil.applyDeadband(MathUtil.clamp(driver.getLeftX(),-0.5,0.5), 0.1),
-            () -> -MathUtil.applyDeadband(MathUtil.clamp(driver.getRightX(),-0.5,0.5), 0.1))
+            () -> MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftY(),-0.5,0.5), 0.1),
+            () -> MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftX(),-0.5,0.5), 0.1),
+            () -> -MathUtil.applyDeadband(MathUtil.clamp(-driver.getRightX(),-1,1), 0.1))
         );
 
         //Reset gyro / odometry
@@ -180,7 +180,7 @@ public class RobotContainer {
             driver.povUp().whileTrue(elevator.setHeight(120));
             driver.povLeft().whileTrue(elevator.setHeight(30));
             driver.povDown().whileTrue(elevator.setHeight(0));
-            EndEffector.setDefaultCommand(EndEffector.runTeleop(() -> operator.getLeftTriggerAxis(), ()-> operator.getRightTriggerAxis(), () -> operator.getLeftY()));
+            EndEffector.setDefaultCommand(EndEffector.runTeleop(() -> operator.getLeftTriggerAxis()/3, ()-> operator.getRightTriggerAxis()/3, () -> operator.getLeftY()));
 
 
         }         
