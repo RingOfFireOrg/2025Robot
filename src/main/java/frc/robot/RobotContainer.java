@@ -185,18 +185,35 @@ public class RobotContainer {
         if (Constants.currentMode == Constants.Mode.REAL) {
 
             /* Open Loop Control for Elevator */
-            operator.axisMagnitudeGreaterThan(XboxController.Axis.kLeftTrigger.value, 0.2).whileTrue(elevator.runTeleop(() -> operator.getLeftY()));
+           // operator.axisMagnitudeGreaterThan(XboxController.Axis.kLeftTrigger.value, 0.2).whileTrue(elevator.runTeleop(() -> operator.getLeftY()));
 
-            operator.povUp().whileTrue(elevator.setHeight(300));
-            operator.povLeft().whileTrue(elevator.setHeight(200));
+            operator.povUp().whileTrue(elevator.setHeight(200));
+            operator.povLeft().whileTrue(elevator.setHeight(150));
             operator.povRight().whileTrue(elevator.setHeight(100));
             operator.povDown().whileTrue(elevator.setHeight(0));
 
-            EndEffector.setDefaultCommand(EndEffector.runTeleop(() -> operator.getLeftTriggerAxis()/4, ()-> operator.getRightTriggerAxis()/4, () -> operator.getLeftY()));
+            operator.y().onTrue(EndEffector.angle(10));
+            operator.x().onTrue(EndEffector.angle(50));
+            operator.a().onTrue(EndEffector.angle(90));
+
+
+            operator.axisMagnitudeGreaterThan(XboxController.Axis.kLeftTrigger.value, 0.1)
+            .onTrue(elevator.setHeight(100))
+            .onTrue(EndEffector.angle(50))
+            .whileTrue(EndEffector.ejecter(0.7))
+            .onFalse(EndEffector.ejecter(0))
+            ;
+
+            operator.axisMagnitudeGreaterThan(XboxController.Axis.kRightTrigger.value, 0.1)
+            .whileTrue(EndEffector.ejecter(-0.6))
+            .onFalse(EndEffector.ejecter(0))
+            ;
+
+            //EndEffector.setDefaultCommand(EndEffector.runTeleop(() -> operator.getLeftTriggerAxis()/4, ()-> operator.getRightTriggerAxis()/4, () -> operator.getLeftY()));
 
             climberController.axisMagnitudeGreaterThan(Joystick.AxisType.kY.value, 0.2)
             .and(climberController.button(1))
-            .whileTrue(climber.runTeleop(() -> climberController.getY()))
+            .whileTrue(climber.runTeleop(() -> -climberController.getY()))
             .onFalse(climber.runTeleop(() -> 0));
 
 

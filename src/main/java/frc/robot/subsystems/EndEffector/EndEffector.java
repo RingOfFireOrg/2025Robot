@@ -29,7 +29,11 @@ public class EndEffector extends SubsystemBase {
   }
 
   public Command angle(double angle) {
-    return run(() -> io.setAngle(angle));
+    return runOnce(() -> io.setAngle(angle));
+  }
+
+  public Command ejecter(double volts) {
+    return runOnce(() -> io.ejecter(volts));
   }
 
   public Command runTeleop(DoubleSupplier forward, DoubleSupplier reverse, DoubleSupplier eject) {
