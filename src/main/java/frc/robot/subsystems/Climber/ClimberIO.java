@@ -1,12 +1,12 @@
-package frc.robot.subsystems.Elevator;
+package frc.robot.subsystems.Climber;
 
 import org.littletonrobotics.junction.AutoLog;
 
 import edu.wpi.first.math.geometry.Pose3d;
 
-public interface ElevatorIO {
+public interface ClimberIO {
   @AutoLog
-  public static class ElevatorIOInputs {
+  public static class ClimberIOInputs {
     public double controllerSetpoint = 0.0;
     public double controllerOutput = 0.0;
     public double positionRad = 0.0;
@@ -19,7 +19,7 @@ public interface ElevatorIO {
 
   }
 
-  public default void updateInputs(ElevatorIOInputs inputs) {}
+  public default void updateInputs(ClimberIOInputs inputs) {}
 
   public default void setVoltage(double volts) {}
 

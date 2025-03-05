@@ -30,6 +30,18 @@ public final class Constants {
         /** Replaying from a log file. */
         REPLAY
     }
+    public static enum EndEffectorPositionState {
+        STOWED,
+        INTAKE,
+        SCORE,
+        SCOREL4
+    }
+    public static enum EndEffectorIntakeState {
+        INTAKE,
+        EJECT,
+        HOLD,
+        NONE
+    }
 
     public static class OIConstants {
         public static final double controllerDeadband = 0.1;

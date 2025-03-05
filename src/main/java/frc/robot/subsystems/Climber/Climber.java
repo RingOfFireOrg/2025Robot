@@ -1,22 +1,19 @@
-package frc.robot.subsystems.Elevator;
-
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.units.BaseUnits;
-import edu.wpi.first.units.VoltageUnit;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+package frc.robot.subsystems.Climber;
 
 import java.util.function.DoubleSupplier;
+
 import org.littletonrobotics.junction.Logger;
 
-public class Elevator extends SubsystemBase {
-    private final ElevatorIO io;
-    private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+public class Climber extends SubsystemBase {
+    private final ClimberIO io;
+    private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged();
     public double elevatorHeight = 0;
     //private final SysIdRoutine sysId;
 
-    public Elevator(ElevatorIO io) {
+    public Climber(ClimberIO io) {
         this.io = io;
         // sysId = new SysIdRoutine(
         //     new SysIdRoutine.Config(null, null, null,

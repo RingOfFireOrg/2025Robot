@@ -65,7 +65,6 @@ public class ElevatorIOReal implements ElevatorIO {
         kFF = 0.000015; 
         kMaxOutput = 1; 
         kMinOutput = -1;
-        maxRPM = 5700;
 
         elevatorMotor = new SparkMax(elevatorCanID, MotorType.kBrushless);
         config
@@ -92,7 +91,6 @@ public class ElevatorIOReal implements ElevatorIO {
         SmartDashboard.putNumber("P Gain", kP);
         SmartDashboard.putNumber("I Gain", kI);
         SmartDashboard.putNumber("D Gain", kD);
-        SmartDashboard.putNumber("I Zone", kIz);
         SmartDashboard.putNumber("Feed Forward", kFF);
         SmartDashboard.putNumber("Max Output", kMaxOutput);
         SmartDashboard.putNumber("Min Output", kMinOutput);
@@ -117,10 +115,7 @@ public class ElevatorIOReal implements ElevatorIO {
         double p = SmartDashboard.getNumber("P Gain", 0);
         double i = SmartDashboard.getNumber("I Gain", 0);
         double d = SmartDashboard.getNumber("D Gain", 0);
-        double iz = SmartDashboard.getNumber("I Zone", 0);
         double ff = SmartDashboard.getNumber("Feed Forward", 0);
-        double max = SmartDashboard.getNumber("Max Output", 0);
-        double min = SmartDashboard.getNumber("Min Output", 0);
     
         // if PID coefficients on SmartDashboard have changed, write new values to controller
         if((p != kP)) { 
@@ -167,14 +162,7 @@ public class ElevatorIOReal implements ElevatorIO {
         return height;
     }
 
-    // @Override
-    // public void setHeight(double height) {
-    // }
 
-    @Override
-    public void setDriveOpenLoop(double output) {
-        elevatorMotor.setVoltage(output);
-    }
 
     public void sysIDTest() {
 

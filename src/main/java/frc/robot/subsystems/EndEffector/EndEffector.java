@@ -2,7 +2,6 @@ package frc.robot.subsystems.EndEffector;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.Elevator.ElevatorIOInputsAutoLogged;
 
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;

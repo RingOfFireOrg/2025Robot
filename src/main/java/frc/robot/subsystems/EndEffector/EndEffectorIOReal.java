@@ -1,9 +1,11 @@
 package frc.robot.subsystems.EndEffector;
 
-
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+
+import frc.robot.Constants.EndEffectorIntakeState;
+
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import com.revrobotics.RelativeEncoder;
@@ -20,9 +22,8 @@ public class EndEffectorIOReal implements EndEffectorIO {
     private SparkMaxConfig config = new SparkMaxConfig();
     private SparkClosedLoopController closedLoopController;
 
-    //public static final int elevatorCanIDleft = 14;
-    public static final int EndEffectorCanID/*right*/ = 17;
-    public static final int EjectCanID/*right*/ = 18;
+    public static final int EndEffectorCanID = 17;
+    public static final int EjectCanID = 18;
 
 
     public EndEffectorIOReal() {
@@ -31,10 +32,8 @@ public class EndEffectorIOReal implements EndEffectorIO {
         EjectMotor = new SparkMax(EjectCanID, MotorType.kBrushless);
 
         config
-            //.inverted(false)
             .idleMode(IdleMode.kBrake)
-            .smartCurrentLimit(40)
-            ;//.closedLoopRampRate(0.5);
+            .smartCurrentLimit(40);
 
 
         config.encoder.positionConversionFactor(1);
@@ -52,9 +51,6 @@ public class EndEffectorIOReal implements EndEffectorIO {
     @Override
     public void updateInputs(EndEffectorIOInputs inputs) {
 
-
-
-
     }
 
     @Override
@@ -67,6 +63,22 @@ public class EndEffectorIOReal implements EndEffectorIO {
         EndEffectorMotor.setVoltage(volts/2);
         EjectMotor.setVoltage(ejectsVolts/5);
     }
+
+    public void endEffectorState(double volts, EndEffectorIntakeState state) {
+        switch (state) {
+            case EJECT:
+                break;
+            case INTAKE:
+                break;
+            case NONE:
+                break;
+            default:
+                System.out.println("Unknown state: " + state);
+        }
+
+    }
+         
+    
 
 
 }

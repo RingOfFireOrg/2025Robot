@@ -176,10 +176,16 @@ public class RobotContainer {
 
 
         if (Constants.currentMode == Constants.Mode.REAL) {
-            elevator.setDefaultCommand(elevator.runTeleop(() -> driver.getLeftTriggerAxis(), ()-> driver.getRightTriggerAxis()));
-            driver.povUp().whileTrue(elevator.setHeight(120));
-            driver.povLeft().whileTrue(elevator.setHeight(30));
-            driver.povDown().whileTrue(elevator.setHeight(0));
+
+            /* Open Loop Control for Elevator */
+            operator.axisMagnitudeGreaterThan(XboxController.Axis.kLeftTrigger.value, 0.2).whileTrue(elevator.runTeleop(() -> operator.getLeftY()));
+
+            operator.povUp().whileTrue(elevator.setHeight(120));
+            
+            operator.povLeft().whileTrue(elevator.setHeight(30));
+            operator.povRight().whileTrue(elevator.setHeight(30));
+
+            operator.povDown().whileTrue(elevator.setHeight(0));
             EndEffector.setDefaultCommand(EndEffector.runTeleop(() -> operator.getLeftTriggerAxis()/3, ()-> operator.getRightTriggerAxis()/3, () -> operator.getLeftY()));
 
 
