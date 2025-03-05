@@ -40,7 +40,7 @@ public class DriveConstants {
     };
 
     /* Do not try to zero it here */
-    public static final Rotation2d frontLeftZeroRotation = new Rotation2d(Math.toRadians(180));
+    public static final Rotation2d frontLeftZeroRotation = new Rotation2d(Math.toRadians(0));
     public static final Rotation2d frontRightZeroRotation = new Rotation2d(Math.toRadians(0));
     public static final Rotation2d backLeftZeroRotation = new Rotation2d(Math.toRadians(0));
     public static final Rotation2d backRightZeroRotation = new Rotation2d(Math.toRadians(0));
@@ -103,7 +103,7 @@ public class DriveConstants {
     public static final double turnEncoderVelocityFactor = (2 * Math.PI) / 60.0 / turnMotorReduction; // RPM -> Rad/Sec
 
     // Turn PID configuration
-    public static final double turnKp = 0.0;
+    public static final double turnKp = 0.7;
     public static final double turnKd = 0.0;
     public static final double turnSimP = 8.0;
     public static final double turnSimD = 0.0;

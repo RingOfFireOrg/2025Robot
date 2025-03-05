@@ -21,12 +21,16 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
+import frc.robot.subsystems.Climber.Climber;
+import frc.robot.subsystems.Climber.ClimberIOReal;
 import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.subsystems.Elevator.ElevatorIO;
 import frc.robot.subsystems.Elevator.ElevatorIOReal;
@@ -46,12 +50,14 @@ public class RobotContainer {
     private final Drive drive;
     private Vision vision;
     private Elevator elevator;
+    private Climber climber;
     private SwerveDriveSimulation driveSimulation = null;
     private EndEffector EndEffector;
 
     // Controller
     private final CommandXboxController driver = new CommandXboxController(0);
     private final CommandXboxController operator = new CommandXboxController(1);
+    private final CommandJoystick climberController = new CommandJoystick(2);
 
     // Dashboard inputs
     private final LoggedDashboardChooser<Command> autoChooser;
@@ -70,6 +76,7 @@ public class RobotContainer {
                 });
                 elevator = new Elevator(new ElevatorIOReal());
                 EndEffector = new EndEffector(new EndEffectorIOReal());
+                climber = new Climber(new ClimberIOReal());
 
                 // this.vision = new Vision(
                 //     drive,
@@ -159,9 +166,9 @@ public class RobotContainer {
         drive.setDefaultCommand(DriveCommands.joystickDrive
         (
             drive,
-            () -> MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftY(),-0.5,0.5), 0.1),
-            () -> MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftX(),-0.5,0.5), 0.1),
-            () -> -MathUtil.applyDeadband(MathUtil.clamp(-driver.getRightX(),-1,1), 0.1))
+            () -> -MathUtil.applyDeadband(MathUtil.clamp(driver.getLeftY(),-0.5,0.5), 0.1),
+            () -> -MathUtil.applyDeadband(MathUtil.clamp(driver.getLeftX(),-0.5,0.5), 0.1),
+            () -> -MathUtil.applyDeadband(MathUtil.clamp(-driver.getRightX(),-0.5,0.5), 0.1))
         );
 
         //Reset gyro / odometry
@@ -180,13 +187,17 @@ public class RobotContainer {
             /* Open Loop Control for Elevator */
             operator.axisMagnitudeGreaterThan(XboxController.Axis.kLeftTrigger.value, 0.2).whileTrue(elevator.runTeleop(() -> operator.getLeftY()));
 
-            operator.povUp().whileTrue(elevator.setHeight(120));
-            
-            operator.povLeft().whileTrue(elevator.setHeight(30));
-            operator.povRight().whileTrue(elevator.setHeight(30));
-
+            operator.povUp().whileTrue(elevator.setHeight(300));
+            operator.povLeft().whileTrue(elevator.setHeight(200));
+            operator.povRight().whileTrue(elevator.setHeight(100));
             operator.povDown().whileTrue(elevator.setHeight(0));
-            EndEffector.setDefaultCommand(EndEffector.runTeleop(() -> operator.getLeftTriggerAxis()/3, ()-> operator.getRightTriggerAxis()/3, () -> operator.getLeftY()));
+
+            EndEffector.setDefaultCommand(EndEffector.runTeleop(() -> operator.getLeftTriggerAxis()/4, ()-> operator.getRightTriggerAxis()/4, () -> operator.getLeftY()));
+
+            climberController.axisMagnitudeGreaterThan(Joystick.AxisType.kY.value, 0.2)
+            .and(climberController.button(1))
+            .whileTrue(climber.runTeleop(() -> climberController.getY()))
+            .onFalse(climber.runTeleop(() -> 0));
 
 
         }         

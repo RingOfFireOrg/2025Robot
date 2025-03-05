@@ -154,7 +154,7 @@ public class ModuleIOSpark implements ModuleIO {
         var turnConfig = new SparkMaxConfig();
         turnConfig
             .inverted(turnInverted)
-            .idleMode(IdleMode.kCoast)
+            .idleMode(IdleMode.kBrake)
             .smartCurrentLimit(turnMotorCurrentLimit)
             .voltageCompensation(12.0);
             
@@ -250,7 +250,7 @@ public class ModuleIOSpark implements ModuleIO {
 
     @Override
     public void setTurnOpenLoop(double output) {
-        turnSpark.setVoltage(MathUtil.applyDeadband(output, 0.5));
+        turnSpark.setVoltage(output);
     }
 
     @Override
@@ -265,5 +265,9 @@ public class ModuleIOSpark implements ModuleIO {
         double setpoint =
             MathUtil.inputModulus(rotation.plus(zeroRotation).getRadians(), turnPIDMinInput, turnPIDMaxInput);
         turnController.setReference(setpoint, ControlType.kPosition);
+    }
+
+    public void setValuetoCANcoder() {
+        turnEncoder.setPosition((canCoder.getAbsolutePosition().getValue().in(Radians)));
     }
 }

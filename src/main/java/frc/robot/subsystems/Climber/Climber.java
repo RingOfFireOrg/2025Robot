@@ -15,17 +15,13 @@ public class Climber extends SubsystemBase {
 
     public Climber(ClimberIO io) {
         this.io = io;
-        // sysId = new SysIdRoutine(
-        //     new SysIdRoutine.Config(null, null, null,
-        //         (state) -> Logger.recordOutput("ElevatorSysID", state.toString())),
-        //     new SysIdRoutine.Mechanism((voltage) -> runCharacterization(voltage.in(BaseUnits.VoltageUnit)), null,
-        //         this));
+
     }
 
     @Override
     public void periodic() {
         io.updateInputs(inputs);
-        Logger.processInputs("Elevator", inputs);
+        Logger.processInputs("Climber", inputs);
         elevatorHeight = inputs.elevatorPositionMeters;
 
     }
@@ -45,14 +41,6 @@ public class Climber extends SubsystemBase {
     //         () -> io.setVoltage(0.0));
     // }
 
-    // public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-    //     return run(() -> runCharacterization(0.0)).withTimeout(1.0).andThen(sysId.quasistatic(direction));
-    // }
-
-    // /** Returns a command to run a dynamic test in the specified direction. */
-    // public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-    //     return run(() -> runCharacterization(0.0)).withTimeout(1.0).andThen(sysId.dynamic(direction));
-    // }
 
     public Command setHeight(double height) {
         return run(() -> io.setHeight(height));
