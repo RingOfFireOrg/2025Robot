@@ -27,6 +27,7 @@ import java.util.Queue;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.AutoLogOutputManager;
 import org.littletonrobotics.junction.Logger;
+import static edu.wpi.first.units.Units.Radians;
 
 
 public class ModuleIOSparkCanCoder implements ModuleIO {
@@ -36,6 +37,8 @@ public class ModuleIOSparkCanCoder implements ModuleIO {
   private final SparkMax driveSpark;
   private final SparkMax turnSpark;
   private final RelativeEncoder driveEncoder;  
+  private final RelativeEncoder turnEncoder;  
+
   private final DoubleSupplier turnEncoderDS;
   private final CANcoder turnCAN;
 
@@ -43,7 +46,7 @@ public class ModuleIOSparkCanCoder implements ModuleIO {
   private final SparkClosedLoopController driveController;
   // private final SparkClosedLoopController turnController;
 
-  private final PIDController turnMotorPIDController = new PIDController(0, 0, 0);
+  private final PIDController turnMotorPIDController = new PIDController(0.2, 0, 0);
 
   // Queue inputs from odometry thread
   private final Queue<Double> timestampQueue;
@@ -106,6 +109,7 @@ public class ModuleIOSparkCanCoder implements ModuleIO {
     turnEncoderDS = () -> ((turnCAN.getAbsolutePosition().getValueAsDouble() + .5) * 2 * 3.14159);
     driveEncoder = driveSpark.getEncoder();
     driveController = driveSpark.getClosedLoopController();
+    turnEncoder = turnSpark.getEncoder();
     // turnController = turnSpark.getClosedLoopController();
 
     // Configure drive motor
@@ -142,41 +146,40 @@ public class ModuleIOSparkCanCoder implements ModuleIO {
             driveSpark.configure(
                 driveConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
     tryUntilOk(driveSpark, 5, () -> driveEncoder.setPosition(0.0));
+        // Configure turn motor
+        var turnConfig = new SparkMaxConfig();
+        turnConfig
+            .inverted(turnInverted)
+            .idleMode(IdleMode.kBrake)
+            .smartCurrentLimit(turnMotorCurrentLimit)
+            .voltageCompensation(12.0);
+            
+        turnConfig
+            .encoder
+            .positionConversionFactor(turnEncoderPositionFactor)
+            .velocityConversionFactor(turnEncoderVelocityFactor)
+            .uvwAverageDepth(2);
+        turnConfig
+            .closedLoop
+            .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+            .positionWrappingEnabled(true)
+            .positionWrappingInputRange(turnPIDMinInput, turnPIDMaxInput)
+            .pidf(turnKp, 0.0, turnKd, 0.0);
+        turnConfig
+            .signals
+            .primaryEncoderPositionAlwaysOn(true)
+            .primaryEncoderPositionPeriodMs((int) (1000.0 / odometryFrequency))
+            .primaryEncoderVelocityAlwaysOn(true)
+            .primaryEncoderVelocityPeriodMs(20)
+            .appliedOutputPeriodMs(20)
+            .busVoltagePeriodMs(20)
+            .outputCurrentPeriodMs(20);
+        tryUntilOk(
+            turnSpark,
+            5,
+            () -> turnSpark.configure(turnConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
 
-    // Configure turn motor
-    var turnConfig = new SparkMaxConfig();
-    turnConfig
-        .inverted(turnInverted)
-        .idleMode(IdleMode.kBrake)
-        .smartCurrentLimit(turnMotorCurrentLimit)
-        .voltageCompensation(12.0);
-    turnConfig
-        .absoluteEncoder
-        .inverted(turnEncoderInverted)
-        .positionConversionFactor(turnEncoderPositionFactor)
-        .velocityConversionFactor(turnEncoderVelocityFactor)
-        .averageDepth(2);
-    turnConfig
-        .closedLoop
-        .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
-        .positionWrappingEnabled(true)
-        .positionWrappingInputRange(turnPIDMinInput, turnPIDMaxInput)
-        .pidf(turnKp, 0.0, turnKd, 0.0);
-    turnConfig
-        .signals
-        .absoluteEncoderPositionAlwaysOn(true)
-        .absoluteEncoderPositionPeriodMs((int) (1000.0 / odometryFrequency))
-        .absoluteEncoderVelocityAlwaysOn(true)
-        .absoluteEncoderVelocityPeriodMs(20)
-        .appliedOutputPeriodMs(20)
-        .busVoltagePeriodMs(20)
-        .outputCurrentPeriodMs(20);
-    tryUntilOk(
-        turnSpark,
-        5,
-        () ->
-            turnSpark.configure(
-                turnConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters));
+        tryUntilOk(turnSpark, 5, () -> turnEncoder.setPosition((turnCAN.getAbsolutePosition().getValue().in(Radians))));
 
     turnMotorPIDController.enableContinuousInput(0, 3.14159 * 2);
 

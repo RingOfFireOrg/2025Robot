@@ -204,7 +204,11 @@ public class ModuleIOSpark implements ModuleIO {
 
 
 
-
+        double cancoderAngle = canCoder.getAbsolutePosition().getValue().in(Radians);
+        double encoderAngle = turnEncoder.getPosition();
+        if (Math.abs(encoderAngle - cancoderAngle) > 0.05) { // Only correct significant drift
+            turnEncoder.setPosition(cancoderAngle);
+        }
         // Update drive inputs
         sparkStickyFault = false;
         ifOk(driveSpark, driveEncoder::getPosition, (value) -> inputs.drivePositionRad = value);

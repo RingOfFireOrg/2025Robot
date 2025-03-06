@@ -8,6 +8,8 @@ import frc.robot.Constants.EndEffectorIntakeState;
 
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
@@ -31,18 +33,21 @@ public class EndEffectorIOReal implements EndEffectorIO {
     private static final int EjectCanID = 18;
 
     private final DutyCycleEncoder absEncoder;
-    private double zeroOffset = 0.0;
+    public double zeroOffset = 0.0;
     private int AbsEncoderDIOID = 1;
-    private double targetAngle = 0.0; // Target position in degrees
+    public double targetAngle = 0.0; // Target position in degrees
 
-    private double MAX_VELOCITY = 10.0; // in degrees per second
-    private double MAX_ACCELERATION = 360.0; // degrees per second squared
+    private double MAX_VELOCITY = 1; // in degrees per second
+    private double MAX_ACCELERATION = 20; // degrees per second squared
     private final ProfiledPIDController pidController = new ProfiledPIDController(
-        0.05, 0.0, 0.01, // PID gains (adjust as needed)
+        0.1, 0.0, 0.01, // PID gains (adjust as needed)
         new TrapezoidProfile.Constraints(MAX_VELOCITY, MAX_ACCELERATION)
     );
+
+    private PIDController normaController = new PIDController(0.5, 0, 0.05);
     private boolean enableHoming = false; // In case operator Takes manuel control
 
+    
 
     public EndEffectorIOReal() {
 
@@ -64,21 +69,41 @@ public class EndEffectorIOReal implements EndEffectorIO {
         EjectMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
         encoder = EndEffectorMotor.getEncoder();
+        absEncoder.setInverted(true);
+        
         closedLoopController = EndEffectorMotor.getClosedLoopController();
 
+        normaController.disableContinuousInput();
 
+        normaController.setTolerance(0.05);
+        
+        zeroOffset = resetEncoder();
+        targetAngle = 0.0;
     }
 
     @Override
     public void updateInputs(EndEffectorIOInputs inputs) {
+//        double output = pidController.calculate(getPositionDegrees(), targetAngle);
+        double output = normaController.calculate(getAbsOffset(), targetAngle);
+        if (zeroOffset == 0.0) {
+            zeroOffset = resetEncoder();
+        }
         if (enableHoming) {
-            double output = pidController.calculate(getPositionDegrees(), targetAngle);
-            EndEffectorMotor.set(output);
+            EndEffectorMotor.set(MathUtil.applyDeadband(output, 0.1));
+
+            Logger.recordOutput("test_Target output", MathUtil.applyDeadband(output, 0.1));
+
         }
 
+        Logger.recordOutput("test_ error", normaController.getError());
+        Logger.recordOutput("test_Target Angle", normaController.getSetpoint());
+        Logger.recordOutput("test_Target at goal", normaController.atSetpoint());
+        Logger.recordOutput("test_homing enabled", enableHoming);
+        Logger.recordOutput("test_AbsEncoder Value with offset", getAbsOffset());
+        //Logger.recordOutput("test_AbsEncoder Degrees", getPositionDegrees());
+        Logger.recordOutput("test_AbsEncoder offset", zeroOffset);
+        Logger.recordOutput("test_AbsEncoder angled targeting", targetAngle);
 
-        Logger.recordOutput("test_AbsEncoder", absEncoder.get());
-        Logger.recordOutput("test_AbsEncoder Degrees", getPositionDegrees());
 
     }
 
@@ -122,12 +147,16 @@ public class EndEffectorIOReal implements EndEffectorIO {
          
 
 
-    public void resetEncoder() {
-        zeroOffset = absEncoder.get() * 360.0;
+    public double resetEncoder() {
+        return absEncoder.get();
     }
 
     public double getPositionDegrees() {
-        return (absEncoder.get() * 360.0) - zeroOffset;
+        return getAbsOffset() * 360;
+    }
+
+    public double getAbsOffset() {
+        return  ((absEncoder.get()-zeroOffset) % 1 + 1) % 1; 
     }
 
 

@@ -166,9 +166,9 @@ public class RobotContainer {
         drive.setDefaultCommand(DriveCommands.joystickDrive
         (
             drive,
-            () -> -MathUtil.applyDeadband(MathUtil.clamp(driver.getLeftY(),-0.5,0.5), 0.1),
-            () -> -MathUtil.applyDeadband(MathUtil.clamp(driver.getLeftX(),-0.5,0.5), 0.1),
-            () -> -MathUtil.applyDeadband(MathUtil.clamp(-driver.getRightX(),-0.5,0.5), 0.1))
+            () -> MathUtil.applyDeadband(MathUtil.clamp(driver.getLeftY(),-0.5,0.5), 0.1),
+            () -> MathUtil.applyDeadband(MathUtil.clamp(driver.getLeftX(),-0.5,0.5), 0.1),
+            () -> -MathUtil.applyDeadband(MathUtil.clamp(-driver.getRightX(),-0.8,0.8), 0.1))
         );
 
         //Reset gyro / odometry
@@ -192,22 +192,27 @@ public class RobotContainer {
             operator.povRight().whileTrue(elevator.setHeight(100));
             operator.povDown().whileTrue(elevator.setHeight(0));
 
-            operator.y().onTrue(EndEffector.angle(10));
-            operator.x().onTrue(EndEffector.angle(50));
-            operator.a().onTrue(EndEffector.angle(90));
+            operator.y().onTrue(EndEffector.angle(0.5));
+            operator.x().onTrue(EndEffector.angle(0.1));
+            operator.a().onTrue(EndEffector.angle(0.9));
 
 
-            operator.axisMagnitudeGreaterThan(XboxController.Axis.kLeftTrigger.value, 0.1)
-            .onTrue(elevator.setHeight(100))
-            .onTrue(EndEffector.angle(50))
-            .whileTrue(EndEffector.ejecter(0.7))
-            .onFalse(EndEffector.ejecter(0))
-            ;
+            // operator.axisMagnitudeGreaterThan(XboxController.Axis.kLeftTrigger.value, 0.1)
+            // .onTrue(elevator.setHeight(100))
+            // .onTrue(EndEffector.angle(50))
+            // .whileTrue(EndEffector.ejecter(0.7))
+            // .onFalse(EndEffector.ejecter(0))
+            // ;
 
-            operator.axisMagnitudeGreaterThan(XboxController.Axis.kRightTrigger.value, 0.1)
-            .whileTrue(EndEffector.ejecter(-0.6))
-            .onFalse(EndEffector.ejecter(0))
-            ;
+            // operator.axisMagnitudeGreaterThan(XboxController.Axis.kRightTrigger.value, 0.1)
+            // .whileTrue(EndEffector.ejecter(-0.6))
+            // .onFalse(EndEffector.ejecter(0))
+            // ;
+
+            // operator.axisMagnitudeGreaterThan(XboxController.Axis.kLeftY.value, 0.1)
+            // .whileTrue(elevator.runTeleop(() -> operator.getLeftY()))
+            // .onFalse(elevator.runTeleop(() -> 0))
+            // ;
 
             //EndEffector.setDefaultCommand(EndEffector.runTeleop(() -> operator.getLeftTriggerAxis()/4, ()-> operator.getRightTriggerAxis()/4, () -> operator.getLeftY()));
 

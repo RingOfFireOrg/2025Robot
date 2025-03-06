@@ -82,19 +82,7 @@ public class Vision extends SubsystemBase {
     }
 
 
-    public Command returnPath() throws FileVersionException, IOException, ParseException {
-        PathConstraints constraints = new PathConstraints(
-            3.0, 4.0,
-            Units.degreesToRadians(540), Units.degreesToRadians(720)
-        );
-        targetID = getTargetID(0);
-        if ((targetID == 18 || targetID == 7)) {
-            return AutoBuilder.pathfindThenFollowPath(PathPlannerPath.fromPathFile("ab_left"), constraints);
-        }
-        else {
-            return new InstantCommand();
-        }
-    }
+    
     
 
     @Override
