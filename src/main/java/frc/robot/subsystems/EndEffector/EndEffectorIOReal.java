@@ -44,7 +44,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
         new TrapezoidProfile.Constraints(MAX_VELOCITY, MAX_ACCELERATION)
     );
 
-    private PIDController normaController = new PIDController(0.5, 0, 0.05);
+    private PIDController normaController = new PIDController(2, 0, 0.05);
     private boolean enableHoming = false; // In case operator Takes manuel control
 
     
@@ -75,9 +75,9 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
         normaController.disableContinuousInput();
 
-        normaController.setTolerance(0.05);
+        normaController.setTolerance(0.03);
         
-        zeroOffset = resetEncoder();
+        zeroOffset = resetEncoder() ;
         targetAngle = 0.0;
     }
 
@@ -85,13 +85,13 @@ public class EndEffectorIOReal implements EndEffectorIO {
     public void updateInputs(EndEffectorIOInputs inputs) {
 //        double output = pidController.calculate(getPositionDegrees(), targetAngle);
         double output = normaController.calculate(getAbsOffset(), targetAngle);
-        if (zeroOffset == 0.0) {
+        if (zeroOffset == 0.0 || zeroOffset == 0.35) {
             zeroOffset = resetEncoder();
         }
         if (enableHoming) {
-            EndEffectorMotor.set(MathUtil.applyDeadband(output, 0.1));
+            EndEffectorMotor.set(-MathUtil.applyDeadband(output, 0.1));
 
-            Logger.recordOutput("test_Target output", MathUtil.applyDeadband(output, 0.1));
+            Logger.recordOutput("test_Target output", output);
 
         }
 
@@ -148,7 +148,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
 
     public double resetEncoder() {
-        return absEncoder.get();
+        return absEncoder.get() ;
     }
 
     public double getPositionDegrees() {
@@ -156,7 +156,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
     }
 
     public double getAbsOffset() {
-        return  ((absEncoder.get()-zeroOffset) % 1 + 1) % 1; 
+        return  ((absEncoder.get()- zeroOffset +0.35) % 1 + 1) % 1; 
     }
 
 

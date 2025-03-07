@@ -192,28 +192,43 @@ public class RobotContainer {
             operator.povRight().whileTrue(elevator.setHeight(100));
             operator.povDown().whileTrue(elevator.setHeight(0));
 
-            operator.y().onTrue(EndEffector.angle(0.5));
-            operator.x().onTrue(EndEffector.angle(0.1));
-            operator.a().onTrue(EndEffector.angle(0.9));
+            operator.y().onTrue(EndEffector.angle(0.27));
+            operator.x().onTrue(EndEffector.angle(0.3));
+            operator.a().onTrue(EndEffector.angle(0.45));
 
 
-            // operator.axisMagnitudeGreaterThan(XboxController.Axis.kLeftTrigger.value, 0.1)
-            // .onTrue(elevator.setHeight(100))
-            // .onTrue(EndEffector.angle(50))
-            // .whileTrue(EndEffector.ejecter(0.7))
-            // .onFalse(EndEffector.ejecter(0))
-            // ;
+            operator.axisMagnitudeGreaterThan(XboxController.Axis.kLeftTrigger.value, 0.1)
+            .whileTrue(elevator.setHeight(60))
+            .whileTrue(EndEffector.angle(0.39))
+            //.whileTrue(EndEffector.ejecter(0.7))
+            //.onFalse(EndEffector.ejecter(0))
+            ;
+
+
+
+
+            operator.axisMagnitudeGreaterThan(XboxController.Axis.kLeftTrigger.value, 0.1)
+            .whileTrue(EndEffector.runTeleop(() -> 0, ()-> 0, () -> operator.getLeftTriggerAxis()))
+            .onFalse(EndEffector.runTeleop(() -> 0, ()-> 0, () -> 0));
+            //EndEffector.setDefaultCommand(EndEffector.runTeleop(() -> operator.getLeftTriggerAxis()/4, ()-> operator.getRightTriggerAxis()/4, () -> operator.getLeftY()));
+
 
             // operator.axisMagnitudeGreaterThan(XboxController.Axis.kRightTrigger.value, 0.1)
             // .whileTrue(EndEffector.ejecter(-0.6))
             // .onFalse(EndEffector.ejecter(0))
             // ;
 
-            // operator.axisMagnitudeGreaterThan(XboxController.Axis.kLeftY.value, 0.1)
-            // .whileTrue(elevator.runTeleop(() -> operator.getLeftY()))
-            // .onFalse(elevator.runTeleop(() -> 0))
-            // ;
+            operator.axisMagnitudeGreaterThan(XboxController.Axis.kLeftY.value, 0.1)
+            .whileTrue(elevator.runTeleop(() -> -operator.getLeftY()))
+            .onFalse(elevator.runTeleop(() -> 0))
+            ;
 
+            operator.axisMagnitudeGreaterThan(XboxController.Axis.kRightY.value, 0.1).whileTrue(EndEffector.runTeleop(() -> -operator.getRightY()/3, ()-> 0, () -> 0))
+            .onFalse(EndEffector.runTeleop(() -> 0, ()-> 0, () -> 0));
+
+            
+            operator.axisMagnitudeGreaterThan(XboxController.Axis.kRightTrigger.value, 0.1).whileTrue(EndEffector.runTeleop(() -> 0, ()-> 0, () -> -operator.getRightTriggerAxis()))
+            .onFalse(EndEffector.runTeleop(() -> 0, ()-> 0, () -> 0));
             //EndEffector.setDefaultCommand(EndEffector.runTeleop(() -> operator.getLeftTriggerAxis()/4, ()-> operator.getRightTriggerAxis()/4, () -> operator.getLeftY()));
 
             climberController.axisMagnitudeGreaterThan(Joystick.AxisType.kY.value, 0.2)

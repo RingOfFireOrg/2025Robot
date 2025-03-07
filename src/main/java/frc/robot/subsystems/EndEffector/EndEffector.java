@@ -42,6 +42,7 @@ public class EndEffector extends SubsystemBase {
       () -> io.setVoltageEject(0.0,0.0)
     );
   }
+  
 
   public double getAngle() {
     return angle;
