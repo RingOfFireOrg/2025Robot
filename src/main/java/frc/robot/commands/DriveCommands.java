@@ -98,31 +98,39 @@ public class DriveCommands {
     public static Command joystickDrive(
             Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier omegaSupplier) {
         return Commands.run(
-                () -> {
-                    // Get linear velocity
-                    Translation2d linearVelocity = getLinearVelocityFromJoysticks(xSupplier.getAsDouble(),
-                            ySupplier.getAsDouble());
+            () -> {
+                double x = xSupplier.getAsDouble();
+                double y = ySupplier.getAsDouble();
+                double omega = omegaSupplier.getAsDouble();
+                /* Scale values to controler deadband */
+                x = (1 / (1 - OIConstants.controllerDeadband)) * (x + ( -Math.signum(x) * OIConstants.controllerDeadband));
+                y = (1 / (1 - OIConstants.controllerDeadband)) * (y + ( -Math.signum(y) * OIConstants.controllerDeadband));
+                omega = (1 / (1 - OIConstants.controllerDeadband)) * (omega + ( -Math.signum(omega) * OIConstants.controllerDeadband));
+                Translation2d linearVelocity = getLinearVelocityFromJoysticks(x,y);
+                // // Get linear velocity
+                // Translation2d linearVelocity = getLinearVelocityFromJoysticks(xSupplier.getAsDouble(),
+                //         ySupplier.getAsDouble());
 
-                    // Apply rotation deadband
-                    double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), 0.2);
+                // Apply rotation deadband
+                //double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), 0.1);
 
-                    // Square rotation value for more precise control
-                    omega = Math.copySign(omega * omega, omega);
+                // Square rotation value for more precise control
+                omega = Math.copySign(omega * omega, omega);
 
-                    // Convert to field relative speeds & send command
-                    ChassisSpeeds speeds = new ChassisSpeeds(
-                            linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                            linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
-                            omega * drive.getMaxAngularSpeedRadPerSec());
+                // Convert to field relative speeds & send command
+                ChassisSpeeds speeds = new ChassisSpeeds(
+                    linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                    linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                    omega * drive.getMaxAngularSpeedRadPerSec());
 
-                    boolean isFlipped = DriverStation.getAlliance().isPresent()
-                            && DriverStation.getAlliance().get() == Alliance.Red;
-                    speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-                            speeds,
-                            isFlipped ? drive.getRotation().plus(new Rotation2d(Math.PI)) : drive.getRotation());
-                    drive.runVelocity(speeds);
-                },
-                drive);
+                boolean isFlipped = DriverStation.getAlliance().isPresent()
+                    && DriverStation.getAlliance().get() == Alliance.Red;
+                speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+                    speeds,
+                    isFlipped ? drive.getRotation().plus(new Rotation2d(Math.PI)) : drive.getRotation());
+                drive.runVelocity(speeds);
+            },
+            drive);
     }
 
     /**

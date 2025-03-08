@@ -39,12 +39,12 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
     private double MAX_VELOCITY = 1; // in degrees per second
     private double MAX_ACCELERATION = 20; // degrees per second squared
-    private final ProfiledPIDController pidController = new ProfiledPIDController(
+    private final ProfiledPIDController profiledPidController = new ProfiledPIDController(
         0.1, 0.0, 0.01, // PID gains (adjust as needed)
         new TrapezoidProfile.Constraints(MAX_VELOCITY, MAX_ACCELERATION)
     );
 
-    private PIDController normaController = new PIDController(2, 0, 0.05);
+    private PIDController pidController = new PIDController(2, 0, 0.05);
     private boolean enableHoming = false; // In case operator Takes manuel control
 
     
@@ -73,9 +73,9 @@ public class EndEffectorIOReal implements EndEffectorIO {
         
         closedLoopController = EndEffectorMotor.getClosedLoopController();
 
-        normaController.disableContinuousInput();
+        pidController.disableContinuousInput();
 
-        normaController.setTolerance(0.03);
+        pidController.setTolerance(0.03);
         
         zeroOffset = resetEncoder() ;
         targetAngle = 0.0;
@@ -83,26 +83,36 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
     @Override
     public void updateInputs(EndEffectorIOInputs inputs) {
-//        double output = pidController.calculate(getPositionDegrees(), targetAngle);
-        double output = normaController.calculate(getAbsOffset(), targetAngle);
+        //double output = pidController.calculate(getPositionDegrees(), targetAngle);
+        
+        double output = pidController.calculate(getAbsOffset(), targetAngle);
         if (zeroOffset == 0.0 || zeroOffset == 0.35) {
+            /* Dosen't always properly apply the offset, so run in periodic if thats the case */
             zeroOffset = resetEncoder();
         }
-        if (enableHoming) {
+        if (enableHoming && absEncoder.isConnected()) {
             EndEffectorMotor.set(-MathUtil.applyDeadband(output, 0.1));
-
             Logger.recordOutput("test_Target output", output);
-
+        }
+        else if (enableHoming && !absEncoder.isConnected()) {
+            System.out.println("ENCODER IS NOT CONNECTED, HOMING DISABLED");
+            enableHoming = false;
         }
 
-        Logger.recordOutput("test_ error", normaController.getError());
-        Logger.recordOutput("test_Target Angle", normaController.getSetpoint());
-        Logger.recordOutput("test_Target at goal", normaController.atSetpoint());
-        Logger.recordOutput("test_homing enabled", enableHoming);
-        Logger.recordOutput("test_AbsEncoder Value with offset", getAbsOffset());
-        //Logger.recordOutput("test_AbsEncoder Degrees", getPositionDegrees());
-        Logger.recordOutput("test_AbsEncoder offset", zeroOffset);
-        Logger.recordOutput("test_AbsEncoder angled targeting", targetAngle);
+        Logger.recordOutput("test_1 Targeting Angle:", pidController.getSetpoint());
+        Logger.recordOutput("test_2 Supposed to target:", targetAngle);
+        Logger.recordOutput("test_3 Encoder Raw Value", absEncoder.get());
+        Logger.recordOutput("test_4 Encoder Offset Value", getAbsOffset());
+        Logger.recordOutput("test_5 Error", pidController.getError());
+
+
+        Logger.recordOutput("test_4 Encoder Offset", zeroOffset);
+        Logger.recordOutput("test_5 Encoder Offset With .35", zeroOffset + .35);
+
+
+        Logger.recordOutput("test_x Homing Enabled", enableHoming);
+        Logger.recordOutput("test_X At goal", pidController.atSetpoint());
+
 
 
     }

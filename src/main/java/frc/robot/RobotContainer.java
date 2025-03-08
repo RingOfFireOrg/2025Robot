@@ -199,8 +199,8 @@ public class RobotContainer {
 
             operator.axisMagnitudeGreaterThan(XboxController.Axis.kLeftTrigger.value, 0.1)
             .whileTrue(elevator.setHeight(60))
-            .whileTrue(EndEffector.angle(0.39))
-            //.whileTrue(EndEffector.ejecter(0.7))
+            .onTrue(EndEffector.angle(0.39))
+            .whileTrue(EndEffector.ejecter(0.7))
             //.onFalse(EndEffector.ejecter(0))
             ;
 
