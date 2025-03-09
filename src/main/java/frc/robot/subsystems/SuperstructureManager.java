@@ -60,6 +60,7 @@ public class SuperstructureManager {
     public Command returnState(SuperstructureState stateRequest) {
         switch (currentState) {
             case STOWED:
+            
             case PREP_L4:
             // case PREP_L3_ALGAE:
                 // Stow Intake

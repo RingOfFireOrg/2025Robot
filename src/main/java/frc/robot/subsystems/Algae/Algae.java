@@ -34,6 +34,10 @@ public class Algae extends SubsystemBase {
         return run(() -> io.setVoltage((input.getAsDouble()) * 12.0));
     }
 
+    public Command runTeleopIntake(DoubleSupplier input) {
+        return run(() -> io.setVoltageIntake((input.getAsDouble()) * 12.0));
+    }
+
     //TODO: remove
     // public Command runTeleop(DoubleSupplier forward, DoubleSupplier reverse) {
     //     return runEnd(
@@ -42,9 +46,7 @@ public class Algae extends SubsystemBase {
     // }
 
 
-    public Command setHeight(double height) {
-        return run(() -> io.setHeight(height));
-    }
+
 
     public double getHeight() {
         return elevatorHeight;

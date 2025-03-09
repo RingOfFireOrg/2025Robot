@@ -50,6 +50,7 @@ public class AlgaeIOReal implements AlgaeIO {
         algaePivotMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
         leftAlgaeIntakeMotor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
         intakeConfig.follow(leftAlgaeIntakeMotor);
+        intakeConfig.inverted(true);
         rightAlgaeIntakeMotor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
         
         encoder = algaePivotMotor.getEncoder();
@@ -65,8 +66,16 @@ public class AlgaeIOReal implements AlgaeIO {
     @Override
     public void setVoltage(double volts) {
         algaePivotMotor.setVoltage(volts/1.5);
-    }
+        System.out.println("UP/Down Algae Volts " + algaePivotMotor.getAppliedOutput());
 
+    }
+    @Override
+    public void setVoltageIntake(double volts) {
+
+        leftAlgaeIntakeMotor.setVoltage(volts/1.5);
+        System.out.println("Left - right Algae Volts " + (leftAlgaeIntakeMotor.getAppliedOutput() - rightAlgaeIntakeMotor.getAppliedOutput()));
+
+    }
     public boolean isTheIntakeBallin() {
         double avgCurrent = (leftAlgaeIntakeMotor.getOutputCurrent() + rightAlgaeIntakeMotor.getOutputCurrent()) / 2.0;
 

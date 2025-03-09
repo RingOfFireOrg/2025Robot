@@ -39,12 +39,13 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
     private double MAX_VELOCITY = 1; // in degrees per second
     private double MAX_ACCELERATION = 20; // degrees per second squared
+
     private final ProfiledPIDController profiledPidController = new ProfiledPIDController(
         0.1, 0.0, 0.01, // PID gains (adjust as needed)
         new TrapezoidProfile.Constraints(MAX_VELOCITY, MAX_ACCELERATION)
     );
 
-    private PIDController pidController = new PIDController(2, 0, 0.05);
+    private PIDController pidController = new PIDController(1.0, 0, 0.05);
     private boolean enableHoming = false; // In case operator Takes manuel control
 
     
@@ -59,7 +60,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
         config
             .idleMode(IdleMode.kBrake)
-            .smartCurrentLimit(40);
+            .smartCurrentLimit(17);
 
 
         config.encoder.positionConversionFactor(1);
@@ -74,10 +75,9 @@ public class EndEffectorIOReal implements EndEffectorIO {
         closedLoopController = EndEffectorMotor.getClosedLoopController();
 
         pidController.disableContinuousInput();
-
-        pidController.setTolerance(0.03);
+        pidController.setTolerance(0.01);
         
-        zeroOffset = resetEncoder() ;
+        zeroOffset = resetOffset();
         targetAngle = 0.0;
     }
 
@@ -86,17 +86,24 @@ public class EndEffectorIOReal implements EndEffectorIO {
         //double output = pidController.calculate(getPositionDegrees(), targetAngle);
         
         double output = pidController.calculate(getAbsOffset(), targetAngle);
-        if (zeroOffset == 0.0 || zeroOffset == 0.35) {
+        if (zeroOffset == 0.0 || zeroOffset == 0.35 || zeroOffset <= 0.265) {
             /* Dosen't always properly apply the offset, so run in periodic if thats the case */
-            zeroOffset = resetEncoder();
+            zeroOffset = resetOffset();
         }
         if (enableHoming && absEncoder.isConnected()) {
-            EndEffectorMotor.set(-MathUtil.applyDeadband(output, 0.1));
+            EndEffectorMotor.set(-MathUtil.clamp(MathUtil.applyDeadband(output, 0.06), -0.5,0.5));
             Logger.recordOutput("test_Target output", output);
         }
         else if (enableHoming && !absEncoder.isConnected()) {
             System.out.println("ENCODER IS NOT CONNECTED, HOMING DISABLED");
+            EndEffectorMotor.set(0);
             enableHoming = false;
+        }
+        
+        else if (getAbsOffset() > 0.8) {
+            enableHoming = false;
+            EndEffectorMotor.set(0);
+            System.out.println("ENCODER PASSED USABLE AREA");
         }
 
         Logger.recordOutput("test_1 Targeting Angle:", pidController.getSetpoint());
@@ -108,6 +115,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
         Logger.recordOutput("test_4 Encoder Offset", zeroOffset);
         Logger.recordOutput("test_5 Encoder Offset With .35", zeroOffset + .35);
+        Logger.recordOutput("test_x Encoder Offset minus .35", zeroOffset - .35);
 
 
         Logger.recordOutput("test_x Homing Enabled", enableHoming);
@@ -139,6 +147,8 @@ public class EndEffectorIOReal implements EndEffectorIO {
     @Override
     public void ejecter(double volts) {
         EjectMotor.setVoltage(volts/5);
+        System.out.println(EjectMotor.getAppliedOutput());
+
     }
 
     public void endEffectorState(double volts, EndEffectorIntakeState state) {
@@ -156,9 +166,14 @@ public class EndEffectorIOReal implements EndEffectorIO {
     }
          
 
-
-    public double resetEncoder() {
+    public double resetOffset() {
         return absEncoder.get() ;
+    }
+
+    @Override
+    public void resetEncoder() {
+        zeroOffset = resetOffset();
+
     }
 
     public double getPositionDegrees() {

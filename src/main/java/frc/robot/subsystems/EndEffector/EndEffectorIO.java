@@ -27,5 +27,6 @@ public interface EndEffectorIO {
 
   public default void setAngle(double angle) {}
   public default void ejecter(double volts) {}
+  public default void resetEncoder() {}
 
 }

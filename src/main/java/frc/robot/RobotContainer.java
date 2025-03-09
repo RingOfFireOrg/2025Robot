@@ -28,12 +28,16 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.PivotAngles;
 import frc.robot.commands.DriveCommands;
+import frc.robot.subsystems.Algae.Algae;
+import frc.robot.subsystems.Algae.AlgaeIOReal;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Climber.ClimberIOReal;
 import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.subsystems.Elevator.ElevatorIO;
 import frc.robot.subsystems.Elevator.ElevatorIOReal;
+import frc.robot.subsystems.Elevator.ElevatorIORealTalon;
 import frc.robot.subsystems.Elevator.ElevatorIOSim;
 import frc.robot.subsystems.EndEffector.EndEffector;
 import frc.robot.subsystems.EndEffector.EndEffectorIO;
@@ -53,11 +57,13 @@ public class RobotContainer {
     private Climber climber;
     private SwerveDriveSimulation driveSimulation = null;
     private EndEffector EndEffector;
+    private Algae algae;
 
     // Controller
     private final CommandXboxController driver = new CommandXboxController(0);
     private final CommandXboxController operator = new CommandXboxController(1);
     private final CommandJoystick climberController = new CommandJoystick(2);
+    private final CommandXboxController spareTest = new CommandXboxController(4);
 
     // Dashboard inputs
     private final LoggedDashboardChooser<Command> autoChooser;
@@ -74,10 +80,10 @@ public class RobotContainer {
                     new ModuleIOSpark(3),
                     (pose) -> {
                 });
-                elevator = new Elevator(new ElevatorIOReal());
+                elevator = new Elevator(new ElevatorIORealTalon());
                 EndEffector = new EndEffector(new EndEffectorIOReal());
                 climber = new Climber(new ClimberIOReal());
-
+                algae = new Algae(new AlgaeIOReal());
                 // this.vision = new Vision(
                 //     drive,
                 //     new VisionIOLimelight(VisionConstants.camera0Name, drive::getRotation),
@@ -184,29 +190,58 @@ public class RobotContainer {
 
         if (Constants.currentMode == Constants.Mode.REAL) {
 
-            /* Open Loop Control for Elevator */
-           // operator.axisMagnitudeGreaterThan(XboxController.Axis.kLeftTrigger.value, 0.2).whileTrue(elevator.runTeleop(() -> operator.getLeftY()));
 
-            operator.povUp().whileTrue(elevator.setHeight(200));
-            operator.povLeft().whileTrue(elevator.setHeight(150));
-            operator.povRight().whileTrue(elevator.setHeight(100));
-            operator.povDown().whileTrue(elevator.setHeight(0));
+            spareTest.y()
+            .whileTrue(algae.runTeleop(() -> 0.4))
+            .onFalse(algae.runTeleop(() -> 0.0));
+            spareTest.a()
+            .whileTrue(algae.runTeleop(() -> -0.4))
+            .onFalse(algae.runTeleop(() -> 0.0));
 
-            operator.y().onTrue(EndEffector.angle(0.27));
+            spareTest.x()
+            .whileTrue(algae.runTeleopIntake(() -> 0.4))
+            .onFalse(algae.runTeleopIntake(() -> 0.0));
+            spareTest.b()
+            .whileTrue(algae.runTeleopIntake(() -> -0.4))
+            .onFalse(algae.runTeleopIntake(() -> 0.0));
+
+            operator.povUp()
+            .whileTrue(elevator.setHeight(1))
+            .onTrue(EndEffector.angle(PivotAngles.STANDARD_CORAL));
+            operator.povLeft()
+            .whileTrue(elevator.setHeight(0.5))
+            .onTrue(EndEffector.angle(PivotAngles.STANDARD_CORAL));
+            operator.povRight()
+            .whileTrue(elevator.setHeight(0.3))
+            .onTrue(EndEffector.angle(PivotAngles.STANDARD_CORAL));
+            operator.povDown()
+            .whileTrue(elevator.setHeight(0))
+            .onTrue(EndEffector.angle(PivotAngles.STOWED));
+
+
+            operator.y().onTrue(EndEffector.angle(PivotAngles.STOWED));
             operator.x().onTrue(EndEffector.angle(0.3));
-            operator.a().onTrue(EndEffector.angle(0.45));
+            operator.a().onTrue(EndEffector.angle(PivotAngles.STANDARD_CORAL));
 
+            /* Intake Coral */
+            operator.leftBumper()
+            .onTrue(EndEffector.ejecter(0.7))
+            .onFalse(EndEffector.ejecter(0));
 
+            /* Intake Coral */
+            operator.rightBumper()
+            .onTrue(EndEffector.ejecter(-0.7))
+            .onFalse(EndEffector.ejecter(0));
+
+            /* Intaking Setup Button - Move elevator to intake height, move intake to intake angle, and Intake coral */
             operator.axisMagnitudeGreaterThan(XboxController.Axis.kLeftTrigger.value, 0.1)
             .whileTrue(elevator.setHeight(60))
-            .onTrue(EndEffector.angle(0.39))
-            .whileTrue(EndEffector.ejecter(0.7))
-            //.onFalse(EndEffector.ejecter(0))
+            .onTrue(EndEffector.angle(PivotAngles.STANDARD_CORAL))
+            .onTrue(EndEffector.ejecter(0.7))
+            .onFalse(EndEffector.ejecter(0))
             ;
 
-
-
-
+            /* Outaking Eject - Eject Coral */
             operator.axisMagnitudeGreaterThan(XboxController.Axis.kLeftTrigger.value, 0.1)
             .whileTrue(EndEffector.runTeleop(() -> 0, ()-> 0, () -> operator.getLeftTriggerAxis()))
             .onFalse(EndEffector.runTeleop(() -> 0, ()-> 0, () -> 0));
@@ -219,15 +254,17 @@ public class RobotContainer {
             // ;
 
             operator.axisMagnitudeGreaterThan(XboxController.Axis.kLeftY.value, 0.1)
-            .whileTrue(elevator.runTeleop(() -> -operator.getLeftY()))
+            .whileTrue(elevator.runTeleop(() -> -operator.getLeftY()/1.4))
             .onFalse(elevator.runTeleop(() -> 0))
             ;
 
-            operator.axisMagnitudeGreaterThan(XboxController.Axis.kRightY.value, 0.1).whileTrue(EndEffector.runTeleop(() -> -operator.getRightY()/3, ()-> 0, () -> 0))
+            operator.axisMagnitudeGreaterThan(XboxController.Axis.kRightY.value, 0.1)
+            .whileTrue(EndEffector.runTeleop(() -> -operator.getRightY()/3, ()-> 0, () -> 0))
             .onFalse(EndEffector.runTeleop(() -> 0, ()-> 0, () -> 0));
 
             
-            operator.axisMagnitudeGreaterThan(XboxController.Axis.kRightTrigger.value, 0.1).whileTrue(EndEffector.runTeleop(() -> 0, ()-> 0, () -> -operator.getRightTriggerAxis()))
+            operator.axisMagnitudeGreaterThan(XboxController.Axis.kRightTrigger.value, 0.1)
+            .whileTrue(EndEffector.runTeleop(() -> 0, ()-> 0, () -> -operator.getRightTriggerAxis()))
             .onFalse(EndEffector.runTeleop(() -> 0, ()-> 0, () -> 0));
             //EndEffector.setDefaultCommand(EndEffector.runTeleop(() -> operator.getLeftTriggerAxis()/4, ()-> operator.getRightTriggerAxis()/4, () -> operator.getLeftY()));
 

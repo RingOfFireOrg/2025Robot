@@ -22,6 +22,7 @@ public interface AlgaeIO {
   public default void updateInputs(AlgaeIOInputs inputs) {}
 
   public default void setVoltage(double volts) {}
+  public default void setVoltageIntake(double volts) {}
 
   public default double getHeight(double height) {return height;}
   public default void setHeight(double height) {}

@@ -33,7 +33,7 @@ public class EndEffector extends SubsystemBase {
   }
 
   public Command ejecter(double volts) {
-    return runOnce(() -> io.ejecter(volts));
+    return runOnce(() -> io.ejecter(volts*12));
   }
 
   public Command runTeleop(DoubleSupplier forward, DoubleSupplier reverse, DoubleSupplier eject) {
@@ -42,7 +42,10 @@ public class EndEffector extends SubsystemBase {
       () -> io.setVoltageEject(0.0,0.0)
     );
   }
-  
+  public Command resetPivot() {
+    return runOnce(() -> io.resetEncoder());
+  }
+
 
   public double getAngle() {
     return angle;
