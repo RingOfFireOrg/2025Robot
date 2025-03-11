@@ -9,6 +9,7 @@ import frc.robot.Constants.EndEffectorIntakeState;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -37,13 +38,16 @@ public class EndEffectorIOReal implements EndEffectorIO {
     private int AbsEncoderDIOID = 1;
     public double targetAngle = 0.0; // Target position in degrees
 
-    private double MAX_VELOCITY = 1; // in degrees per second
-    private double MAX_ACCELERATION = 20; // degrees per second squared
+    private double MAX_VELOCITY = 0.2; // in degrees per second
+    private double MAX_ACCELERATION = 1; // degrees per second squared
 
     private final ProfiledPIDController profiledPidController = new ProfiledPIDController(
-        0.1, 0.0, 0.01, // PID gains (adjust as needed)
+        1, 0.0, 0.05, // PID gains (adjust as needed)
         new TrapezoidProfile.Constraints(MAX_VELOCITY, MAX_ACCELERATION)
     );
+    ArmFeedforward feedforward = new ArmFeedforward
+    (0, 0, 0, 0);
+
 
     private PIDController pidController = new PIDController(1.0, 0, 0.05);
     private boolean enableHoming = false; // In case operator Takes manuel control
@@ -76,9 +80,12 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
         pidController.disableContinuousInput();
         pidController.setTolerance(0.01);
+
+        profiledPidController.disableContinuousInput();
+        profiledPidController.setTolerance(0.01);
         
         zeroOffset = resetOffset();
-        targetAngle = 0.0;
+        targetAngle = 0.35;
     }
 
     @Override
@@ -86,12 +93,25 @@ public class EndEffectorIOReal implements EndEffectorIO {
         //double output = pidController.calculate(getPositionDegrees(), targetAngle);
         
         double output = pidController.calculate(getAbsOffset(), targetAngle);
-        if (zeroOffset == 0.0 || zeroOffset == 0.35 || zeroOffset <= 0.265) {
+        double ppidOutput = profiledPidController.calculate(getAbsOffset(), targetAngle);
+        double ffOutput = feedforward.calculate(
+            Math.toRadians(getAbsFFOffset()*360),0.0
+        );
+
+
+        if (zeroOffset == 0.0 || zeroOffset == 0.35) {
             /* Dosen't always properly apply the offset, so run in periodic if thats the case */
             zeroOffset = resetOffset();
         }
-        if (enableHoming && absEncoder.isConnected()) {
-            EndEffectorMotor.set(-MathUtil.clamp(MathUtil.applyDeadband(output, 0.06), -0.5,0.5));
+        if (getAbsOffset() < 0.265) {
+            zeroOffset = resetOffset();
+
+            enableHoming = false;
+            EndEffectorMotor.set(0);
+            System.out.println("ENCODER PASSED USABLE AREA");
+        }
+        else if (enableHoming && absEncoder.isConnected()) {
+            EndEffectorMotor.set(-MathUtil.clamp(MathUtil.applyDeadband(output, 0.06), -0.2,0.2));
             Logger.recordOutput("test_Target output", output);
         }
         else if (enableHoming && !absEncoder.isConnected()) {
@@ -100,11 +120,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
             enableHoming = false;
         }
         
-        else if (getAbsOffset() > 0.8) {
-            enableHoming = false;
-            EndEffectorMotor.set(0);
-            System.out.println("ENCODER PASSED USABLE AREA");
-        }
+        
 
         Logger.recordOutput("test_1 Targeting Angle:", pidController.getSetpoint());
         Logger.recordOutput("test_2 Supposed to target:", targetAngle);
@@ -115,6 +131,12 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
         Logger.recordOutput("test_4 Encoder Offset", zeroOffset);
         Logger.recordOutput("test_5 Encoder Offset With .35", zeroOffset + .35);
+
+        Logger.recordOutput("test_ppid output", ppidOutput);
+        Logger.recordOutput("test_ff output", ffOutput);
+        Logger.recordOutput("test_ppid + ff output", ppidOutput + ffOutput);
+
+
         Logger.recordOutput("test_x Encoder Offset minus .35", zeroOffset - .35);
 
 
@@ -182,6 +204,11 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
     public double getAbsOffset() {
         return  ((absEncoder.get()- zeroOffset +0.35) % 1 + 1) % 1; 
+    }
+
+    
+    public double getAbsFFOffset() {
+        return  ((absEncoder.get()- zeroOffset -0.5) % 1 + 1) % 1; 
     }
 
 

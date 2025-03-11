@@ -49,8 +49,8 @@ public class AlgaeIOReal implements AlgaeIO {
 
         algaePivotMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
         leftAlgaeIntakeMotor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-        intakeConfig.follow(leftAlgaeIntakeMotor);
-        intakeConfig.inverted(true);
+       // intakeConfig.follow(leftAlgaeIntakeMotor);
+        //intakeConfig.inverted(true);
         rightAlgaeIntakeMotor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
         
         encoder = algaePivotMotor.getEncoder();
@@ -73,6 +73,7 @@ public class AlgaeIOReal implements AlgaeIO {
     public void setVoltageIntake(double volts) {
 
         leftAlgaeIntakeMotor.setVoltage(volts/1.5);
+        rightAlgaeIntakeMotor.setVoltage(-volts/1.5);
         System.out.println("Left - right Algae Volts " + (leftAlgaeIntakeMotor.getAppliedOutput() - rightAlgaeIntakeMotor.getAppliedOutput()));
 
     }

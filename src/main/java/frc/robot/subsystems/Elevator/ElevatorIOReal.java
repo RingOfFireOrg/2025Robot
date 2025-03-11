@@ -38,6 +38,13 @@ import frc.robot.Constants;
 
 public class ElevatorIOReal implements ElevatorIO {
 
+
+
+
+    /*
+    *  Here for refrence, elevator motor has been switched to talonfx
+    *  so don't use this one!!!!!!
+    */
     private final SparkMax elevatorMotor;
     private final RelativeEncoder encoder;
     private SparkMaxConfig config = new SparkMaxConfig();

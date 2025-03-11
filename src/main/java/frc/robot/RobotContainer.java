@@ -174,7 +174,7 @@ public class RobotContainer {
             drive,
             () -> MathUtil.applyDeadband(MathUtil.clamp(driver.getLeftY(),-0.5,0.5), 0.1),
             () -> MathUtil.applyDeadband(MathUtil.clamp(driver.getLeftX(),-0.5,0.5), 0.1),
-            () -> -MathUtil.applyDeadband(MathUtil.clamp(-driver.getRightX(),-0.8,0.8), 0.1))
+            () -> -MathUtil.applyDeadband(MathUtil.clamp(-driver.getRightX(),-0.5,0.5), 0.1))
         );
 
         //Reset gyro / odometry
@@ -191,37 +191,41 @@ public class RobotContainer {
         if (Constants.currentMode == Constants.Mode.REAL) {
 
 
-            spareTest.y()
-            .whileTrue(algae.runTeleop(() -> 0.4))
-            .onFalse(algae.runTeleop(() -> 0.0));
-            spareTest.a()
+            operator.y()
             .whileTrue(algae.runTeleop(() -> -0.4))
             .onFalse(algae.runTeleop(() -> 0.0));
+            operator.a()
+            .whileTrue(algae.runTeleop(() -> 0.4))
+            .onFalse(algae.runTeleop(() -> 0.0));
 
-            spareTest.x()
+            operator.x()
             .whileTrue(algae.runTeleopIntake(() -> 0.4))
             .onFalse(algae.runTeleopIntake(() -> 0.0));
-            spareTest.b()
+            operator.b()
             .whileTrue(algae.runTeleopIntake(() -> -0.4))
             .onFalse(algae.runTeleopIntake(() -> 0.0));
 
             operator.povUp()
-            .whileTrue(elevator.setHeight(1))
-            .onTrue(EndEffector.angle(PivotAngles.STANDARD_CORAL));
+            .whileTrue(elevator.setHeight(1.8))
+            .onTrue(EndEffector.angle(PivotAngles.STANDARD_CORAL))
+            ;
             operator.povLeft()
-            .whileTrue(elevator.setHeight(0.5))
-            .onTrue(EndEffector.angle(PivotAngles.STANDARD_CORAL));
+            .whileTrue(elevator.setHeight(1.35))
+            .onTrue(EndEffector.angle(PivotAngles.STANDARD_CORAL))
+            ;
             operator.povRight()
-            .whileTrue(elevator.setHeight(0.3))
-            .onTrue(EndEffector.angle(PivotAngles.STANDARD_CORAL));
+            .whileTrue(elevator.setHeight(1))
+            .onTrue(EndEffector.angle(PivotAngles.STANDARD_CORAL))
+            ;
             operator.povDown()
             .whileTrue(elevator.setHeight(0))
-            .onTrue(EndEffector.angle(PivotAngles.STOWED));
+            .onTrue(EndEffector.angle(PivotAngles.STOWED))
+           ;
 
 
-            operator.y().onTrue(EndEffector.angle(PivotAngles.STOWED));
-            operator.x().onTrue(EndEffector.angle(0.3));
-            operator.a().onTrue(EndEffector.angle(PivotAngles.STANDARD_CORAL));
+            // operator.y().onTrue(EndEffector.angle(PivotAngles.STOWED));
+            // operator.x().onTrue(EndEffector.angle(0.45));
+            // operator.a().onTrue(EndEffector.angle(PivotAngles.STANDARD_CORAL));
 
             /* Intake Coral */
             operator.leftBumper()

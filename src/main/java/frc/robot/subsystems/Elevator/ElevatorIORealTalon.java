@@ -1,7 +1,9 @@
 package frc.robot.subsystems.Elevator;
 
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static edu.wpi.first.units.Units.Rotations;
@@ -32,6 +34,8 @@ public class ElevatorIORealTalon implements ElevatorIO {
     // MutAngle angle = Radians.mutable(0);
     // MutAngularVelocity velocity = RadiansPerSecond.mutable(0);
     TalonFXConfiguration talonFXConfigs;
+    final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
+
 
     // 1.5
     // 36:1 
@@ -52,7 +56,7 @@ public class ElevatorIORealTalon implements ElevatorIO {
         
         MotionMagicConfigs mm = talonFXConfigs.MotionMagic;
         mm
-            .withMotionMagicCruiseVelocity(RotationsPerSecond.of(5)) // 5 (mechanism) rotations per second cruise
+            .withMotionMagicCruiseVelocity(RotationsPerSecond.of(10.5)) // 5 (mechanism) rotations per second cruise
             .withMotionMagicAcceleration(RotationsPerSecondPerSecond.of(10)) // Take approximately 0.5 seconds to reach max vel
             .withMotionMagicJerk(RotationsPerSecondPerSecond.per(Second).of(100));
 
@@ -63,10 +67,10 @@ public class ElevatorIORealTalon implements ElevatorIO {
         // motionMagicConfigs.MotionMagicJerk = 1600; // Target jerk of 1600 rps/s/s (0.1 seconds)
         
         var slot0Configs = talonFXConfigs.Slot0;
-        slot0Configs.kP = 1; // An error of 1 rotation results in 1 V output
+        slot0Configs.kP = 4; // An error of 1 rotation results in 1 V output
         slot0Configs.kI = 0; // no output for integrated error
         slot0Configs.kD = 0.1; // A velocity of 1 rps results in 0.1 V output
-        slot0Configs.kG = 1;
+        slot0Configs.kG = 0.1;
         slot0Configs.GravityType = GravityTypeValue.Elevator_Static;
 
         // StatusCode status = StatusCode.StatusCodeNotInitialized;
@@ -81,9 +85,9 @@ public class ElevatorIORealTalon implements ElevatorIO {
         elevatorRequest = new VoltageOut(0.0);
         var slot1 = talonFXConfigs.Slot1;
         slot1.GravityType = GravityTypeValue.Elevator_Static;
-        kG = 0;
+        kG = 1;
         slot1.kG = kG; // Replace with your determined value
-        elevatorMotor.getConfigurator().apply(slot1, 1); // Apply to slot 1
+        elevatorMotor.getConfigurator().apply(talonFXConfigs.Slot0, 1); // Apply to slot 1
 
 
         // kP = 0.5; 
@@ -111,14 +115,14 @@ public class ElevatorIORealTalon implements ElevatorIO {
 
         Logger.recordOutput("ElevatorPosition Rots", elevatorMotor.getPosition().getValueAsDouble());
     
-        Logger.recordOutput("ElevatorPosition Meters", (elevatorMotor.getPosition().getValueAsDouble()/36) * Math.PI );
-        Logger.recordOutput("ElevatorPosition Meters Mult", (elevatorMotor.getPosition().getValueAsDouble()*36) * Math.PI );
+        Logger.recordOutput("ElevatorPosition Meters", (elevatorMotor.getPosition().getValueAsDouble()/36) * Math.PI * 2 );
 
-        // Logger.recordOutput("referenceposi", setpoint.position);
+        
+        Logger.recordOutput("ElevatorPosition Meters with GEAR ratio", (elevatorMotor.getPosition().getValueAsDouble() / 36) * (Math.PI * Units.inchesToMeters(1.5)));
+        Logger.recordOutput("ElevatorPosition Meters with GEAR ratio fipped", (elevatorMotor.getPosition().getValueAsDouble() / (1/36) * (2 * Math.PI * Units.inchesToMeters(1.5))));
+        Logger.recordOutput("ElevatorPosition closed loop slot", elevatorMotor.getClosedLoopSlot().getValueAsDouble());
+
         double g = SmartDashboard.getNumber("kG Gain", 0);
-        // double i = SmartDashboard.getNumber("I Gain", 0);
-        // double d = SmartDashboard.getNumber("D Gain", 0);
-        // double ff = SmartDashboard.getNumber("Feed Forward", 0);
     
         // // if PID coefficients on SmartDashboard have changed, write new values to controller
         if((g != kG)) { 
@@ -127,38 +131,12 @@ public class ElevatorIORealTalon implements ElevatorIO {
             var slot1 = talonFXConfigs.Slot1;
 
             slot1.kG = kG; // Replace with your determined value
-            elevatorMotor.getConfigurator().apply(slot1, 1); // Apply to slot 1
+            //elevatorMotor.getConfigurator().apply(slot1, 1); // Apply to slot 1
 
         } 
         SmartDashboard.putNumber("kG Value", talonFXConfigs.Slot1.kG);
 
-            // elevatorMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
-        // }
-        // if((i != kI)) { 
-        //     // config.closedLoop.i(i); 
-        //     kI = i; 
-        //     // elevatorMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-
-        // }
-        // if((d != kD)) { 
-        //     // config.closedLoop.d(d); 
-        //     kD = d; 
-        //     // elevatorMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-
-        // }
-        // // if((iz != kIz)) { m_pidController.setIZone(iz); kIz = iz; 
-        
-        // // }
-        // if((ff != kFF)) { 
-        //     // config.closedLoop.velocityFF(ff); kFF = ff; 
-        //     // elevatorMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-
-        // }
-        // // if((max != kMaxOutput) || (min != kMinOutput)) { 
-        // //   m_pidController.setOutputRange(min, max); 
-        // //   kMinOutput = min; kMaxOutput = max; 
-        // // }
 
 
 
@@ -168,7 +146,8 @@ public class ElevatorIORealTalon implements ElevatorIO {
     public void setVoltage(double volts) {
         //elevatorMotor.setControl(m_mmReq.withPosition(volts * 12).withSlot(0));
         //elevatorMotor.setVoltage(volts);
-        elevatorMotor.setControl(elevatorRequest.withOutput(volts));
+        elevatorMotor.getConfigurator().apply(talonFXConfigs.Slot1, 1);
+        elevatorMotor.setControl(elevatorRequest.withOutput(volts/2));
     }
 
     @Override
@@ -184,8 +163,14 @@ public class ElevatorIORealTalon implements ElevatorIO {
 
     @Override
     public void setHeight(double userGoal) {
-        double rots = -(userGoal/(2 *Math.PI)) * /*gear ratio */ 36;
-        elevatorMotor.setPosition(Rotations.of(rots));
+       // double rots = -(userGoal/(2 *Math.PI)) * /*gear ratio */ 36;
+       // double rots = -(userGoal / (2 * Math.PI * Units.inchesToMeters(1.5))) * 36; // Convert meters to rotations
+
+        //elevatorMotor.setPosition(Rotations.of(rots));
+        //elevatorMotor.setControl(elevatorRequ.withPosition(rots));
+        elevatorMotor.getConfigurator().apply(talonFXConfigs.Slot0, 1);
+
+        elevatorMotor.setControl(m_request.withPosition(userGoal));
 
         // goal = new TrapezoidProfile.State(userGoal, 0);
         // setpoint = new TrapezoidProfile.State(encoder.getPosition(), 0);
