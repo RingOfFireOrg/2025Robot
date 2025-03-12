@@ -20,10 +20,10 @@ import edu.wpi.first.math.geometry.Transform3d;
 
 public class VisionConstants {
     // AprilTag layout
-    public static AprilTagFieldLayout aprilTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+    public static AprilTagFieldLayout aprilTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
 
     // Camera names, must match names configured on coprocessor
-    public static String LimelightFrontName = "LL_Front";
+    public static String LimelightFrontName = "limelight-tag";
 
     public static String camera0Name = "Photon_Front";
     public static String camera1Name = "Photon_Second";

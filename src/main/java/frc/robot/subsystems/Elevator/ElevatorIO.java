@@ -25,5 +25,7 @@ public interface ElevatorIO {
 
   public default double getHeight(double height) {return height;}
   public default void setHeight(double height) {}
+  public default void zeroElevator() {}
+
 
 }

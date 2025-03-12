@@ -13,10 +13,17 @@
 
 package frc.robot;
 
-import static frc.robot.subsystems.vision.VisionConstants.*;
+import static frc.robot.subsystems.vision.VisionConstants.camera0Name;
+import static frc.robot.subsystems.vision.VisionConstants.camera1Name;
+import static frc.robot.subsystems.vision.VisionConstants.robotToCamera0;
+import static frc.robot.subsystems.vision.VisionConstants.robotToCamera1;
+
+import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -28,27 +35,33 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.ElevatorHeights;
 import frc.robot.Constants.PivotAngles;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.DriveToCurrentReef;
 import frc.robot.subsystems.Algae.Algae;
 import frc.robot.subsystems.Algae.AlgaeIOReal;
 import frc.robot.subsystems.Climber.Climber;
 import frc.robot.subsystems.Climber.ClimberIOReal;
 import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.subsystems.Elevator.ElevatorIO;
-import frc.robot.subsystems.Elevator.ElevatorIOReal;
 import frc.robot.subsystems.Elevator.ElevatorIORealTalon;
 import frc.robot.subsystems.Elevator.ElevatorIOSim;
 import frc.robot.subsystems.EndEffector.EndEffector;
 import frc.robot.subsystems.EndEffector.EndEffectorIO;
 import frc.robot.subsystems.EndEffector.EndEffectorIOReal;
 import frc.robot.subsystems.EndEffector.EndEffectorIOSim;
-import frc.robot.subsystems.drive.*;
-import frc.robot.subsystems.vision.*;
-import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
-import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.DriveConstants;
+import frc.robot.subsystems.drive.GyroIO;
+import frc.robot.subsystems.drive.GyroIONavX;
+import frc.robot.subsystems.drive.GyroIOSim;
+import frc.robot.subsystems.drive.ModuleIO;
+import frc.robot.subsystems.drive.ModuleIOSim;
+import frc.robot.subsystems.drive.ModuleIOSpark;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 
 public class RobotContainer {
     private final Drive drive;
@@ -158,7 +171,10 @@ public class RobotContainer {
         autoChooser.addOption("Drive SysId (Dynamic Reverse)",
             drive.sysIdDynamic(SysIdRoutine.Direction.kReverse)
         );
-
+        // autoChooser.addOption("leftOnlyPathing",
+        //     drive.sysIdDynamic(SysIdRoutine.Direction.kReverse)
+        // );
+        
         // autoChooser.addOption("rightSideAuto",
         //     new PathPlannerAuto("Auto Name", true);
         // );
@@ -169,13 +185,31 @@ public class RobotContainer {
 
     private void configureButtonBindings() {
 
-        drive.setDefaultCommand(DriveCommands.joystickDrive
-        (
+        double maxSpeed = 0.7;
+        drive.setDefaultCommand(DriveCommands.joystickDrive(
             drive,
-            () -> MathUtil.applyDeadband(MathUtil.clamp(driver.getLeftY(),-0.5,0.5), 0.1),
-            () -> MathUtil.applyDeadband(MathUtil.clamp(driver.getLeftX(),-0.5,0.5), 0.1),
-            () -> -MathUtil.applyDeadband(MathUtil.clamp(-driver.getRightX(),-0.5,0.5), 0.1))
+            () -> MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftY(),-maxSpeed,maxSpeed), 0.1),
+            () -> MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftX(),-maxSpeed,maxSpeed), 0.1),
+            () -> MathUtil.applyDeadband(MathUtil.clamp(driver.getRightX(),-maxSpeed,maxSpeed), 0.1))
         );
+
+        driver.povRight().whileTrue(DriveCommands.joystickDriveRobotOriented(drive, () -> 0, () -> 0.4, () -> 0));
+        driver.povLeft().whileTrue(DriveCommands.joystickDriveRobotOriented(drive, () -> 0, () -> -0.4, () -> 0));
+        driver.povUp().whileTrue(DriveCommands.joystickDriveRobotOriented(drive, () -> -0.4, () -> 0, () -> 0));
+        driver.povDown().whileTrue(DriveCommands.joystickDriveRobotOriented(drive, () -> 0.4, () -> 0, () -> 0));
+
+        driver.rightBumper().whileTrue(DriveCommands.joystickDriveAtAngle(drive, 
+        () -> MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftY(),-maxSpeed,maxSpeed), 0.1),
+        () -> MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftX(),-maxSpeed,maxSpeed), 0.1),
+        () -> new Rotation2d(-125) ));
+
+        driver.leftBumper().whileTrue(DriveCommands.joystickDriveAtAngle(drive, 
+        () -> MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftY(),-maxSpeed,maxSpeed), 0.1),
+        () -> MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftX(),-maxSpeed,maxSpeed), 0.1),
+        () -> new Rotation2d(125) ));
+
+
+        driver.a().whileTrue(new DriveToCurrentReef(drive, vision));
 
         //Reset gyro / odometry
         final Runnable resetGyro = Constants.currentMode == Constants.Mode.SIM
@@ -199,18 +233,18 @@ public class RobotContainer {
             .onFalse(algae.runTeleop(() -> 0.0));
 
             operator.x()
-            .whileTrue(algae.runTeleopIntake(() -> 0.4))
+            .whileTrue(algae.runTeleopIntake(() -> 0.7))
             .onFalse(algae.runTeleopIntake(() -> 0.0));
             operator.b()
-            .whileTrue(algae.runTeleopIntake(() -> -0.4))
+            .whileTrue(algae.runTeleopIntake(() -> -0.7))
             .onFalse(algae.runTeleopIntake(() -> 0.0));
 
             operator.povUp()
-            .whileTrue(elevator.setHeight(1.8))
+            .whileTrue(elevator.setHeight(ElevatorHeights.L3))
             .onTrue(EndEffector.angle(PivotAngles.STANDARD_CORAL))
             ;
             operator.povLeft()
-            .whileTrue(elevator.setHeight(1.35))
+            .whileTrue(elevator.setHeight(ElevatorHeights.L2))
             .onTrue(EndEffector.angle(PivotAngles.STANDARD_CORAL))
             ;
             operator.povRight()
@@ -239,8 +273,8 @@ public class RobotContainer {
 
             /* Intaking Setup Button - Move elevator to intake height, move intake to intake angle, and Intake coral */
             operator.axisMagnitudeGreaterThan(XboxController.Axis.kLeftTrigger.value, 0.1)
-            .whileTrue(elevator.setHeight(60))
-            .onTrue(EndEffector.angle(PivotAngles.STANDARD_CORAL))
+            .whileTrue(elevator.setHeight(ElevatorHeights.INTAKE_HEIGHT))
+            .whileTrue(EndEffector.angle(PivotAngles.INTAKE))
             .onTrue(EndEffector.ejecter(0.7))
             .onFalse(EndEffector.ejecter(0))
             ;
@@ -252,26 +286,28 @@ public class RobotContainer {
             //EndEffector.setDefaultCommand(EndEffector.runTeleop(() -> operator.getLeftTriggerAxis()/4, ()-> operator.getRightTriggerAxis()/4, () -> operator.getLeftY()));
 
 
-            // operator.axisMagnitudeGreaterThan(XboxController.Axis.kRightTrigger.value, 0.1)
-            // .whileTrue(EndEffector.ejecter(-0.6))
-            // .onFalse(EndEffector.ejecter(0))
-            // ;
 
+            /* Manual Control for ELevator */
             operator.axisMagnitudeGreaterThan(XboxController.Axis.kLeftY.value, 0.1)
             .whileTrue(elevator.runTeleop(() -> -operator.getLeftY()/1.4))
             .onFalse(elevator.runTeleop(() -> 0))
             ;
 
+            /* Manual Control for Pivot intake */
             operator.axisMagnitudeGreaterThan(XboxController.Axis.kRightY.value, 0.1)
             .whileTrue(EndEffector.runTeleop(() -> -operator.getRightY()/3, ()-> 0, () -> 0))
             .onFalse(EndEffector.runTeleop(() -> 0, ()-> 0, () -> 0));
 
             
+            /* Eject Coral CMD */
             operator.axisMagnitudeGreaterThan(XboxController.Axis.kRightTrigger.value, 0.1)
             .whileTrue(EndEffector.runTeleop(() -> 0, ()-> 0, () -> -operator.getRightTriggerAxis()))
             .onFalse(EndEffector.runTeleop(() -> 0, ()-> 0, () -> 0));
             //EndEffector.setDefaultCommand(EndEffector.runTeleop(() -> operator.getLeftTriggerAxis()/4, ()-> operator.getRightTriggerAxis()/4, () -> operator.getLeftY()));
 
+
+
+            /* Climbing Controls */
             climberController.axisMagnitudeGreaterThan(Joystick.AxisType.kY.value, 0.2)
             .and(climberController.button(1))
             .whileTrue(climber.runTeleop(() -> -climberController.getY()))
@@ -301,7 +337,32 @@ public class RobotContainer {
 
     }
     
+    public Command getAutonomousCommand() {
+        return autoChooser.get();
+    }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /* -------------------------------------------------------------------------------------------------- */
     public void resetSimulationField() {
         if (Constants.currentMode != Constants.Mode.SIM)
             return;
@@ -323,9 +384,7 @@ public class RobotContainer {
             SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
     }
 
-    public Command getAutonomousCommand() {
-        return autoChooser.get();
-    }
+
 
 
 }

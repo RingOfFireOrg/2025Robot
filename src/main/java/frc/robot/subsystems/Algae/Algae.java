@@ -10,8 +10,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Algae extends SubsystemBase {
     private final AlgaeIO io;
     private final AlgaeIOInputsAutoLogged inputs = new AlgaeIOInputsAutoLogged();
-    public double elevatorHeight = 0;
-    //private final SysIdRoutine sysId;
 
     public Algae(AlgaeIO io) {
         this.io = io;
@@ -21,8 +19,7 @@ public class Algae extends SubsystemBase {
     @Override
     public void periodic() {
         io.updateInputs(inputs);
-        Logger.processInputs("Climber", inputs);
-        elevatorHeight = inputs.elevatorPositionMeters;
+        Logger.processInputs("Algae", inputs);
 
     }
 
@@ -38,21 +35,4 @@ public class Algae extends SubsystemBase {
         return run(() -> io.setVoltageIntake((input.getAsDouble()) * 12.0));
     }
 
-    //TODO: remove
-    // public Command runTeleop(DoubleSupplier forward, DoubleSupplier reverse) {
-    //     return runEnd(
-    //         () -> io.setVoltage((forward.getAsDouble() - reverse.getAsDouble()) * 12.0),
-    //         () -> io.setVoltage(0.0));
-    // }
-
-
-
-
-    public double getHeight() {
-        return elevatorHeight;
-    }
-
-    // public void runCharacterization(double output) {
-    //     io.setDriveOpenLoop(output);
-    // }
 }

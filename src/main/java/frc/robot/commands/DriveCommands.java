@@ -102,10 +102,23 @@ public class DriveCommands {
                 double x = xSupplier.getAsDouble();
                 double y = ySupplier.getAsDouble();
                 double omega = omegaSupplier.getAsDouble();
-                /* Scale values to controler deadband */
-                x = (1 / (1 - OIConstants.controllerDeadband)) * (x + ( -Math.signum(x) * OIConstants.controllerDeadband));
-                y = (1 / (1 - OIConstants.controllerDeadband)) * (y + ( -Math.signum(y) * OIConstants.controllerDeadband));
+                // /* Scale values to controler deadband */
+                // x = (1 / (1 - OIConstants.controllerDeadband)) * (x + ( -Math.signum(x) * OIConstants.controllerDeadband));
+                // y = (1 / (1 - OIConstants.controllerDeadband)) * (y + ( -Math.signum(y) * OIConstants.controllerDeadband));
                 omega = (1 / (1 - OIConstants.controllerDeadband)) * (omega + ( -Math.signum(omega) * OIConstants.controllerDeadband));
+
+                // if (Math.abs(x) >= OIConstants.controllerDeadband) {
+                //     x = Math.signum(x) * (Math.abs(x) - OIConstants.controllerDeadband) / (1.0 - OIConstants.controllerDeadband);
+                // }
+                
+                // if (Math.abs(y) >= OIConstants.controllerDeadband) {
+                //     y = Math.signum(y) * (Math.abs(y) - OIConstants.controllerDeadband) / (1.0 - OIConstants.controllerDeadband);
+                // }
+                
+                // if (Math.abs(omega) >= OIConstants.controllerDeadband) {
+                //     omega = Math.signum(omega) * (Math.abs(omega) - OIConstants.controllerDeadband) / (1.0 - OIConstants.controllerDeadband);
+                // }
+
                 Translation2d linearVelocity = getLinearVelocityFromJoysticks(x,y);
                 // // Get linear velocity
                 // Translation2d linearVelocity = getLinearVelocityFromJoysticks(xSupplier.getAsDouble(),
@@ -132,7 +145,30 @@ public class DriveCommands {
             },
             drive);
     }
+    public static Command joystickDriveRobotOriented(
+            Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier omegaSupplier) {
+        return Commands.run(
+            () -> {
+                double x = xSupplier.getAsDouble();
+                double y = ySupplier.getAsDouble();
+                double omega = 0;
+                Translation2d linearVelocity = getLinearVelocityFromJoysticks(x,y);
+                omega = Math.copySign(omega * omega, omega);
 
+                ChassisSpeeds speeds = new ChassisSpeeds(
+                    linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
+                    linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                    omega * drive.getMaxAngularSpeedRadPerSec());
+
+                boolean isFlipped = DriverStation.getAlliance().isPresent()
+                    && DriverStation.getAlliance().get() == Alliance.Red;
+                speeds = ChassisSpeeds.fromRobotRelativeSpeeds(
+                    speeds,
+                    isFlipped ? new Rotation2d() : new Rotation2d());
+                drive.runVelocity(speeds);
+            },
+            drive);
+    }
     /**
      * Field relative drive command using joystick for linear control and PID for
      * angular control. Possible use cases

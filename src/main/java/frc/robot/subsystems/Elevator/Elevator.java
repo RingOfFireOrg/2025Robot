@@ -41,6 +41,10 @@ public class Elevator extends SubsystemBase {
         return run(() -> io.setVoltage((input.getAsDouble()) * 12.0));
     }
 
+    public Command zeroElevator() {
+        return runOnce(() -> io.zeroElevator());
+    }
+
     //TODO: remove
     // public Command runTeleop(DoubleSupplier forward, DoubleSupplier reverse) {
     //     return runEnd(

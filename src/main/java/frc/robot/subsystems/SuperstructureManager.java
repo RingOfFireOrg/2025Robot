@@ -62,7 +62,8 @@ public class SuperstructureManager {
             case STOWED:
             
             case PREP_L4:
-            // case PREP_L3_ALGAE:
+                // Move Elevator to L4 Height
+                // case PREP_L3_ALGAE:
                 // Stow Intake
             case PREP_L3:
                 //if Algae is up, spin till stall

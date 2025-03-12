@@ -29,7 +29,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
     private final RelativeEncoder encoder;
     private SparkMaxConfig config = new SparkMaxConfig();
     private SparkClosedLoopController closedLoopController;
-
+    double ffOutput;
     private static final int EndEffectorCanID = 17;
     private static final int EjectCanID = 18;
 
@@ -38,18 +38,19 @@ public class EndEffectorIOReal implements EndEffectorIO {
     private int AbsEncoderDIOID = 1;
     public double targetAngle = 0.0; // Target position in degrees
 
-    private double MAX_VELOCITY = 0.2; // in degrees per second
+    private double MAX_VELOCITY = 0.3; // in degrees per second
     private double MAX_ACCELERATION = 1; // degrees per second squared
 
     private final ProfiledPIDController profiledPidController = new ProfiledPIDController(
-        1, 0.0, 0.05, // PID gains (adjust as needed)
+        1.5, 0.0, 0.02, // PID gains (adjust as needed)
         new TrapezoidProfile.Constraints(MAX_VELOCITY, MAX_ACCELERATION)
     );
     ArmFeedforward feedforward = new ArmFeedforward
-    (0, 0, 0, 0);
+    (0, .16, 0, 0);
+    double output = 0;
 
 
-    private PIDController pidController = new PIDController(1.0, 0, 0.05);
+    private PIDController pidController = new PIDController(1.3, 0.1, 0.0);
     private boolean enableHoming = false; // In case operator Takes manuel control
 
     
@@ -86,17 +87,19 @@ public class EndEffectorIOReal implements EndEffectorIO {
         
         zeroOffset = resetOffset();
         targetAngle = 0.35;
+        pidController.setIZone(0.4);
+
     }
 
     @Override
     public void updateInputs(EndEffectorIOInputs inputs) {
         //double output = pidController.calculate(getPositionDegrees(), targetAngle);
         
-        double output = pidController.calculate(getAbsOffset(), targetAngle);
         double ppidOutput = profiledPidController.calculate(getAbsOffset(), targetAngle);
-        double ffOutput = feedforward.calculate(
+        ffOutput = feedforward.calculate(
             Math.toRadians(getAbsFFOffset()*360),0.0
         );
+
 
 
         if (zeroOffset == 0.0 || zeroOffset == 0.35) {
@@ -111,7 +114,8 @@ public class EndEffectorIOReal implements EndEffectorIO {
             System.out.println("ENCODER PASSED USABLE AREA");
         }
         else if (enableHoming && absEncoder.isConnected()) {
-            EndEffectorMotor.set(-MathUtil.clamp(MathUtil.applyDeadband(output, 0.06), -0.2,0.2));
+            output = pidController.calculate(getAbsOffset(), targetAngle);
+            EndEffectorMotor.set(-MathUtil.clamp(MathUtil.applyDeadband(output, 0.06) + (ffOutput/3.7), -0.4,0.4));
             Logger.recordOutput("test_Target output", output);
         }
         else if (enableHoming && !absEncoder.isConnected()) {
@@ -133,11 +137,13 @@ public class EndEffectorIOReal implements EndEffectorIO {
         Logger.recordOutput("test_5 Encoder Offset With .35", zeroOffset + .35);
 
         Logger.recordOutput("test_ppid output", ppidOutput);
-        Logger.recordOutput("test_ff output", ffOutput);
+        Logger.recordOutput("test_ff output", getAbsFFOffset());
+        Logger.recordOutput("test_ff Angle", ffOutput);
+
         Logger.recordOutput("test_ppid + ff output", ppidOutput + ffOutput);
 
 
-        Logger.recordOutput("test_x Encoder Offset minus .35", zeroOffset - .35);
+        //Logger.recordOutput("test_x Encoder Offset minus .35", zeroOffset - .35);
 
 
         Logger.recordOutput("test_x Homing Enabled", enableHoming);
@@ -150,13 +156,13 @@ public class EndEffectorIOReal implements EndEffectorIO {
     @Override
     public void setVoltage(double volts) {
         enableHoming = false;
-        EndEffectorMotor.setVoltage(volts/3);
+        EndEffectorMotor.setVoltage(volts/3 + ffOutput);
     }
 
     @Override
     public void setVoltageEject(double volts, double ejectsVolts) {
         enableHoming = false;
-        EndEffectorMotor.setVoltage(volts/3);
+        EndEffectorMotor.setVoltage(volts/3 + ffOutput);
         EjectMotor.setVoltage(ejectsVolts/5);
     }
 
@@ -208,7 +214,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
     
     public double getAbsFFOffset() {
-        return  ((absEncoder.get()- zeroOffset -0.5) % 1 + 1) % 1; 
+        return  ((absEncoder.get()- zeroOffset - .2) % 1 + 1) % 1; 
     }
 
 

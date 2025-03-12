@@ -119,7 +119,10 @@ public class ModuleIOSpark implements ModuleIO {
         driveConfig
                 .idleMode(IdleMode.kBrake)
                 .smartCurrentLimit(driveMotorCurrentLimit)
-                .voltageCompensation(12.0);
+                .voltageCompensation(12.0)
+                //.inverted(true)
+                ;
+                
         driveConfig
                 .encoder
                 .positionConversionFactor(driveEncoderPositionFactor)
@@ -206,7 +209,7 @@ public class ModuleIOSpark implements ModuleIO {
 
         double cancoderAngle = canCoder.getAbsolutePosition().getValue().in(Radians);
         double encoderAngle = turnEncoder.getPosition();
-        if (Math.abs(encoderAngle - cancoderAngle) > 0.05) { // Only correct significant drift
+        if (Math.abs(encoderAngle - cancoderAngle) > 0.035) { // Only correct significant drift
             turnEncoder.setPosition(cancoderAngle);
         }
         // Update drive inputs

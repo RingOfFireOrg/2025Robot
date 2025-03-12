@@ -118,8 +118,8 @@ public class ElevatorIORealTalon implements ElevatorIO {
         Logger.recordOutput("ElevatorPosition Meters", (elevatorMotor.getPosition().getValueAsDouble()/36) * Math.PI * 2 );
 
         
-        Logger.recordOutput("ElevatorPosition Meters with GEAR ratio", (elevatorMotor.getPosition().getValueAsDouble() / 36) * (Math.PI * Units.inchesToMeters(1.5)));
-        Logger.recordOutput("ElevatorPosition Meters with GEAR ratio fipped", (elevatorMotor.getPosition().getValueAsDouble() / (1/36) * (2 * Math.PI * Units.inchesToMeters(1.5))));
+        Logger.recordOutput("ElevatorPosition Meters with GEAR ratio", (elevatorMotor.getPosition().getValueAsDouble()) * (2 * Math.PI * Units.inchesToMeters(1.5)));
+        Logger.recordOutput("ElevatorPosition Meters with GEAR ratio fipped", (elevatorMotor.getPosition().getValueAsDouble() / (2 * Math.PI * Units.inchesToMeters(1.5))));
         Logger.recordOutput("ElevatorPosition closed loop slot", elevatorMotor.getClosedLoopSlot().getValueAsDouble());
 
         double g = SmartDashboard.getNumber("kG Gain", 0);
@@ -134,7 +134,7 @@ public class ElevatorIORealTalon implements ElevatorIO {
             //elevatorMotor.getConfigurator().apply(slot1, 1); // Apply to slot 1
 
         } 
-        SmartDashboard.putNumber("kG Value", talonFXConfigs.Slot1.kG);
+        SmartDashboard.putNumber("ElevatorPosition kG Value", talonFXConfigs.Slot1.kG);
 
 
 
