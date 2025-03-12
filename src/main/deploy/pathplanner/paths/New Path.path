@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 4.0,
-        "y": 6.0
+        "x": 1.4725171232876713,
+        "y": 7.232983732876712
       },
       "prevControl": {
-        "x": 3.0,
-        "y": 6.0
+        "x": 0.47251712328767126,
+        "y": 7.232983732876712
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 125.1341930569156
   },
   "reversed": false,
   "folder": "_middleSideAuto",

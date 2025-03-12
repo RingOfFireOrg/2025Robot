@@ -90,24 +90,7 @@ public class ElevatorIORealTalon implements ElevatorIO {
         elevatorMotor.getConfigurator().apply(talonFXConfigs.Slot0, 1); // Apply to slot 1
 
 
-        // kP = 0.5; 
-        // kI = 0;
-        // kD = 0; 
-        // kIz = 0; 
-        // kFF = 0.000015; 
-        // kMaxOutput = 1; 
-        // kMinOutput = -1;
-
         SmartDashboard.putNumber("kG Gain", kG);
-
-        // SmartDashboard.putNumber("I Gain", kI);
-        // SmartDashboard.putNumber("D Gain", kD);
-        // SmartDashboard.putNumber("Feed Forward", kFF);
-        // SmartDashboard.putNumber("Max Output", kMaxOutput);
-        // SmartDashboard.putNumber("Min Output", kMinOutput);
-
-
-    
     }
 
     @Override
@@ -124,16 +107,15 @@ public class ElevatorIORealTalon implements ElevatorIO {
 
         double g = SmartDashboard.getNumber("kG Gain", 0);
     
-        // // if PID coefficients on SmartDashboard have changed, write new values to controller
+        //Test if this had an effect
         if((g != kG)) { 
-            // config.closedLoop.p(p); 
             kG = g;
             var slot1 = talonFXConfigs.Slot1;
-
-            slot1.kG = kG; // Replace with your determined value
-            //elevatorMotor.getConfigurator().apply(slot1, 1); // Apply to slot 1
-
+            slot1.kG = kG; 
         } 
+
+
+
         SmartDashboard.putNumber("ElevatorPosition kG Value", talonFXConfigs.Slot1.kG);
 
 
@@ -144,9 +126,9 @@ public class ElevatorIORealTalon implements ElevatorIO {
 
     @Override
     public void setVoltage(double volts) {
-        //elevatorMotor.setControl(m_mmReq.withPosition(volts * 12).withSlot(0));
-        //elevatorMotor.setVoltage(volts);
         elevatorMotor.getConfigurator().apply(talonFXConfigs.Slot1, 1);
+        // its calling this periodically, need to fix this
+
         elevatorMotor.setControl(elevatorRequest.withOutput(volts/2));
     }
 

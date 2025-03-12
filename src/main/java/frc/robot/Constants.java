@@ -56,7 +56,7 @@ public final class Constants {
         public static final double INTAKE_HEIGHT = 0;
         public static final double L2 = 1.4;
 
-        public static final double L3 = 2.9;
+        public static final double L3 = 3.1;
         public static final double L4 = 0;
 
 
@@ -65,6 +65,14 @@ public final class Constants {
     public static class PivotAngles {
         public static final double STOWED = 0.37;
         public static final double INTAKE = 0.45;
-        public static final double STANDARD_CORAL = 0.57;
+        public static final double L2 = 0.57;
+        public static final double L3 = 0.5;
+
+
+
+        public static final double Intake_Coral = 0.7;
+        public static final double Eject_Coral = -0.7;
+        public static final double Maintain_Coral = 0.3;
+
     }
 }

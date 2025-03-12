@@ -45,24 +45,13 @@ public class Elevator extends SubsystemBase {
         return runOnce(() -> io.zeroElevator());
     }
 
-    //TODO: remove
-    // public Command runTeleop(DoubleSupplier forward, DoubleSupplier reverse) {
-    //     return runEnd(
-    //         () -> io.setVoltage((forward.getAsDouble() - reverse.getAsDouble()) * 12.0),
-    //         () -> io.setVoltage(0.0));
-    // }
-
-    // public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-    //     return run(() -> runCharacterization(0.0)).withTimeout(1.0).andThen(sysId.quasistatic(direction));
-    // }
-
-    // /** Returns a command to run a dynamic test in the specified direction. */
-    // public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-    //     return run(() -> runCharacterization(0.0)).withTimeout(1.0).andThen(sysId.dynamic(direction));
-    // }
 
     public Command setHeight(double height) {
         return run(() -> io.setHeight(height));
+    }
+
+    public Command runOnceHeight(double height) {
+        return runOnce(() -> io.setHeight(height));
     }
 
 

@@ -24,6 +24,7 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -32,6 +33,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -146,6 +148,7 @@ public class RobotContainer {
         }
 
 
+        setNamedCommands();
 
         // Set up auto routines
         autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -241,15 +244,15 @@ public class RobotContainer {
 
             operator.povUp()
             .whileTrue(elevator.setHeight(ElevatorHeights.L3))
-            .onTrue(EndEffector.angle(PivotAngles.STANDARD_CORAL))
+            .onTrue(EndEffector.angle(PivotAngles.L3))
             ;
             operator.povLeft()
             .whileTrue(elevator.setHeight(ElevatorHeights.L2))
-            .onTrue(EndEffector.angle(PivotAngles.STANDARD_CORAL))
+            .onTrue(EndEffector.angle(PivotAngles.L2))
             ;
             operator.povRight()
-            .whileTrue(elevator.setHeight(1))
-            .onTrue(EndEffector.angle(PivotAngles.STANDARD_CORAL))
+            .whileTrue(elevator.setHeight(ElevatorHeights.L2))
+            .onTrue(EndEffector.angle(PivotAngles.L2))
             ;
             operator.povDown()
             .whileTrue(elevator.setHeight(0))
@@ -274,7 +277,7 @@ public class RobotContainer {
             /* Intaking Setup Button - Move elevator to intake height, move intake to intake angle, and Intake coral */
             operator.axisMagnitudeGreaterThan(XboxController.Axis.kLeftTrigger.value, 0.1)
             .whileTrue(elevator.setHeight(ElevatorHeights.INTAKE_HEIGHT))
-            .whileTrue(EndEffector.angle(PivotAngles.INTAKE))
+            .onTrue(EndEffector.angle(PivotAngles.INTAKE))
             .onTrue(EndEffector.ejecter(0.7))
             .onFalse(EndEffector.ejecter(0))
             ;
@@ -334,6 +337,59 @@ public class RobotContainer {
             // driver.leftTrigger().whileTrue(getAutonomousCommand());
     
         }
+
+    }
+
+    public void setNamedCommands() {
+        /*
+         * Raise Elevator to L3
+         * Pivot Endeffector to L3
+         */
+        NamedCommands.registerCommand("Prep_L3", 
+        elevator.runOnceHeight(ElevatorHeights.L3)
+        .alongWith(EndEffector.angle(PivotAngles.L3))
+        .alongWith(Commands.print("Prep_L3"))
+        );
+        
+        /*
+         * Raise Elevator to L2
+         * Pivot Endeffector to L2
+         */
+        NamedCommands.registerCommand("Prep_L2", 
+        elevator.runOnceHeight(ElevatorHeights.L2)
+        .alongWith(EndEffector.angle(PivotAngles.L2))
+        .alongWith(Commands.print("NamedCommand: Prep_L2"))
+        );
+
+        /*
+         * Raise Elevator to Intake Height
+         * Pivot Endeffector to L3
+         * Start Intaking
+         */
+        NamedCommands.registerCommand("Intake", 
+        elevator.runOnceHeight(ElevatorHeights.INTAKE_HEIGHT)
+        .alongWith(EndEffector.angle(PivotAngles.INTAKE))
+        .alongWith(EndEffector.ejecter(0.7))
+        .alongWith(Commands.print("NamedCommand: Intake"))
+        );
+        
+
+        NamedCommands.registerCommand("Reset",
+        elevator.runOnceHeight(ElevatorHeights.STOWED)
+        .alongWith(EndEffector.angle(PivotAngles.STOWED))
+        .alongWith(EndEffector.ejecter(PivotAngles.Maintain_Coral))
+        .alongWith(Commands.print("NamedCommand: Reset"))
+        ); 
+
+        NamedCommands.registerCommand("Ejecter_Maintain",
+        new InstantCommand()
+        .alongWith(Commands.print("NamedCommand: Ejecter_Maintain"))
+        ); 
+
+        NamedCommands.registerCommand("Ejecter_Eject",
+        new InstantCommand()
+        .alongWith(Commands.print("NamedCommand: Ejecter_Eject"))
+        ); 
 
     }
     
