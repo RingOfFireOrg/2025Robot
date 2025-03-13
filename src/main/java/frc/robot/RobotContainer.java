@@ -188,16 +188,34 @@ public class RobotContainer {
 
     private void configureButtonBindings() {
 
-        double maxSpeed = 0.7;
-        drive.setDefaultCommand(DriveCommands.joystickDrive(
-            drive,
-            () -> MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftY(),-maxSpeed,maxSpeed), 0.1),
-            () -> MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftX(),-maxSpeed,maxSpeed), 0.1),
-            () -> MathUtil.applyDeadband(MathUtil.clamp(driver.getRightX(),-maxSpeed,maxSpeed), 0.1))
-        );
+        double maxSpeed = 0.6;
+        // drive.setDefaultCommand(DriveCommands.joystickDrive(
+        //     drive,
+        //     () -> MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftY(),-maxSpeed,maxSpeed), 0.1),
+        //     () -> MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftX(),-maxSpeed,maxSpeed), 0.1),
+        //     () -> MathUtil.applyDeadband(MathUtil.clamp(driver.getRightX(),-maxSpeed,maxSpeed), 0.1))
+        // );
 
-        driver.povRight().whileTrue(DriveCommands.joystickDriveRobotOriented(drive, () -> 0, () -> 0.4, () -> 0));
-        driver.povLeft().whileTrue(DriveCommands.joystickDriveRobotOriented(drive, () -> 0, () -> -0.4, () -> 0));
+        drive.setDefaultCommand(DriveCommands.joystickDrive(
+         drive,
+            () -> {
+                double maxSpeedX = (1 - driver.getLeftTriggerAxis()) * (0.5 + 0.5 * driver.getRightTriggerAxis());
+                return MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftY(), -maxSpeedX, maxSpeedX), 0.1);
+            },
+            () -> {
+                double maxSpeedY = (1 - driver.getLeftTriggerAxis()) * (0.5 + 0.5 * driver.getRightTriggerAxis());
+                return MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftX(), -maxSpeedY, maxSpeedY), 0.1);
+            },
+            () -> {
+                double maxSpeedTheta = (1 - driver.getLeftTriggerAxis()) * (0.5 + 0.5 * driver.getRightTriggerAxis());
+                return MathUtil.applyDeadband(MathUtil.clamp(-driver.getRightX(), -maxSpeedTheta, maxSpeedTheta), 0.1);
+            }
+        ));
+
+
+        driver.povRight().whileTrue(DriveCommands.joystickDriveRobotOriented(drive, () -> 0, () -> -0.4, () -> 0));
+        driver.povLeft().whileTrue(DriveCommands.joystickDriveRobotOriented(drive, () -> 0, () -> 0.4, () -> 0));
+
         driver.povUp().whileTrue(DriveCommands.joystickDriveRobotOriented(drive, () -> -0.4, () -> 0, () -> 0));
         driver.povDown().whileTrue(DriveCommands.joystickDriveRobotOriented(drive, () -> 0.4, () -> 0, () -> 0));
 
@@ -212,7 +230,7 @@ public class RobotContainer {
         () -> new Rotation2d(125) ));
 
 
-        driver.a().whileTrue(new DriveToCurrentReef(drive, vision));
+        //driver.a().whileTrue(new DriveToCurrentReef(drive, vision));
 
         //Reset gyro / odometry
         final Runnable resetGyro = Constants.currentMode == Constants.Mode.SIM
@@ -277,16 +295,10 @@ public class RobotContainer {
             /* Intaking Setup Button - Move elevator to intake height, move intake to intake angle, and Intake coral */
             operator.axisMagnitudeGreaterThan(XboxController.Axis.kLeftTrigger.value, 0.1)
             .whileTrue(elevator.setHeight(ElevatorHeights.INTAKE_HEIGHT))
-            .onTrue(EndEffector.angle(PivotAngles.INTAKE))
-            .onTrue(EndEffector.ejecter(0.7))
+            .onTrue(EndEffector.setAngleandIntake(PivotAngles.INTAKE, 0.7))
             .onFalse(EndEffector.ejecter(0))
             ;
 
-            /* Outaking Eject - Eject Coral */
-            operator.axisMagnitudeGreaterThan(XboxController.Axis.kLeftTrigger.value, 0.1)
-            .whileTrue(EndEffector.runTeleop(() -> 0, ()-> 0, () -> operator.getLeftTriggerAxis()))
-            .onFalse(EndEffector.runTeleop(() -> 0, ()-> 0, () -> 0));
-            //EndEffector.setDefaultCommand(EndEffector.runTeleop(() -> operator.getLeftTriggerAxis()/4, ()-> operator.getRightTriggerAxis()/4, () -> operator.getLeftY()));
 
 
 
@@ -369,7 +381,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("Intake", 
         elevator.runOnceHeight(ElevatorHeights.INTAKE_HEIGHT)
         .alongWith(EndEffector.angle(PivotAngles.INTAKE))
-        .alongWith(EndEffector.ejecter(0.7))
+        .andThen(EndEffector.ejecter(0.7))
         .alongWith(Commands.print("NamedCommand: Intake"))
         );
         
@@ -377,7 +389,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("Reset",
         elevator.runOnceHeight(ElevatorHeights.STOWED)
         .alongWith(EndEffector.angle(PivotAngles.STOWED))
-        .alongWith(EndEffector.ejecter(PivotAngles.Maintain_Coral))
+        .andThen(EndEffector.ejecter(PivotAngles.Maintain_Coral))
         .alongWith(Commands.print("NamedCommand: Reset"))
         ); 
 

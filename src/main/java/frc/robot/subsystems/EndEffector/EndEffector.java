@@ -46,6 +46,12 @@ public class EndEffector extends SubsystemBase {
     return runOnce(() -> io.resetEncoder());
   }
 
+  public Command setAngleandIntake(double angle, double volts) {
+    //return runOnce(() -> io.setAngleandIntake(angle, volts));
+    return runOnce(() -> io.setAngle(angle))
+    .andThen(runOnce(() -> io.ejecter(volts*12)));
+  }
+
 
   public double getAngle() {
     return angle;

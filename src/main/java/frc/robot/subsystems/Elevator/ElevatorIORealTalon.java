@@ -126,7 +126,9 @@ public class ElevatorIORealTalon implements ElevatorIO {
 
     @Override
     public void setVoltage(double volts) {
-        elevatorMotor.getConfigurator().apply(talonFXConfigs.Slot1, 1);
+        if (elevatorMotor.getClosedLoopSlot().getValueAsDouble() != 1) {
+            elevatorMotor.getConfigurator().apply(talonFXConfigs.Slot1, 1);
+        }
         // its calling this periodically, need to fix this
 
         elevatorMotor.setControl(elevatorRequest.withOutput(volts/2));
@@ -150,7 +152,9 @@ public class ElevatorIORealTalon implements ElevatorIO {
 
         //elevatorMotor.setPosition(Rotations.of(rots));
         //elevatorMotor.setControl(elevatorRequ.withPosition(rots));
-        elevatorMotor.getConfigurator().apply(talonFXConfigs.Slot0, 1);
+        if (elevatorMotor.getClosedLoopSlot().getValueAsDouble() != 0) {
+            elevatorMotor.getConfigurator().apply(talonFXConfigs.Slot0, 1);
+        }
 
         elevatorMotor.setControl(m_request.withPosition(userGoal));
 

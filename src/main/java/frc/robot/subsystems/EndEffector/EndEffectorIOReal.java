@@ -50,7 +50,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
     double output = 0;
 
 
-    private PIDController pidController = new PIDController(1.3, 0.1, 0.0);
+    private PIDController pidController = new PIDController(1.39, 0.1, 0.0);
     private boolean enableHoming = false; // In case operator Takes manuel control
 
     
@@ -170,6 +170,12 @@ public class EndEffectorIOReal implements EndEffectorIO {
     public void setAngle(double angle) {
         targetAngle = angle;
         enableHoming = true;
+    }
+    
+    @Override
+    public void setAngleandIntake(double angle, double volts) {
+        setAngle(angle);
+        ejecter(volts*12);
     }
 
     @Override

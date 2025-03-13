@@ -115,9 +115,11 @@ public class ModuleIOSparkCanCoder implements ModuleIO {
     // Configure drive motor
     var driveConfig = new SparkFlexConfig();
     driveConfig
+        .inverted(true)
         .idleMode(IdleMode.kBrake)
         .smartCurrentLimit(driveMotorCurrentLimit)
         .voltageCompensation(12.0);
+        
     driveConfig
         .encoder
         .positionConversionFactor(driveEncoderPositionFactor)

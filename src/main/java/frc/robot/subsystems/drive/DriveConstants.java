@@ -40,10 +40,10 @@ public class DriveConstants {
     };
 
     /* Do not try to zero it here */
-    public static final Rotation2d frontLeftZeroRotation = new Rotation2d(Math.toRadians(0));
-    public static final Rotation2d frontRightZeroRotation = new Rotation2d(Math.toRadians(0));
-    public static final Rotation2d backLeftZeroRotation = new Rotation2d(Math.toRadians(0));
-    public static final Rotation2d backRightZeroRotation = new Rotation2d(Math.toRadians(0));
+    public static final Rotation2d frontLeftZeroRotation = new Rotation2d(Math.toRadians(180));
+    public static final Rotation2d frontRightZeroRotation = new Rotation2d(Math.toRadians(180));
+    public static final Rotation2d backLeftZeroRotation = new Rotation2d(Math.toRadians(180));
+    public static final Rotation2d backRightZeroRotation = new Rotation2d(Math.toRadians(180));
 
  
 
@@ -65,7 +65,7 @@ public class DriveConstants {
 
     // Drive motor configuration
     public static final int driveMotorCurrentLimit = 60;
-    public static final double wheelRadiusMeters = Units.inchesToMeters(2);
+    public static final double wheelRadiusMeters = Units.inchesToMeters(1.754);
     public static final double driveMotorReduction = 6.75;
        // (45.0 * 22.0) / (14.0 * 15.0); 
     public static final double circumfence = Math.PI * wheelRadiusMeters*2;
@@ -80,8 +80,8 @@ public class DriveConstants {
     // Drive PID configuration
     public static final double driveKp = 0.0;
     public static final double driveKd = 0.0;
-    public static final double driveKs = 0.0;
-    public static final double driveKv = 0.1;
+    public static final double driveKs = 0.17052;
+    public static final double driveKv = 0.14893;
     public static final double driveSimP = 0.05;
     public static final double driveSimD = 0.0;
     public static final double driveSimKs = 0.0;

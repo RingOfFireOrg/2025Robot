@@ -53,8 +53,8 @@ public final class Constants {
     public static class ElevatorHeights {
         public static final double OFF_THE_GROUND = 0;
         public static final double STOWED = 0;
-        public static final double INTAKE_HEIGHT = 0;
-        public static final double L2 = 1.4;
+        public static final double INTAKE_HEIGHT = 0.89;
+        public static final double L2 = .993;
 
         public static final double L3 = 3.1;
         public static final double L4 = 0;
@@ -64,7 +64,7 @@ public final class Constants {
     }
     public static class PivotAngles {
         public static final double STOWED = 0.37;
-        public static final double INTAKE = 0.45;
+        public static final double INTAKE = 0.41;
         public static final double L2 = 0.57;
         public static final double L3 = 0.5;
 
