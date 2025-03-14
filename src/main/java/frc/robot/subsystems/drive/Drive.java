@@ -101,7 +101,8 @@ public class Drive extends SubsystemBase implements Vision.VisionConsumer {
         SparkOdometryThread.getInstance().start();
         RobotConfig config;
         try{
-            config = RobotConfig.fromGUISettings();
+           // config = RobotConfig.fromGUISettings();
+           config = ppConfig;
         } catch (Exception e) {
             // Handle exception as needed
             config = ppConfig;

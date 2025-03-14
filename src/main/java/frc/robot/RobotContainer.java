@@ -196,18 +196,19 @@ public class RobotContainer {
         //     () -> MathUtil.applyDeadband(MathUtil.clamp(driver.getRightX(),-maxSpeed,maxSpeed), 0.1))
         // );
 
+        double standardSpeed = 0.5;
         drive.setDefaultCommand(DriveCommands.joystickDrive(
          drive,
             () -> {
-                double maxSpeedX = (1 - driver.getLeftTriggerAxis()) * (0.5 + 0.5 * driver.getRightTriggerAxis());
+                double maxSpeedX = (1 - driver.getLeftTriggerAxis()) * (standardSpeed + (1-standardSpeed) * driver.getRightTriggerAxis());
                 return MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftY(), -maxSpeedX, maxSpeedX), 0.1);
             },
             () -> {
-                double maxSpeedY = (1 - driver.getLeftTriggerAxis()) * (0.5 + 0.5 * driver.getRightTriggerAxis());
+                double maxSpeedY = (1 - driver.getLeftTriggerAxis()) * (standardSpeed + (1-standardSpeed) * driver.getRightTriggerAxis());
                 return MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftX(), -maxSpeedY, maxSpeedY), 0.1);
             },
             () -> {
-                double maxSpeedTheta = (1 - driver.getLeftTriggerAxis()) * (0.5 + 0.5 * driver.getRightTriggerAxis());
+                double maxSpeedTheta = (1 - driver.getLeftTriggerAxis()) * (standardSpeed + (1-standardSpeed) * driver.getRightTriggerAxis());
                 return MathUtil.applyDeadband(MathUtil.clamp(-driver.getRightX(), -maxSpeedTheta, maxSpeedTheta), 0.1);
             }
         ));
@@ -216,8 +217,8 @@ public class RobotContainer {
         driver.povRight().whileTrue(DriveCommands.joystickDriveRobotOriented(drive, () -> 0, () -> -0.4, () -> 0));
         driver.povLeft().whileTrue(DriveCommands.joystickDriveRobotOriented(drive, () -> 0, () -> 0.4, () -> 0));
 
-        driver.povUp().whileTrue(DriveCommands.joystickDriveRobotOriented(drive, () -> -0.4, () -> 0, () -> 0));
-        driver.povDown().whileTrue(DriveCommands.joystickDriveRobotOriented(drive, () -> 0.4, () -> 0, () -> 0));
+        driver.povUp().whileTrue(DriveCommands.joystickDriveRobotOriented(drive, () -> 0.4, () -> 0, () -> 0));
+        driver.povDown().whileTrue(DriveCommands.joystickDriveRobotOriented(drive, () -> -0.4, () -> 0, () -> 0));
 
         driver.rightBumper().whileTrue(DriveCommands.joystickDriveAtAngle(drive, 
         () -> MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftY(),-maxSpeed,maxSpeed), 0.1),
@@ -272,11 +273,13 @@ public class RobotContainer {
             .whileTrue(elevator.setHeight(ElevatorHeights.L2))
             .onTrue(EndEffector.angle(PivotAngles.L2))
             ;
+
             operator.povDown()
             .whileTrue(elevator.setHeight(0))
             .onTrue(EndEffector.angle(PivotAngles.STOWED))
            ;
 
+    
 
             // operator.y().onTrue(EndEffector.angle(PivotAngles.STOWED));
             // operator.x().onTrue(EndEffector.angle(0.45));
@@ -368,8 +371,8 @@ public class RobotContainer {
          * Pivot Endeffector to L2
          */
         NamedCommands.registerCommand("Prep_L2", 
-        elevator.runOnceHeight(ElevatorHeights.L2)
-        .alongWith(EndEffector.angle(PivotAngles.L2))
+        elevator.runOnceHeight(.92)
+        .alongWith(EndEffector.angle(0.5))
         .alongWith(Commands.print("NamedCommand: Prep_L2"))
         );
 
@@ -388,7 +391,7 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("Reset",
         elevator.runOnceHeight(ElevatorHeights.STOWED)
-        .alongWith(EndEffector.angle(PivotAngles.STOWED))
+        .andThen(EndEffector.angle(PivotAngles.STOWED))
         .andThen(EndEffector.ejecter(PivotAngles.Maintain_Coral))
         .alongWith(Commands.print("NamedCommand: Reset"))
         ); 
@@ -399,7 +402,7 @@ public class RobotContainer {
         ); 
 
         NamedCommands.registerCommand("Ejecter_Eject",
-        new InstantCommand()
+        EndEffector.ejecter(-0.7)
         .alongWith(Commands.print("NamedCommand: Ejecter_Eject"))
         ); 
 
@@ -408,6 +411,11 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
         return autoChooser.get();
     }
+
+    public EndEffector getEffector() {
+        return EndEffector;
+    }
+
 
 
 

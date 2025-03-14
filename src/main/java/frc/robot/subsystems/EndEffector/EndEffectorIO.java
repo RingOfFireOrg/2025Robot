@@ -31,4 +31,7 @@ public interface EndEffectorIO {
 
   public default void setAngleandIntake(double angle, double volts) {}
 
+
+  public default void enableHoming(boolean enable) {}
+
 }

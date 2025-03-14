@@ -46,11 +46,11 @@ public class EndEffectorIOReal implements EndEffectorIO {
         new TrapezoidProfile.Constraints(MAX_VELOCITY, MAX_ACCELERATION)
     );
     ArmFeedforward feedforward = new ArmFeedforward
-    (0, .16, 0, 0);
+    (0, .11, 0, 0);
     double output = 0;
 
 
-    private PIDController pidController = new PIDController(1.39, 0.1, 0.0);
+    private PIDController pidController = new PIDController(1.3, 0.05, 0.0);
     private boolean enableHoming = false; // In case operator Takes manuel control
 
     
@@ -80,14 +80,14 @@ public class EndEffectorIOReal implements EndEffectorIO {
         closedLoopController = EndEffectorMotor.getClosedLoopController();
 
         pidController.disableContinuousInput();
-        pidController.setTolerance(0.01);
+        pidController.setTolerance(0.03);
 
         profiledPidController.disableContinuousInput();
-        profiledPidController.setTolerance(0.01);
+        profiledPidController.setTolerance(0.07);
         
         zeroOffset = resetOffset();
         targetAngle = 0.35;
-        pidController.setIZone(0.4);
+        pidController.setIZone(0.3);
 
     }
 
@@ -120,8 +120,9 @@ public class EndEffectorIOReal implements EndEffectorIO {
         }
         else if (enableHoming && !absEncoder.isConnected()) {
             System.out.println("ENCODER IS NOT CONNECTED, HOMING DISABLED");
-            EndEffectorMotor.set(0);
             enableHoming = false;
+            EndEffectorMotor.set(0);
+        
         }
         
         
@@ -208,6 +209,11 @@ public class EndEffectorIOReal implements EndEffectorIO {
     public void resetEncoder() {
         zeroOffset = resetOffset();
 
+    }
+
+    @Override
+    public void enableHoming(boolean enable){
+        enableHoming = enable;
     }
 
     public double getPositionDegrees() {

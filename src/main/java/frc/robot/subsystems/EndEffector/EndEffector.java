@@ -36,6 +36,9 @@ public class EndEffector extends SubsystemBase {
     return runOnce(() -> io.ejecter(volts*12));
   }
 
+  public Command enableHomeing(boolean enable) {
+    return runOnce(() -> io.enableHoming(enable));
+  }
   public Command runTeleop(DoubleSupplier forward, DoubleSupplier reverse, DoubleSupplier eject) {
     return runEnd(
       () -> io.setVoltageEject((forward.getAsDouble() - reverse.getAsDouble()) * 12.0, eject.getAsDouble() * 12.0),

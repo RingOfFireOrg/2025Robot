@@ -3,33 +3,47 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.115463019606485,
-        "y": 2.3139476612691157
+        "x": 5.253729227367191,
+        "y": 2.5992646176854417
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.896356777254419,
-        "y": 2.4274750791698554
+        "x": 5.1193001625990435,
+        "y": 2.815290882678765
       },
       "isLocked": false,
-      "linkedName": "LeftAutoStart"
+      "linkedName": "f_lineup"
     },
     {
       "anchor": {
-        "x": 5.183861301369863,
-        "y": 2.7703553082191785
+        "x": 5.16655945675441,
+        "y": 2.75684074148547
       },
       "prevControl": {
-        "x": 6.506677495202421,
-        "y": 2.4479225170494328
+        "x": 5.306479494851539,
+        "y": 2.5280366480574563
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "EF_center"
+      "linkedName": "f_score"
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "SlowDown",
+      "minWaypointRelativePos": 0,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 1.0,
+        "maxAcceleration": 1.0,
+        "maxAngularVelocity": 300.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -45,10 +59,10 @@
     "rotation": 119.99999999999999
   },
   "reversed": false,
-  "folder": "_leftSideAuto",
+  "folder": "_rightSideAuto",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 119.99999999999999
   },
   "useDefaultConstraints": true
 }
