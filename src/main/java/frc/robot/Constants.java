@@ -64,7 +64,7 @@ public final class Constants {
     }
     public static class PivotAngles {
         public static final double STOWED = 0.37;
-        public static final double INTAKE = 0.42;
+        public static final double INTAKE = 0.22;
         public static final double L2 = 0.57;
         public static final double L3 = 0.5;
 

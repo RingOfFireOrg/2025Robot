@@ -196,7 +196,7 @@ public class RobotContainer {
         //     () -> MathUtil.applyDeadband(MathUtil.clamp(driver.getRightX(),-maxSpeed,maxSpeed), 0.1))
         // );
 
-        double standardSpeed = 0.5;
+        double standardSpeed = 0.7;
         drive.setDefaultCommand(DriveCommands.joystickDrive(
          drive,
             () -> {
@@ -402,8 +402,13 @@ public class RobotContainer {
         ); 
 
         NamedCommands.registerCommand("Ejecter_Eject",
-        EndEffector.ejecter(-0.7)
+        EndEffector.ejecter(-0.4)
         .alongWith(Commands.print("NamedCommand: Ejecter_Eject"))
+        ); 
+
+        NamedCommands.registerCommand("Ejecter_Stop",
+        EndEffector.ejecter(0)
+        .alongWith(Commands.print("NamedCommand: Ejecter_Stop"))
         ); 
 
     }
