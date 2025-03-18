@@ -67,7 +67,7 @@ public class AlgaeIOReal implements AlgaeIO {
     @Override
     public void setVoltage(double volts) {
         algaePivotMotor.setVoltage(volts/1.5);
-        System.out.println("UP/Down Algae Volts " + algaePivotMotor.getAppliedOutput());
+        //System.out.println("UP/Down Algae Volts " + algaePivotMotor.getAppliedOutput());
 
     }
     
@@ -76,7 +76,7 @@ public class AlgaeIOReal implements AlgaeIO {
 
         leftAlgaeIntakeMotor.setVoltage(volts/1.2);
         rightAlgaeIntakeMotor.setVoltage(-volts/1.2);
-        System.out.println("Left - right Algae Volts " + (leftAlgaeIntakeMotor.getAppliedOutput() - rightAlgaeIntakeMotor.getAppliedOutput()));
+        //System.out.println("Left - right Algae Volts " + (leftAlgaeIntakeMotor.getAppliedOutput() - rightAlgaeIntakeMotor.getAppliedOutput()));
 
     }
 

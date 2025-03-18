@@ -4,6 +4,7 @@ import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
+import frc.robot.Robot;
 import frc.robot.Constants.EndEffectorIntakeState;
 
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -13,6 +14,7 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 
 import org.littletonrobotics.junction.Logger;
@@ -37,6 +39,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
     public double zeroOffset = 0.0;
     private int AbsEncoderDIOID = 1;
     public double targetAngle = 0.0; // Target position in degrees
+    double ppidOutput = 0;
 
     private double MAX_VELOCITY = 0.3; // in degrees per second
     private double MAX_ACCELERATION = 1; // degrees per second squared
@@ -83,11 +86,15 @@ public class EndEffectorIOReal implements EndEffectorIO {
         pidController.setTolerance(0.03);
 
         profiledPidController.disableContinuousInput();
-        profiledPidController.setTolerance(0.07);
+        profiledPidController.setTolerance(0.03);
+
+        profiledPidController.setIZone(0.03);
+        profiledPidController.setIntegratorRange(-1.6, 1.6);
         
         zeroOffset = resetOffset();
         targetAngle = 0.35;
         pidController.setIZone(0.3);
+        pidController.setIntegratorRange(-1.6, 1.6);
 
     }
 
@@ -95,7 +102,6 @@ public class EndEffectorIOReal implements EndEffectorIO {
     public void updateInputs(EndEffectorIOInputs inputs) {
         //double output = pidController.calculate(getPositionDegrees(), targetAngle);
         
-        double ppidOutput = profiledPidController.calculate(getAbsOffset(), targetAngle);
         ffOutput = feedforward.calculate(
             Math.toRadians(getAbsFFOffset()*360),0.0
         );
@@ -115,6 +121,8 @@ public class EndEffectorIOReal implements EndEffectorIO {
         }
         else if (enableHoming && absEncoder.isConnected()) {
             output = pidController.calculate(getAbsOffset(), targetAngle);
+            ppidOutput = profiledPidController.calculate(getAbsOffset(), targetAngle);
+
             EndEffectorMotor.set(-MathUtil.clamp(MathUtil.applyDeadband(output, 0.06) + (ffOutput/3.7), -0.4,0.4));
             Logger.recordOutput("test_Target output", output);
         }
@@ -123,6 +131,12 @@ public class EndEffectorIOReal implements EndEffectorIO {
             enableHoming = false;
             EndEffectorMotor.set(0);
         
+        }
+
+        if (DriverStation.isDisabled()) {
+            enableHoming = false;
+            EndEffectorMotor.set(0);
+            EjectMotor.set(0);
         }
         
         

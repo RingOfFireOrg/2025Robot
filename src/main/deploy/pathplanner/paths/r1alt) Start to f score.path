@@ -3,57 +3,41 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.259393635491202,
-        "y": 2.8082663875393803
+        "x": 7.106100731131239,
+        "y": 2.3060538816967107
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.772813183768074,
-        "y": 2.2076324904052167
+        "x": 5.99634638767146,
+        "y": 2.28386557850435
       },
       "isLocked": false,
-      "linkedName": "f_score"
+      "linkedName": "right_AutoStart"
     },
     {
       "anchor": {
-        "x": 4.793326067075212,
-        "y": 2.086770051100639
+        "x": 5.259393635491202,
+        "y": 2.8082663875393803
       },
       "prevControl": {
-        "x": 4.900109887283034,
-        "y": 2.3128169837093857
-      },
-      "nextControl": {
-        "x": 4.686542246867389,
-        "y": 1.8607231184918918
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 1.3673373287671233,
-        "y": 1.027375856164383
-      },
-      "prevControl": {
-        "x": 2.0746480232844293,
-        "y": 1.8886773781513915
+        "x": 5.416006120556272,
+        "y": 2.613400973671903
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "f_score"
     }
   ],
   "rotationTargets": [],
   "constraintZones": [
     {
-      "name": "Slow Down",
-      "minWaypointRelativePos": 1.6985507246376779,
-      "maxWaypointRelativePos": 2.0,
+      "name": "Constraints Zone",
+      "minWaypointRelativePos": 0.44347826086956665,
+      "maxWaypointRelativePos": 1.0,
       "constraints": {
-        "maxVelocity": 0.901,
+        "maxVelocity": 1.0,
         "maxAcceleration": 1.0,
-        "maxAngularVelocity": 540.0,
+        "maxAngularVelocity": 200.0,
         "maxAngularAcceleration": 720.0,
         "nominalVoltage": 12.0,
         "unlimited": false
@@ -72,13 +56,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -128.36748538486154
+    "rotation": 119.99999999999999
   },
   "reversed": false,
   "folder": "_rightSideAuto",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 119.99999999999999
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }
