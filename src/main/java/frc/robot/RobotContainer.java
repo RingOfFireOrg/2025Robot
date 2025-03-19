@@ -255,10 +255,10 @@ public class RobotContainer {
             .onFalse(algae.runTeleop(() -> 0.0));
 
             operator.x()
-            .whileTrue(algae.runTeleopIntake(() -> 0.7))
+            .whileTrue(algae.runTeleopIntake(() -> 1))
             .onFalse(algae.runTeleopIntake(() -> 0.0));
             operator.b()
-            .whileTrue(algae.runTeleopIntake(() -> -0.7))
+            .whileTrue(algae.runTeleopIntake(() -> -1))
             .onFalse(algae.runTeleopIntake(() -> 0.0));
 
             operator.povUp()
@@ -324,6 +324,9 @@ public class RobotContainer {
             //EndEffector.setDefaultCommand(EndEffector.runTeleop(() -> operator.getLeftTriggerAxis()/4, ()-> operator.getRightTriggerAxis()/4, () -> operator.getLeftY()));
 
 
+            climberController.button(9)
+            .onTrue(algae.runTeleopLaunch(() -> -1, () -> 0))
+            .onFalse(algae.runTeleopLaunch(() -> 0.2, () -> 1));
 
             /* Climbing Controls */
             climberController.axisMagnitudeGreaterThan(Joystick.AxisType.kY.value, 0.2)

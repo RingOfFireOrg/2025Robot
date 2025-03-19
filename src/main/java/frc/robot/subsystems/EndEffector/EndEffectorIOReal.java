@@ -216,6 +216,8 @@ public class EndEffectorIOReal implements EndEffectorIO {
          
 
     public double resetOffset() {
+
+        System.out.println("Yo twin, what is this blasmpahey?!?");
         return absEncoder.get() ;
     }
 

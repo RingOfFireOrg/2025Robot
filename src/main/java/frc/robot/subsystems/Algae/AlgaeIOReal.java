@@ -3,6 +3,7 @@ package frc.robot.subsystems.Algae;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -19,7 +20,7 @@ public class AlgaeIOReal implements AlgaeIO {
     private final SparkMax leftAlgaeIntakeMotor;
     private final SparkMax rightAlgaeIntakeMotor;
 
-    private final RelativeEncoder encoder;
+    private final AbsoluteEncoder absEncoder;
     private SparkMaxConfig config = new SparkMaxConfig();
     private SparkMaxConfig intakeConfig = new SparkMaxConfig();
 
@@ -33,6 +34,7 @@ public class AlgaeIOReal implements AlgaeIO {
 
     private double lastDetectionTime = 0;
     private boolean ballDetected = false;
+    public double zeroOffset = 0.0;
 
     public AlgaeIOReal() {
         algaePivotMotor = new SparkMax(algaePivotMotorCanID, MotorType.kBrushless);
@@ -48,12 +50,14 @@ public class AlgaeIOReal implements AlgaeIO {
             
 
         algaePivotMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+
+
         leftAlgaeIntakeMotor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-       // intakeConfig.follow(leftAlgaeIntakeMotor);
-        //intakeConfig.inverted(true);
+
         rightAlgaeIntakeMotor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
         
-        encoder = algaePivotMotor.getEncoder();
+        absEncoder = algaePivotMotor.getAbsoluteEncoder();
+        zeroOffset = resetOffset();
 
     
     }
@@ -62,24 +66,28 @@ public class AlgaeIOReal implements AlgaeIO {
     public void updateInputs(AlgaeIOInputs inputs) {
         Logger.recordOutput("test_isTheIntakeBallin", isTheIntakeBallin());
         Logger.recordOutput("Algae/AlgaePivot Value", algaePivotMotor.getEncoder().getPosition());
+        Logger.recordOutput("Algae/Abs Encoder Raw", absEncoder.getPosition());
+        Logger.recordOutput("Algae/Abs Encoder Offset", absEncoder.getPosition());
+
     }
 
     @Override
     public void setVoltage(double volts) {
         algaePivotMotor.setVoltage(volts/1.5);
-        //System.out.println("UP/Down Algae Volts " + algaePivotMotor.getAppliedOutput());
 
     }
     
     @Override
     public void setVoltageIntake(double volts) {
-
         leftAlgaeIntakeMotor.setVoltage(volts/1.2);
         rightAlgaeIntakeMotor.setVoltage(-volts/1.2);
-        //System.out.println("Left - right Algae Volts " + (leftAlgaeIntakeMotor.getAppliedOutput() - rightAlgaeIntakeMotor.getAppliedOutput()));
-
     }
 
+    @Override
+    public void setVoltageLaunch(double left, double right) {
+        leftAlgaeIntakeMotor.setVoltage(left);
+        rightAlgaeIntakeMotor.setVoltage(right);
+    }
 
     public boolean isTheIntakeBallin() {
         double avgCurrent = (leftAlgaeIntakeMotor.getOutputCurrent() + rightAlgaeIntakeMotor.getOutputCurrent()) / 2.0;
@@ -99,6 +107,8 @@ public class AlgaeIOReal implements AlgaeIO {
     }
 
 
-
+    public double resetOffset() {
+        return absEncoder.getPosition();
+    }
 
 }

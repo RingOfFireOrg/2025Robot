@@ -18,6 +18,7 @@ public interface AlgaeIO {
 
   public default void setVoltage(double volts) {}
   public default void setVoltageIntake(double volts) {}
+  public default void setVoltageLaunch(double left, double right) {}
 
 
 

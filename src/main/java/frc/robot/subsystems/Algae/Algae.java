@@ -34,5 +34,8 @@ public class Algae extends SubsystemBase {
     public Command runTeleopIntake(DoubleSupplier input) {
         return run(() -> io.setVoltageIntake((input.getAsDouble()) * 12.0));
     }
+    public Command runTeleopLaunch(DoubleSupplier left, DoubleSupplier right) {
+        return run(() -> io.setVoltageLaunch((left.getAsDouble()) * 12.0, (right.getAsDouble()) * 12.0));
+    }
 
 }
