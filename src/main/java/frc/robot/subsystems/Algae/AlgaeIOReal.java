@@ -1,6 +1,8 @@
 package frc.robot.subsystems.Algae;
 
 
+import java.util.function.DoubleSupplier;
+
 import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.AbsoluteEncoder;
@@ -12,7 +14,10 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DriverStation;
 
 public class AlgaeIOReal implements AlgaeIO {
 
@@ -28,13 +33,22 @@ public class AlgaeIOReal implements AlgaeIO {
     public static final int leftAlgaeIntakeMotorCanID = 21;
     public static final int rightAlgaeIntakeMotorCanID = 22;
 
-    private static final double INTAKE_POWER = 0.75; // Adjust as needed
-    private static final double CURRENT_THRESHOLD = 20.0; // Adjust 
-    private static final double DETECTION_TIME = 0.2; 
-
-    private double lastDetectionTime = 0;
-    private boolean ballDetected = false;
     public double zeroOffset = 0.0;
+
+    private double MAX_VELOCITY = 0.5; // in degrees per second
+    private double MAX_ACCELERATION = MAX_VELOCITY*2; // degrees per second squared
+
+    private boolean atGoal = false;
+    double targetAngle = 0.35;
+
+    private final ProfiledPIDController profiledPidController = new ProfiledPIDController(
+        1.4, 0.0, 0.00, // PID gains (adjust as needed)
+        new TrapezoidProfile.Constraints(MAX_VELOCITY, MAX_ACCELERATION)
+    );
+    ArmFeedforward feedforward = new ArmFeedforward
+    (0, .6, 0, 0);
+    double output = 0;
+
 
     public AlgaeIOReal() {
         algaePivotMotor = new SparkMax(algaePivotMotorCanID, MotorType.kBrushless);
@@ -43,11 +57,13 @@ public class AlgaeIOReal implements AlgaeIO {
 
         config
             .idleMode(IdleMode.kBrake)
-            .smartCurrentLimit(40);
-        intakeConfig
+            .smartCurrentLimit(40)
+            .absoluteEncoder.inverted(true);
+            intakeConfig
             .idleMode(IdleMode.kBrake)
             .smartCurrentLimit(20);
             
+
 
         algaePivotMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
@@ -57,17 +73,36 @@ public class AlgaeIOReal implements AlgaeIO {
         rightAlgaeIntakeMotor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
         
         absEncoder = algaePivotMotor.getAbsoluteEncoder();
+        
+
         zeroOffset = resetOffset();
+
+        profiledPidController.disableContinuousInput();
+
+        profiledPidController.setTolerance(0.05);
 
     
     }
 
     @Override
     public void updateInputs(AlgaeIOInputs inputs) {
-        Logger.recordOutput("test_isTheIntakeBallin", isTheIntakeBallin());
-        Logger.recordOutput("Algae/AlgaePivot Value", algaePivotMotor.getEncoder().getPosition());
+        output = profiledPidController.calculate(getAbsOffset(), targetAngle);
+        atGoal = profiledPidController.atGoal();
+        inputs.atGoal = profiledPidController.atGoal();
+        Logger.recordOutput("Algae/AlgaePivot Value", algaePivotMotor.getAbsoluteEncoder().getPosition());
         Logger.recordOutput("Algae/Abs Encoder Raw", absEncoder.getPosition());
-        Logger.recordOutput("Algae/Abs Encoder Offset", absEncoder.getPosition());
+        Logger.recordOutput("Algae/Abs Encoder Offset", getAbsOffset());
+        Logger.recordOutput("Algae/profiled output", output);
+        System.out.println(algaePivotMotor.getAppliedOutput());
+
+        
+        if (DriverStation.isDisabled()) {
+            algaePivotMotor.setVoltage(0);
+        }
+
+        if (profiledPidController.atGoal()) {
+            algaePivotMotor.setVoltage(0);
+        }
 
     }
 
@@ -89,26 +124,30 @@ public class AlgaeIOReal implements AlgaeIO {
         rightAlgaeIntakeMotor.setVoltage(right);
     }
 
-    public boolean isTheIntakeBallin() {
-        double avgCurrent = (leftAlgaeIntakeMotor.getOutputCurrent() + rightAlgaeIntakeMotor.getOutputCurrent()) / 2.0;
-
-        if (avgCurrent > CURRENT_THRESHOLD) {
-            if (!ballDetected) {
-                if (Timer.getFPGATimestamp() - lastDetectionTime > DETECTION_TIME) {
-                    ballDetected = true;
-                }
-            }
-        } else {
-            lastDetectionTime = Timer.getFPGATimestamp();
-            ballDetected = false;
+    @Override
+    public void setAngle(DoubleSupplier angle) {
+        targetAngle = angle.getAsDouble();
+        double thisOutput = profiledPidController.calculate(getAbsOffset(), angle.getAsDouble());
+        System.out.println(angle);
+        if (profiledPidController.atGoal()) {
+            thisOutput = 0;
         }
-
-        return ballDetected;
+        algaePivotMotor.setVoltage(-thisOutput*12);
+        System.out.println(-thisOutput*12);
     }
 
+    public boolean atGoal() {
+        return atGoal;
+    }
 
     public double resetOffset() {
         return absEncoder.getPosition();
+    }
+    public double getAbsOffset() {
+        return  ((absEncoder.getPosition()- zeroOffset + (0.35)) % 1 + 1) % 1; 
+    }
+    public double getAbsFFOffset() {
+        return  ((absEncoder.getPosition()- zeroOffset - (.2)) % 1 + 1) % 1; 
     }
 
 }

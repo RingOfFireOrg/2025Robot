@@ -3,6 +3,7 @@ package frc.robot.commands;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -23,6 +24,7 @@ public class DriveToCurrentReef extends Command {
   double tagAngle = -1;
   double rot = 0;
   double xSpeed = 0;
+  Rotation2d poseAngle;
 
   public DriveToCurrentReef(Drive drive,Vision vision) {
     //this.vision = vision;
@@ -50,36 +52,49 @@ public class DriveToCurrentReef extends Command {
     if (tagNum == 18 || tagNum == 7) {
       tagTurnController.setSetpoint(0);
       tagAngle = 0;
+      poseAngle = new Rotation2d(Math.toRadians(tagAngle));
 
     }
     else if (tagNum == 19 || tagNum == 6) {
       tagTurnController.setSetpoint(60);
       tagAngle = 60;
+      poseAngle = new Rotation2d(Math.toRadians(tagAngle));
+
 
     }
     else if (tagNum == 20 || tagNum == 11) {
       tagTurnController.setSetpoint(120);
       tagAngle = 120;
+      poseAngle = new Rotation2d(Math.toRadians(tagAngle));
+
 
     }
     else if (tagNum == 21 || tagNum == 10) {
       tagTurnController.setSetpoint(180);
       tagAngle = 180;
+      poseAngle = new Rotation2d(Math.toRadians(tagAngle));
+
 
     }
     else if (tagNum == 22 || tagNum == 9) {
       tagTurnController.setSetpoint(240);
       tagAngle = 210;
+      poseAngle = new Rotation2d(Math.toRadians(tagAngle));
+
 
     }
     else if (tagNum == 17 || tagNum == 8) {
       tagTurnController.setSetpoint(300);
-      tagAngle = 200;
+      tagAngle = 300;
+      poseAngle = new Rotation2d(Math.toRadians(tagAngle));
+
 
     }
     else {
       tagTurnController.setSetpoint(0);
       tagAngle = -1;
+      poseAngle = new Rotation2d(Math.toRadians(0));
+
     }
   }
 
@@ -93,7 +108,15 @@ public class DriveToCurrentReef extends Command {
 
     if (tagAngle != -1) {
        // DriveCommands.joystickDriveAtAngle(drive, () -> forward_limelight, null, () -> new Rotation2d(Math.toRadians(tagAngle)));
-        DriveCommands.joystickDrive(drive, () -> forward_limelight, () -> 0, () -> rot);
+      //DriveCommands.joystickDrive(drive, () -> forward_limelight, () -> 0, () -> rot);
+      if (Math.abs(drive.getRotation().getDegrees() - tagAngle) > 10 ) {
+        DriveCommands.joystickDriveAtAngle(drive, () -> 0, () -> 0, () -> poseAngle);
+      }
+      else {
+        DriveCommands.joystickDriveAtAngle(drive, () -> 0, () -> 0, () -> poseAngle);
+
+      }
+      
 
     }
 

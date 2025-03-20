@@ -67,12 +67,22 @@ public final class Constants {
         public static final double INTAKE = 0.39;
         public static final double L2 = 0.57;
         public static final double L3 = 0.5;
+        public static final double ALGAE = 0.36;
+
 
 
 
         public static final double Intake_Coral = 0.7;
         public static final double Eject_Coral = -0.7;
         public static final double Maintain_Coral = 0.3;
+
+    }
+
+    public static class AlgaeAngles {
+        public static final double STOWED = 0.41;
+        public static final double LOWER_ALGAE = 0.6;
+        public static final double UPPER_ALGAE = 0.47;
+
 
     }
 }

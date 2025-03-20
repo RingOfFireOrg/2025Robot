@@ -2,12 +2,15 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.subsystems.Algae.Algae;
 import frc.robot.subsystems.Elevator.Elevator;
 import frc.robot.subsystems.EndEffector.EndEffector;
 
 public class SuperstructureManager {
     private final Elevator elevator;
     private final EndEffector endEffector;
+    private final Algae algae;
 
     public enum SuperstructureState {
         STOWED, INTAKING, SCORING, EJECTING,
@@ -21,9 +24,10 @@ public class SuperstructureManager {
 
     private SuperstructureState currentState = SuperstructureState.STOWED;
 
-    public SuperstructureManager(Elevator elevator, EndEffector endEffector) {
+    public SuperstructureManager(Elevator elevator, EndEffector endEffector, Algae algae) {
         this.elevator = elevator;
         this.endEffector = endEffector;
+        this.algae = algae;
     }
 
     public void setState(SuperstructureState newState) {
@@ -36,6 +40,7 @@ public class SuperstructureManager {
                 // elevator.setHeight(0);
                 // endEffector.setPivotAngle(0);
                 // endEffector.setIntakeSpeed(0);
+                // algae in stow position
                 break;
             
             case INTAKING:
@@ -60,6 +65,7 @@ public class SuperstructureManager {
     public Command returnState(SuperstructureState stateRequest) {
         switch (currentState) {
             case STOWED:
+            
             
             case PREP_L4:
                 // Move Elevator to L4 Height

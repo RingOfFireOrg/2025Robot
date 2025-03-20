@@ -1,5 +1,7 @@
 package frc.robot.subsystems.Algae;
 
+import java.util.function.DoubleSupplier;
+
 import org.littletonrobotics.junction.AutoLog;
 
 public interface AlgaeIO {
@@ -12,6 +14,9 @@ public interface AlgaeIO {
     public double appliedVolts = 0.0;
     public double currentAmps = 0.0;
     public double angularPositionRot = 0.0;
+
+
+    public boolean atGoal = false;
   }
 
   public default void updateInputs(AlgaeIOInputs inputs) {}
@@ -20,6 +25,7 @@ public interface AlgaeIO {
   public default void setVoltageIntake(double volts) {}
   public default void setVoltageLaunch(double left, double right) {}
 
+  public default void setAngle(DoubleSupplier angle) {}
 
 
 }
