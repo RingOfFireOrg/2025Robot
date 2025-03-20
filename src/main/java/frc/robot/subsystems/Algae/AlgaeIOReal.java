@@ -7,17 +7,22 @@ import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
+import frc.robot.util.LoggedTunableNumber;
 
 public class AlgaeIOReal implements AlgaeIO {
 
@@ -33,6 +38,13 @@ public class AlgaeIOReal implements AlgaeIO {
     public static final int leftAlgaeIntakeMotorCanID = 21;
     public static final int rightAlgaeIntakeMotorCanID = 22;
 
+
+    private LoggedTunableNumber kP = new LoggedTunableNumber("Algae/kP", 1);
+    private LoggedTunableNumber kI = new LoggedTunableNumber("Algae/kI", 0.0);
+    private LoggedTunableNumber kD = new LoggedTunableNumber("Algae/kD", 0.0);
+
+    private LoggedTunableNumber kG = new LoggedTunableNumber("Algae/kG", 0.0);
+
     public double zeroOffset = 0.0;
 
     private double MAX_VELOCITY = 0.5; // in degrees per second
@@ -45,9 +57,10 @@ public class AlgaeIOReal implements AlgaeIO {
         1.4, 0.0, 0.00, // PID gains (adjust as needed)
         new TrapezoidProfile.Constraints(MAX_VELOCITY, MAX_ACCELERATION)
     );
-    ArmFeedforward feedforward = new ArmFeedforward
-    (0, .6, 0, 0);
+    ArmFeedforward feedforward = new ArmFeedforward(0, .6, 0, 0);
+
     double output = 0;
+    SparkClosedLoopController closedLoopController;
 
 
     public AlgaeIOReal() {
@@ -55,37 +68,64 @@ public class AlgaeIOReal implements AlgaeIO {
         leftAlgaeIntakeMotor = new SparkMax(leftAlgaeIntakeMotorCanID, MotorType.kBrushless);
         rightAlgaeIntakeMotor = new SparkMax(rightAlgaeIntakeMotorCanID, MotorType.kBrushless);
 
+        absEncoder = algaePivotMotor.getAbsoluteEncoder();
+ 
+
         config
             .idleMode(IdleMode.kBrake)
             .smartCurrentLimit(40)
-            .absoluteEncoder.inverted(true);
-            intakeConfig
+        .absoluteEncoder
+            .inverted(true)
+            //.zeroOffset(zeroOffset)
+            // .positionConversionFactor(4.0 * Math.PI)
+            // .velocityConversionFactor(7.0 * Math.PI ) // i aint counting the number of teeth on the gears
+            .zeroOffset(((absEncoder.getPosition()- zeroOffset - (0.35)) % 1 + 1) % 1)
+            
+            ; 
+        config.closedLoop
+            .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
+            .pid(kP.get(), kI.get(), kD.get())
+            //.outputRange(-12, 12);   
+            .outputRange(-1, 1)
+            
+            ;   
+        ;
+        intakeConfig
             .idleMode(IdleMode.kBrake)
-            .smartCurrentLimit(20);
+            .smartCurrentLimit(20)
+        ;
             
 
 
         algaePivotMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-
-
         leftAlgaeIntakeMotor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-
         rightAlgaeIntakeMotor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
         
-        absEncoder = algaePivotMotor.getAbsoluteEncoder();
         
-
         zeroOffset = resetOffset();
 
         profiledPidController.disableContinuousInput();
-
         profiledPidController.setTolerance(0.05);
 
+        closedLoopController = algaePivotMotor.getClosedLoopController();
+
+
     
+        
     }
 
     @Override
     public void updateInputs(AlgaeIOInputs inputs) {
+
+        LoggedTunableNumber.ifChanged(
+            hashCode(), 
+            () -> {
+                config.closedLoop.pid(kP.get(), kI.get(), kD.get());
+                algaePivotMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+            }, 
+            kP, kI, kD
+        );
+
         output = profiledPidController.calculate(getAbsOffset(), targetAngle);
         atGoal = profiledPidController.atGoal();
         inputs.atGoal = profiledPidController.atGoal();
@@ -106,11 +146,11 @@ public class AlgaeIOReal implements AlgaeIO {
 
     }
 
+
+
     @Override
     public void setVoltage(double volts) {
-        algaePivotMotor.setVoltage(volts/1.5);
-
-    }
+        algaePivotMotor.setVoltage(volts/1.5);}
     
     @Override
     public void setVoltageIntake(double volts) {
@@ -136,16 +176,23 @@ public class AlgaeIOReal implements AlgaeIO {
         System.out.println(-thisOutput*12);
     }
 
-    public boolean atGoal() {
-        return atGoal;
+   // @Override
+    public void setReference(double position) {
+        // Removed conversion settings, use raw encoder values
+        System.out.println("Algae Position Referance: "+position);
+        closedLoopController.setReference(position, ControlType.kPosition);
     }
 
+    /* Set offset to value on startup */
     public double resetOffset() {
         return absEncoder.getPosition();
     }
+    /* Get Absolute Encoder Offset Upon Startup wrapped around 0 to 1 */
     public double getAbsOffset() {
         return  ((absEncoder.getPosition()- zeroOffset + (0.35)) % 1 + 1) % 1; 
     }
+    /* Get Absolute Encoder Offset for Feedforward Upon Startup wrapped around 0 to 1 
+     * 0 should be parrallel to floor */
     public double getAbsFFOffset() {
         return  ((absEncoder.getPosition()- zeroOffset - (.2)) % 1 + 1) % 1; 
     }

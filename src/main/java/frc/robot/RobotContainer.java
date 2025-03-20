@@ -247,18 +247,11 @@ public class RobotContainer {
         if (Constants.currentMode == Constants.Mode.REAL) {
 
 
-            operator.y()
-            .whileTrue(algae.runTeleop(() -> 0.4))
-            .onFalse(algae.runTeleop(() -> 0.0));
-            operator.a()
-            .whileTrue(algae.runTeleop(() -> -0.4))
-            .onFalse(algae.runTeleop(() -> 0.0));
-
             spareTest.x()
-            .whileTrue(algae.runAngle(() -> AlgaeAngles.STOWED))
+            .whileTrue(algae.runPosition(() -> AlgaeAngles.STOWED))
             .onFalse(algae.runTeleop(() -> 0.0));
             spareTest.b()
-            .whileTrue(algae.runAngle(() -> AlgaeAngles.LOWER_ALGAE))
+            .whileTrue(algae.runPosition(() -> AlgaeAngles.LOWER_ALGAE))
             .onFalse(algae.runTeleop(() -> 0.0));
 
             spareTest.y()
@@ -269,7 +262,12 @@ public class RobotContainer {
             .onFalse(algae.runTeleop(() -> 0.0));
 
 
-
+            operator.y()
+            .whileTrue(algae.runTeleop(() -> 0.4))
+            .onFalse(algae.runTeleop(() -> 0.0));
+            operator.a()
+            .whileTrue(algae.runTeleop(() -> -0.4))
+            .onFalse(algae.runTeleop(() -> 0.0));
             operator.x()
             .whileTrue(algae.runTeleopIntake(() -> 1))
             .onFalse(algae.runTeleopIntake(() -> 0.0));
@@ -277,23 +275,23 @@ public class RobotContainer {
             .whileTrue(algae.runTeleopIntake(() -> -1))
             .onFalse(algae.runTeleopIntake(() -> 0.0));
 
+
             operator.povUp()
             .whileTrue(elevator.setHeight(ElevatorHeights.L3))
             //.whileTrue(algae.runAngle(() -> AlgaeAngles.STOWED))
             .onTrue(EndEffector.angle(PivotAngles.L3))
-
             ;
+    
             operator.povLeft()
             .whileTrue(elevator.setHeight(ElevatorHeights.L2))
             //.whileTrue(algae.runAngle(() -> AlgaeAngles.STOWED))
             .onTrue(EndEffector.angle(PivotAngles.L2))
-
             ;
+
             operator.povRight()
             .whileTrue(elevator.setHeight(1.2))
             //.whileTrue(algae.runAngle(() -> AlgaeAngles.LOWER_ALGAE))
             .onTrue(EndEffector.angle(PivotAngles.INTAKE))
-
             ;
 
             operator.povDown()
@@ -329,7 +327,7 @@ public class RobotContainer {
 
 
 
-            /* Manual Control for ELevator */
+            /* Manual Control for Elevator */
             operator.axisMagnitudeGreaterThan(XboxController.Axis.kLeftY.value, 0.1)
             .whileTrue(elevator.runTeleop(() -> -operator.getLeftY()/1.4))
             .onFalse(elevator.runTeleop(() -> 0))

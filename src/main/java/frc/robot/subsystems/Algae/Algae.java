@@ -13,14 +13,12 @@ public class Algae extends SubsystemBase {
 
     public Algae(AlgaeIO io) {
         this.io = io;
-
     }
 
     @Override
     public void periodic() {
         io.updateInputs(inputs);
         Logger.processInputs("Algae", inputs);
-
     }
 
     public Command runPercent(double percent) {
@@ -30,7 +28,6 @@ public class Algae extends SubsystemBase {
     public Command runTeleop(DoubleSupplier input) {
         return run(() -> io.setVoltage((input.getAsDouble()) * 12.0));
     }
-
     public Command runTeleopIntake(DoubleSupplier input) {
         return run(() -> io.setVoltageIntake((input.getAsDouble()) * 12.0));
     }
@@ -39,10 +36,14 @@ public class Algae extends SubsystemBase {
     }
     public Command runAngle(DoubleSupplier angle) {
         return run(() -> io.setAngle(angle))
-            // .until(() -> inputs.atGoal)
+            .until(() -> inputs.atGoal)
             // .andThen(() ->  io.setVoltage((0)))
             ;
             //.finallyDo(runOnce(() -> io.setVoltage((0))));
+    }
+
+    public Command runPosition(DoubleSupplier position) {
+        return run(() -> io.setPosition(position.getAsDouble()));
     }
 
 }

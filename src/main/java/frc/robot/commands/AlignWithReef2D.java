@@ -95,7 +95,7 @@ public class AlignWithReef2D extends Command {
   @Override
   public void execute() {
     if (tagAngle == -1) {
-        endCMD = true;
+      endCMD = true;
     }
 
 
