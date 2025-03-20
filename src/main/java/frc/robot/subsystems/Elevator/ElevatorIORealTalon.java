@@ -3,8 +3,10 @@ package frc.robot.subsystems.Elevator;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.util.LoggedTunableNumber;
 
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
@@ -40,8 +42,11 @@ public class ElevatorIORealTalon implements ElevatorIO {
     // 1.5
     // 36:1 
 
+    private LoggedTunableNumber kP = new LoggedTunableNumber("Elevator/kP", 13);
+    private LoggedTunableNumber kI = new LoggedTunableNumber("Elevator/kI", 0.0);
+    private LoggedTunableNumber kD = new LoggedTunableNumber("Elevator/kD", 0.1);
 
-    public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM, kG;
+    public double kIz, kFF, kMaxOutput, kMinOutput, maxRPM, kG;
 
     //public static final int elevatorCanIDleft = 14;
     public static final int elevatorCanID/*right*/ = 15;
@@ -67,9 +72,9 @@ public class ElevatorIORealTalon implements ElevatorIO {
         // motionMagicConfigs.MotionMagicJerk = 1600; // Target jerk of 1600 rps/s/s (0.1 seconds)
         
         var slot0Configs = talonFXConfigs.Slot0;
-        slot0Configs.kP = 4; // An error of 1 rotation results in 1 V output
-        slot0Configs.kI = 0; // no output for integrated error
-        slot0Configs.kD = 0.1; // A velocity of 1 rps results in 0.1 V output
+        slot0Configs.kP = kP.get(); // An error of 1 rotation results in 1 V output
+        slot0Configs.kI = kI.get(); // no output for integrated error
+        slot0Configs.kD = kD.get(); // A velocity of 1 rps results in 0.1 V output
         slot0Configs.kG = 0.1;
         slot0Configs.GravityType = GravityTypeValue.Elevator_Static;
 
@@ -95,6 +100,18 @@ public class ElevatorIORealTalon implements ElevatorIO {
 
     @Override
     public void updateInputs(ElevatorIOInputs inputs) {
+        LoggedTunableNumber.ifChanged(
+            hashCode(), 
+            () -> {        
+                var slot0Configs = talonFXConfigs.Slot0;
+                slot0Configs.kP = kP.get(); // An error of 1 rotation results in 1 V output
+                slot0Configs.kI = kI.get(); // no output for integrated error
+                slot0Configs.kD = kD.get(); // A velocity of 1 rps results in 0.1 V output
+                elevatorMotor.getConfigurator().apply(talonFXConfigs.Slot0, 1); // Apply to slot 1
+
+            }, 
+            kP, kI, kD
+        );
 
         Logger.recordOutput("ElevatorPosition Rots", elevatorMotor.getPosition().getValueAsDouble());
     
@@ -108,11 +125,6 @@ public class ElevatorIORealTalon implements ElevatorIO {
         double g = SmartDashboard.getNumber("kG Gain", 0);
     
         //Test if this had an effect
-        if((g != kG)) { 
-            kG = g;
-            var slot1 = talonFXConfigs.Slot1;
-            slot1.kG = kG; 
-        } 
 
 
 

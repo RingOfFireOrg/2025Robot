@@ -43,7 +43,12 @@ public class Algae extends SubsystemBase {
     }
 
     public Command runPosition(DoubleSupplier position) {
-        return run(() -> io.setPosition(position.getAsDouble()));
+        return run(() -> io.setReference(position.getAsDouble()));
     }
-
+    public Command runPositionandIntake(DoubleSupplier position, DoubleSupplier volts) {
+        //return runOnce(() -> io.setAngleandIntake(angle, volts));
+        return 
+        runOnce(() -> io.setVoltageIntake((volts.getAsDouble()) * 12.0))
+        .andThen(run(() -> io.setReference(position.getAsDouble())));
+      }
 }

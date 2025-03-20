@@ -36,12 +36,11 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.AlgaeAngles;
 import frc.robot.Constants.ElevatorHeights;
 import frc.robot.Constants.PivotAngles;
+import frc.robot.commands.AlignToReefTagRelative;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.DriveToCurrentReef;
 import frc.robot.subsystems.Algae.Algae;
 import frc.robot.subsystems.Algae.AlgaeIOReal;
 import frc.robot.subsystems.Climber.Climber;
@@ -228,9 +227,10 @@ public class RobotContainer {
         driver.leftBumper().whileTrue(DriveCommands.joystickDriveAtAngle(drive, 
         () -> MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftY(),-maxSpeed,maxSpeed), 0.1),
         () -> MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftX(),-maxSpeed,maxSpeed), 0.1),
-        () -> new Rotation2d(Math.toRadians(-125)) ));
+        () -> new Rotation2d(Math.toRadians(125)) ));
 
-
+        driver.x().whileTrue(new AlignToReefTagRelative(true, drive));
+        
         //driver.a().whileTrue(new DriveToCurrentReef(drive, vision));
 
         //Reset gyro / odometry
@@ -278,25 +278,28 @@ public class RobotContainer {
 
             operator.povUp()
             .whileTrue(elevator.setHeight(ElevatorHeights.L3))
-            //.whileTrue(algae.runAngle(() -> AlgaeAngles.STOWED))
+            .whileTrue(algae.runPosition(() -> AlgaeAngles.STOWED))
             .onTrue(EndEffector.angle(PivotAngles.L3))
             ;
     
             operator.povLeft()
             .whileTrue(elevator.setHeight(ElevatorHeights.L2))
-            //.whileTrue(algae.runAngle(() -> AlgaeAngles.STOWED))
+            .whileTrue(algae.runPosition(() -> AlgaeAngles.STOWED))
             .onTrue(EndEffector.angle(PivotAngles.L2))
             ;
 
             operator.povRight()
-            .whileTrue(elevator.setHeight(1.2))
-            //.whileTrue(algae.runAngle(() -> AlgaeAngles.LOWER_ALGAE))
-            .onTrue(EndEffector.angle(PivotAngles.INTAKE))
+            .whileTrue(elevator.setHeight(ElevatorHeights.LOWER_ALGAE))
+            .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.LOWER_ALGAE, () -> -.9))
+            //.whileTrue(algae.runPosition(() -> AlgaeAngles.LOWER_ALGAE))
+            .onTrue(EndEffector.angle(PivotAngles.STOWED))
+            // .andThen(new InstantCommand()))
+            // .onTrue(getAutonomousCommand())
             ;
 
             operator.povDown()
             .whileTrue(elevator.setHeight(0))
-            //.whileTrue(algae.runAngle(() -> AlgaeAngles.STOWED))
+            .whileTrue(algae.runPosition(() -> AlgaeAngles.STOWED))
             .onTrue(EndEffector.angle(PivotAngles.STOWED))
            ;
 
@@ -319,7 +322,7 @@ public class RobotContainer {
             /* Intaking Setup Button - Move elevator to intake height, move intake to intake angle, and Intake coral */
             operator.axisMagnitudeGreaterThan(XboxController.Axis.kLeftTrigger.value, 0.1)
             .whileTrue(elevator.setHeight(ElevatorHeights.INTAKE_HEIGHT))
-            .onTrue(algae.runAngle(() -> AlgaeAngles.STOWED))
+            .onTrue(algae.runPosition(() -> AlgaeAngles.STOWED))
             .onTrue(EndEffector.setAngleandIntake(PivotAngles.INTAKE, 0.7))
             .onFalse(EndEffector.ejecter(0))
             ;
@@ -426,7 +429,7 @@ public class RobotContainer {
         ); 
 
         NamedCommands.registerCommand("Ejecter_Eject",
-        EndEffector.ejecter(-0.4)
+        EndEffector.ejecter(-0.8)
         .alongWith(Commands.print("NamedCommand: Ejecter_Eject"))
         ); 
 

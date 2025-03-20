@@ -6,7 +6,6 @@ import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
@@ -15,7 +14,6 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
@@ -39,9 +37,9 @@ public class AlgaeIOReal implements AlgaeIO {
     public static final int rightAlgaeIntakeMotorCanID = 22;
 
 
-    private LoggedTunableNumber kP = new LoggedTunableNumber("Algae/kP", 1);
+    private LoggedTunableNumber kP = new LoggedTunableNumber("Algae/kP", 2.4);
     private LoggedTunableNumber kI = new LoggedTunableNumber("Algae/kI", 0.0);
-    private LoggedTunableNumber kD = new LoggedTunableNumber("Algae/kD", 0.0);
+    private LoggedTunableNumber kD = new LoggedTunableNumber("Algae/kD", 0.02);
 
     private LoggedTunableNumber kG = new LoggedTunableNumber("Algae/kG", 0.0);
 
@@ -69,18 +67,19 @@ public class AlgaeIOReal implements AlgaeIO {
         rightAlgaeIntakeMotor = new SparkMax(rightAlgaeIntakeMotorCanID, MotorType.kBrushless);
 
         absEncoder = algaePivotMotor.getAbsoluteEncoder();
+        absEncoder.getPosition();
  
 
         config
             .idleMode(IdleMode.kBrake)
             .smartCurrentLimit(40)
         .absoluteEncoder
-            .inverted(true)
-            //.zeroOffset(zeroOffset)
+            .inverted(false)
+            .zeroOffset(0.6)
             // .positionConversionFactor(4.0 * Math.PI)
             // .velocityConversionFactor(7.0 * Math.PI ) // i aint counting the number of teeth on the gears
-            .zeroOffset(((absEncoder.getPosition()- zeroOffset - (0.35)) % 1 + 1) % 1)
-            
+            //.zeroOffset(((absEncoder.getPosition() + 0.6 ) % 1 + 1) % 1)
+        
             ; 
         config.closedLoop
             .feedbackSensor(FeedbackSensor.kAbsoluteEncoder)
@@ -88,13 +87,15 @@ public class AlgaeIOReal implements AlgaeIO {
             //.outputRange(-12, 12);   
             .outputRange(-1, 1)
             
+            
             ;   
         ;
         intakeConfig
             .idleMode(IdleMode.kBrake)
             .smartCurrentLimit(20)
         ;
-            
+
+        
 
 
         algaePivotMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
@@ -108,6 +109,7 @@ public class AlgaeIOReal implements AlgaeIO {
         profiledPidController.setTolerance(0.05);
 
         closedLoopController = algaePivotMotor.getClosedLoopController();
+        
 
 
     
@@ -133,16 +135,20 @@ public class AlgaeIOReal implements AlgaeIO {
         Logger.recordOutput("Algae/Abs Encoder Raw", absEncoder.getPosition());
         Logger.recordOutput("Algae/Abs Encoder Offset", getAbsOffset());
         Logger.recordOutput("Algae/profiled output", output);
-        System.out.println(algaePivotMotor.getAppliedOutput());
+        //Logger.recordOutput("Algae/profiled output", );
+        //System.out.println(algaePivotMotor.getAppliedOutput());
 
         
         if (DriverStation.isDisabled()) {
             algaePivotMotor.setVoltage(0);
+            leftAlgaeIntakeMotor.setVoltage(0);
+            rightAlgaeIntakeMotor.setVoltage(0);
         }
 
-        if (profiledPidController.atGoal()) {
-            algaePivotMotor.setVoltage(0);
-        }
+
+        // if (profiledPidController.atGoal()) {
+        //     algaePivotMotor.setVoltage(0);
+        // }
 
     }
 
@@ -176,11 +182,19 @@ public class AlgaeIOReal implements AlgaeIO {
         System.out.println(-thisOutput*12);
     }
 
-   // @Override
+    @Override
     public void setReference(double position) {
         // Removed conversion settings, use raw encoder values
         System.out.println("Algae Position Referance: "+position);
-        closedLoopController.setReference(position, ControlType.kPosition);
+        if (Math.abs(position - absEncoder.getPosition()) > 0.01) {
+            System.out.println("Not Reached");
+
+            closedLoopController.setReference(position, ControlType.kPosition); 
+            
+        }
+        else {
+            algaePivotMotor.setVoltage(0);
+        }
     }
 
     /* Set offset to value on startup */

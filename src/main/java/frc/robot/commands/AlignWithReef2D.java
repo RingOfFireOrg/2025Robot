@@ -4,6 +4,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -14,6 +15,8 @@ public class AlignWithReef2D extends Command {
     double VISION_TURN_ARRIVE_OFFSET = 0;
     double VISION_SPEED_ARRIVE_OFFSET = 0;
     double VISION_STRAFE_ARRIVE_OFFSET = 0;
+    private Timer dontSeeTagTimer, stopTimer;
+    private boolean isRightScore;
 
     boolean leftReef;
 
@@ -40,10 +43,10 @@ public class AlignWithReef2D extends Command {
     );
     CommandXboxController driver = new CommandXboxController(0);
 
-  public AlignWithReef2D(Drive drive, boolean leftReef) {
+  public AlignWithReef2D(Drive drive, boolean isRightScore) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.drive = drive;
-    this.leftReef = leftReef;
+    this.isRightScore = isRightScore;
     visionTurnController.enableContinuousInput(-180, 180);
     addRequirements(drive);
 
@@ -51,6 +54,11 @@ public class AlignWithReef2D extends Command {
 
   @Override
   public void initialize() {
+    this.stopTimer = new Timer();
+    this.stopTimer.start();
+    this.dontSeeTagTimer = new Timer();
+    this.dontSeeTagTimer.start();
+    
         tagNum = NetworkTableInstance.getDefault().getTable("limelight-tag").getEntry("tid").getDouble(0);
 
 
@@ -83,7 +91,7 @@ public class AlignWithReef2D extends Command {
     }
     else if (tagNum == 17 || tagNum == 8) {
         visionTurnController.setSetpoint(300);
-      tagAngle = 200;
+      tagAngle = 300;
 
     }
     else {

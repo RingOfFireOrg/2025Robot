@@ -26,18 +26,18 @@ import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
 public class DriveCommands {
-    private static final double DEADBAND = 0.1;
+    public static final double DEADBAND = 0.1;
 
-    private static final double ANGLE_KP = 5.0;
-    private static final double ANGLE_KD = 0.4;
-    private static final double ANGLE_MAX_VELOCITY = 8.0/3;
-    private static final double ANGLE_MAX_ACCELERATION = 20.0/3;
+    public static final double ANGLE_KP = 5.0;
+    public static final double ANGLE_KD = 0.4;
+    public static final double ANGLE_MAX_VELOCITY = 8.0/3;
+    public static final double ANGLE_MAX_ACCELERATION = 20.0/3;
 
 
-    private static final double FF_START_DELAY = 2.0; // Secs
-    private static final double FF_RAMP_RATE = 0.1; // Volts/Sec
-    private static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
-    private static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
+    public static final double FF_START_DELAY = 2.0; // Secs
+    public static final double FF_RAMP_RATE = 0.1; // Volts/Sec
+    public static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
+    public static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
     //private static SlewRateLimiter xLimiter, yLimiter, turningLimiter;
     /* if drive dosent work check ratelimiters */
     private DriveCommands() {
@@ -47,40 +47,41 @@ public class DriveCommands {
 
     }
 
-    public static Command testDrive(Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier thetaSupplier) {
-        SlewRateLimiter xLimiter, yLimiter, turningLimiter;
-        xLimiter = new SlewRateLimiter(3);
-        yLimiter = new SlewRateLimiter(3);
-        turningLimiter = new SlewRateLimiter(4);
+    // TODO: delete 3.20
+    // public static Command testDrive(Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier thetaSupplier) {
+    //     SlewRateLimiter xLimiter, yLimiter, turningLimiter;
+    //     xLimiter = new SlewRateLimiter(3);
+    //     yLimiter = new SlewRateLimiter(3);
+    //     turningLimiter = new SlewRateLimiter(4);
 
-        return Commands.run(() -> {
-            double xSpeed = xSupplier.getAsDouble();
-            double ySpeed = ySupplier.getAsDouble();
-            double thetaSpeed = thetaSupplier.getAsDouble();
-            xSpeed = (1 / (1 - OIConstants.controllerDeadband)) * (xSpeed + ( -Math.signum(xSpeed) * OIConstants.controllerDeadband));
-            ySpeed = (1 / (1 - OIConstants.controllerDeadband)) * (ySpeed + ( -Math.signum(ySpeed) * OIConstants.controllerDeadband));
-            thetaSpeed = (1 / (1 - OIConstants.controllerDeadband)) * (ySpeed + ( -Math.signum(ySpeed) * OIConstants.controllerDeadband));
+    //     return Commands.run(() -> {
+    //         double xSpeed = xSupplier.getAsDouble();
+    //         double ySpeed = ySupplier.getAsDouble();
+    //         double thetaSpeed = thetaSupplier.getAsDouble();
+    //         xSpeed = (1 / (1 - OIConstants.controllerDeadband)) * (xSpeed + ( -Math.signum(xSpeed) * OIConstants.controllerDeadband));
+    //         ySpeed = (1 / (1 - OIConstants.controllerDeadband)) * (ySpeed + ( -Math.signum(ySpeed) * OIConstants.controllerDeadband));
+    //         thetaSpeed = (1 / (1 - OIConstants.controllerDeadband)) * (ySpeed + ( -Math.signum(ySpeed) * OIConstants.controllerDeadband));
     
-            xSpeed = xLimiter.calculate(xSpeed);
-            ySpeed = yLimiter.calculate(ySpeed);
-            thetaSpeed = turningLimiter.calculate(thetaSpeed)
-            * drive.getMaxAngularSpeedRadPerSec();
+    //         xSpeed = xLimiter.calculate(xSpeed);
+    //         ySpeed = yLimiter.calculate(ySpeed);
+    //         thetaSpeed = turningLimiter.calculate(thetaSpeed)
+    //         * drive.getMaxAngularSpeedRadPerSec();
 
-            ChassisSpeeds speeds = new ChassisSpeeds(xSpeed,ySpeed,thetaSpeed);
-            boolean isFlipped = DriverStation.getAlliance().isPresent()
-            && DriverStation.getAlliance().get() == Alliance.Red;
-            speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-            speeds,
-            isFlipped 
-                ? drive.getRotation().plus(new Rotation2d(Math.PI)) 
-                : drive.getRotation());
-            drive.runVelocity(speeds);
+    //         ChassisSpeeds speeds = new ChassisSpeeds(xSpeed,ySpeed,thetaSpeed);
+    //         boolean isFlipped = DriverStation.getAlliance().isPresent()
+    //         && DriverStation.getAlliance().get() == Alliance.Red;
+    //         speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
+    //         speeds,
+    //         isFlipped 
+    //             ? drive.getRotation().plus(new Rotation2d(Math.PI)) 
+    //             : drive.getRotation());
+    //         drive.runVelocity(speeds);
 
-        }, 
-        drive);
-    }
+    //     }, 
+    //     drive);
+    // }
 
-    private static Translation2d getLinearVelocityFromJoysticks(double x, double y) {
+    public static Translation2d getLinearVelocityFromJoysticks(double x, double y) {
         // Apply deadband
         double linearMagnitude = MathUtil.applyDeadband(Math.hypot(x, y), DEADBAND);
         Rotation2d linearDirection = new Rotation2d(Math.atan2(y, x));
@@ -148,6 +149,10 @@ public class DriveCommands {
             },
             drive);
     }
+
+
+
+    
     public static Command joystickDriveRobotOriented(
             Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier omegaSupplier) {
         return Commands.run(
@@ -218,6 +223,48 @@ public class DriveCommands {
             .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians())
         );
     }
+
+
+
+
+    public static Command driveToReef(Drive drive, boolean right) {
+
+
+        return Commands.run(() -> {}, drive)
+        
+        ;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Measures the velocity feedforward constants for the drive motors.

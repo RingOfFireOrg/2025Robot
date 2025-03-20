@@ -27,6 +27,6 @@ public interface AlgaeIO {
 
   public default void setAngle(DoubleSupplier angle) {}
   public default void setPosition(double position) {}
-
+  public default void setReference(double position) {}
 
 }

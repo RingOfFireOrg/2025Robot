@@ -37,6 +37,7 @@ public class DriveToCurrentReef extends Command {
 
     // tagForwardController.setSetpoint(14);
     // tagForwardController.setTolerance(2);
+
   }
 
   @Override
@@ -110,7 +111,8 @@ public class DriveToCurrentReef extends Command {
        // DriveCommands.joystickDriveAtAngle(drive, () -> forward_limelight, null, () -> new Rotation2d(Math.toRadians(tagAngle)));
       //DriveCommands.joystickDrive(drive, () -> forward_limelight, () -> 0, () -> rot);
       if (Math.abs(drive.getRotation().getDegrees() - tagAngle) > 10 ) {
-        DriveCommands.joystickDriveAtAngle(drive, () -> 0, () -> 0, () -> poseAngle);
+        
+        controller.x().whileTrue(DriveCommands.joystickDriveAtAngle(drive, () -> 0, () -> 0, () -> poseAngle));
       }
       else {
         DriveCommands.joystickDriveAtAngle(drive, () -> 0, () -> 0, () -> poseAngle);

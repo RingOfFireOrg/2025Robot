@@ -11,9 +11,9 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+@SuppressWarnings("unused")
 public class ClimberIOReal implements ClimberIO {
     private final SparkMax climberMotor;
-    private final RelativeEncoder encoder;
     private SparkMaxConfig config = new SparkMaxConfig();
     public static final int climberCanID = 16;
 
@@ -23,7 +23,6 @@ public class ClimberIOReal implements ClimberIO {
             .idleMode(IdleMode.kBrake)
             .smartCurrentLimit(40);
         climberMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
-        encoder = climberMotor.getEncoder();    
     }
 
     @Override

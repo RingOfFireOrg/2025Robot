@@ -5,6 +5,7 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import frc.robot.Robot;
+import frc.robot.util.LoggedTunableNumber;
 import frc.robot.Constants.EndEffectorIntakeState;
 
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -44,6 +45,10 @@ public class EndEffectorIOReal implements EndEffectorIO {
     private double MAX_VELOCITY = 0.3; // in degrees per second
     private double MAX_ACCELERATION = 1; // degrees per second squared
 
+    private LoggedTunableNumber kP = new LoggedTunableNumber("Coral/kP", 2.9);
+    private LoggedTunableNumber kI = new LoggedTunableNumber("Coral/kI", 0.1);
+    private LoggedTunableNumber kD = new LoggedTunableNumber("Coral/kD", 0.01);
+
     private final ProfiledPIDController profiledPidController = new ProfiledPIDController(
         1.5, 0.0, 0.02, // PID gains (adjust as needed)
         new TrapezoidProfile.Constraints(MAX_VELOCITY, MAX_ACCELERATION)
@@ -53,7 +58,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
     double output = 0;
 
 
-    private PIDController pidController = new PIDController(1.3, 0.05, 0.0);
+    private PIDController pidController; 
     private boolean enableHoming = false; // In case operator Takes manuel control
 
     
@@ -73,7 +78,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
         config.encoder.positionConversionFactor(1);
         //config.encoder.velocityConversionFactor(1);
-
+        pidController = new PIDController(kP.get(), kI.get(), kD.get());
         EndEffectorMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
         EjectMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
@@ -86,7 +91,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
         pidController.setTolerance(0.03);
 
         profiledPidController.disableContinuousInput();
-        profiledPidController.setTolerance(0.03);
+        profiledPidController.setTolerance(0.005);
 
         profiledPidController.setIZone(0.03);
         profiledPidController.setIntegratorRange(-1.6, 1.6);
@@ -106,7 +111,13 @@ public class EndEffectorIOReal implements EndEffectorIO {
             Math.toRadians(getAbsFFOffset()*360),0.0
         );
 
-
+        LoggedTunableNumber.ifChanged(
+            hashCode(), 
+            () -> {
+                pidController = new PIDController(kP.get(), kI.get(), kD.get());
+            }, 
+            kP, kI, kD
+        );
 
         if (zeroOffset == 0.0 || zeroOffset == 0.35) {
             /* Dosen't always properly apply the offset, so run in periodic if thats the case */
