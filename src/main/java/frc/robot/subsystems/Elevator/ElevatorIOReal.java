@@ -13,28 +13,20 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.units.measure.MutAngularVelocity;
 import edu.wpi.first.units.measure.MutVoltage;
-import edu.wpi.first.units.measure.Voltage;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import org.littletonrobotics.junction.Logger;
-import org.littletonrobotics.urcl.URCL;
-
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
-import frc.robot.Constants;
 
 public class ElevatorIOReal implements ElevatorIO {
 
@@ -43,7 +35,7 @@ public class ElevatorIOReal implements ElevatorIO {
 
     /*
     *  Here for refrence, elevator motor has been switched to talonfx
-    *  so don't use this one!!!!!!
+    *  
     */
     private final SparkMax elevatorMotor;
     private final RelativeEncoder encoder;
@@ -58,7 +50,6 @@ public class ElevatorIOReal implements ElevatorIO {
     private TrapezoidProfile profile = new TrapezoidProfile(new TrapezoidProfile.Constraints(10, 20));
     private TrapezoidProfile.State goal = new TrapezoidProfile.State();
     private TrapezoidProfile.State setpoint = new TrapezoidProfile.State();
-    private SysIdRoutine routine;
     public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM;
 
     //public static final int elevatorCanIDleft = 14;
@@ -75,10 +66,9 @@ public class ElevatorIOReal implements ElevatorIO {
 
         elevatorMotor = new SparkMax(elevatorCanID, MotorType.kBrushless);
         config
-            //.inverted(false)
             .idleMode(IdleMode.kBrake)
             .smartCurrentLimit(40)
-            ;//.closedLoopRampRate(0.5);
+            ;
 
         config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder)
             .p(kP)
@@ -143,17 +133,13 @@ public class ElevatorIOReal implements ElevatorIO {
             elevatorMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
         }
-        // if((iz != kIz)) { m_pidController.setIZone(iz); kIz = iz; 
         
         // }
         if((ff != kFF)) { config.closedLoop.velocityFF(ff); kFF = ff; 
             elevatorMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
         }
-        // if((max != kMaxOutput) || (min != kMinOutput)) { 
-        //   m_pidController.setOutputRange(min, max); 
-        //   kMinOutput = min; kMaxOutput = max; 
-        // }
+
 
 
 
@@ -180,8 +166,7 @@ public class ElevatorIOReal implements ElevatorIO {
         goal = new TrapezoidProfile.State(userGoal, 0);
         setpoint = new TrapezoidProfile.State(encoder.getPosition(), 0);
         setpoint = profile.calculate(1, setpoint, goal);
-        //profile.calculate(5, new TrapezoidProfile.State(0, 0), new TrapezoidProfile.State(5, 0));
-        //closedLoopController.setReference(setpoint.position, ControlType.kPosition, ClosedLoopSlot.kSlot0, feedforward.calculate(setpoint.velocity));
+
         closedLoopController.setReference(setpoint.position, ControlType.kPosition, ClosedLoopSlot.kSlot0);
 
     }

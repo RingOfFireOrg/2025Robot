@@ -3,7 +3,6 @@ package frc.robot.subsystems.EndEffector;
 import org.littletonrobotics.junction.AutoLog;
 
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.units.measure.Angle;
 
 public interface EndEffectorIO {
   @AutoLog

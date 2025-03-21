@@ -3,8 +3,6 @@ package frc.robot.subsystems.EndEffector;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
-import static edu.wpi.first.units.Units.Rotation;
-
 import java.util.function.Supplier;
 
 import org.ironmaple.simulation.IntakeSimulation;
@@ -16,12 +14,9 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.MutAngle;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
-import edu.wpi.first.wpilibj.simulation.ElevatorSim;
 
 public class EndEffectorIOSim implements EndEffectorIO {
   private DCMotorSim intakeMotor = new DCMotorSim(
