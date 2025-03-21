@@ -38,48 +38,12 @@ public class DriveCommands {
     public static final double FF_RAMP_RATE = 0.1; // Volts/Sec
     public static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
     public static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
-    //private static SlewRateLimiter xLimiter, yLimiter, turningLimiter;
-    /* if drive dosent work check ratelimiters */
+
     private DriveCommands() {
-        // DriveCommands.xLimiter = new SlewRateLimiter(ANGLE_KD);
-        // this.yLimiter = new SlewRateLimiter(ANGLE_KD);
-        // this.turningLimiter = new SlewRateLimiter(ANGLE_KD);
 
     }
 
-    // TODO: delete 3.20
-    // public static Command testDrive(Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, DoubleSupplier thetaSupplier) {
-    //     SlewRateLimiter xLimiter, yLimiter, turningLimiter;
-    //     xLimiter = new SlewRateLimiter(3);
-    //     yLimiter = new SlewRateLimiter(3);
-    //     turningLimiter = new SlewRateLimiter(4);
 
-    //     return Commands.run(() -> {
-    //         double xSpeed = xSupplier.getAsDouble();
-    //         double ySpeed = ySupplier.getAsDouble();
-    //         double thetaSpeed = thetaSupplier.getAsDouble();
-    //         xSpeed = (1 / (1 - OIConstants.controllerDeadband)) * (xSpeed + ( -Math.signum(xSpeed) * OIConstants.controllerDeadband));
-    //         ySpeed = (1 / (1 - OIConstants.controllerDeadband)) * (ySpeed + ( -Math.signum(ySpeed) * OIConstants.controllerDeadband));
-    //         thetaSpeed = (1 / (1 - OIConstants.controllerDeadband)) * (ySpeed + ( -Math.signum(ySpeed) * OIConstants.controllerDeadband));
-    
-    //         xSpeed = xLimiter.calculate(xSpeed);
-    //         ySpeed = yLimiter.calculate(ySpeed);
-    //         thetaSpeed = turningLimiter.calculate(thetaSpeed)
-    //         * drive.getMaxAngularSpeedRadPerSec();
-
-    //         ChassisSpeeds speeds = new ChassisSpeeds(xSpeed,ySpeed,thetaSpeed);
-    //         boolean isFlipped = DriverStation.getAlliance().isPresent()
-    //         && DriverStation.getAlliance().get() == Alliance.Red;
-    //         speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-    //         speeds,
-    //         isFlipped 
-    //             ? drive.getRotation().plus(new Rotation2d(Math.PI)) 
-    //             : drive.getRotation());
-    //         drive.runVelocity(speeds);
-
-    //     }, 
-    //     drive);
-    // }
 
     public static Translation2d getLinearVelocityFromJoysticks(double x, double y) {
         // Apply deadband
@@ -230,9 +194,8 @@ public class DriveCommands {
     public static Command driveToReef(Drive drive, boolean right) {
 
 
-        return Commands.run(() -> {}, drive)
-        
-        ;
+
+        return Commands.run(() -> {}, drive);
     }
 
 

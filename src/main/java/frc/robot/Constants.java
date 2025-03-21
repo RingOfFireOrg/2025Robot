@@ -60,7 +60,7 @@ public final class Constants {
 
         public static final double L3 = 3.05;
         public static final double L4 = 0;
-        public static final double LOWER_ALGAE = 2.979;
+        public static final double LOWER_ALGAE = 2.95;
 
 
 

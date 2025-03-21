@@ -26,7 +26,7 @@ public class DriveToCurrentReef extends Command {
   double xSpeed = 0;
   Rotation2d poseAngle;
 
-  public DriveToCurrentReef(Drive drive,Vision vision) {
+  public DriveToCurrentReef(Drive drive) {
     //this.vision = vision;
     this.drive = drive;
     addRequirements(drive);
@@ -113,6 +113,7 @@ public class DriveToCurrentReef extends Command {
       if (Math.abs(drive.getRotation().getDegrees() - tagAngle) > 10 ) {
         
         controller.x().whileTrue(DriveCommands.joystickDriveAtAngle(drive, () -> 0, () -> 0, () -> poseAngle));
+
       }
       else {
         DriveCommands.joystickDriveAtAngle(drive, () -> 0, () -> 0, () -> poseAngle);

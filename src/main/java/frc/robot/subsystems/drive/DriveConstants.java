@@ -22,6 +22,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
+import frc.robot.util.LoggedTunableNumber;
+
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.configs.DriveTrainSimulationConfig;
 import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
@@ -64,7 +66,7 @@ public class DriveConstants {
 
 
     // Drive motor configuration
-    public static final int driveMotorCurrentLimit = 60;
+    public static final int driveMotorCurrentLimit = 40;
     public static final double wheelRadiusMeters = Units.inchesToMeters(1.754);
     public static final double driveMotorReduction = 6.75;
        // (45.0 * 22.0) / (14.0 * 15.0); 
@@ -77,16 +79,20 @@ public class DriveConstants {
     public static final double driveEncoderVelocityFactor =
         (2 * Math.PI) / 60.0 / driveMotorReduction; // Rotor RPM -> Wheel Rad/Sec
 
+
     // Drive PID configuration
-    public static final double driveKp = 0.0;
-    public static final double driveKd = 0.0;
-    public static final double driveKs = 0.19535;
-    public static final double driveKv = 0.13757;
+    public static final double driveKp = 0.01;
+    public static final double driveKd = 0.001;
+    public static final double driveKs = 0.20289;
+    public static final double driveKv = 0.14503;
     public static final double driveSimP = 0.05;
     public static final double driveSimD = 0.0;
     public static final double driveSimKs = 0.0;
     public static final double driveSimKv = 0.0789;
 
+    // private LoggedTunableNumber kP = new LoggedTunableNumber("Drive/kP", driveKp);
+    // private LoggedTunableNumber kI = new LoggedTunableNumber("Drive/kI", 0.0);
+    // private LoggedTunableNumber kD = new LoggedTunableNumber("Drive/kD", driveKd);
     // Turn motor configuration
     public static final boolean turnInverted = true;
     public static final int turnMotorCurrentLimit = 20;
@@ -114,7 +120,7 @@ public class DriveConstants {
     public static final double robotMassKg = 48.3;
     public static final double robotMOI = 6.883;
 
-    public static final double wheelCOF = 1.2;
+    public static final double wheelCOF = 1.891;
 
 
     

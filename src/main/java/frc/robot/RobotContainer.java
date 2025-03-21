@@ -36,11 +36,13 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.AlgaeAngles;
 import frc.robot.Constants.ElevatorHeights;
 import frc.robot.Constants.PivotAngles;
 import frc.robot.commands.AlignToReefTagRelative;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.DriveToCurrentReef;
 import frc.robot.subsystems.Algae.Algae;
 import frc.robot.subsystems.Algae.AlgaeIOReal;
 import frc.robot.subsystems.Climber.Climber;
@@ -63,6 +65,7 @@ import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSpark;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 
 public class RobotContainer {
@@ -101,8 +104,8 @@ public class RobotContainer {
                 algae = new Algae(new AlgaeIOReal());
                 // this.vision = new Vision(
                 //     drive,
-                //     new VisionIOLimelight(VisionConstants.camera0Name, drive::getRotation),
-                //     new VisionIOLimelight(VisionConstants.camera1Name, drive::getRotation)
+                //     new VisionIOLimelight("limelight-tag", drive::getRotation)
+                //    // ,new VisionIOLimelight(VisionConstants.camera1Name, drive::getRotation)
                 // );
                
 
@@ -153,27 +156,27 @@ public class RobotContainer {
         // Set up auto routines
         autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
-        // // Set up SysId routines
-        // autoChooser.addOption("Drive Wheel Radius Characterization",
-        //     DriveCommands.wheelRadiusCharacterization(drive)
-        // );
-        // autoChooser.addOption("Drive Simple FF Characterization",
-        //     DriveCommands.feedforwardCharacterization(drive)
-        // );
-        // autoChooser.addOption(
-        //     "Drive SysId (Quasistatic Forward)",
-        //     drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward)
-        // );
-        // autoChooser.addOption(
-        //     "Drive SysId (Quasistatic Reverse)",
-        //     drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
-        // );
-        // autoChooser.addOption("Drive SysId (Dynamic Forward)",
-        //     drive.sysIdDynamic(SysIdRoutine.Direction.kForward)
-        // );
-        // autoChooser.addOption("Drive SysId (Dynamic Reverse)",
-        //     drive.sysIdDynamic(SysIdRoutine.Direction.kReverse)
-        // );
+        // Set up SysId routines
+        autoChooser.addOption("Drive Wheel Radius Characterization",
+            DriveCommands.wheelRadiusCharacterization(drive)
+        );
+        autoChooser.addOption("Drive Simple FF Characterization",
+            DriveCommands.feedforwardCharacterization(drive)
+        );
+        autoChooser.addOption(
+            "Drive SysId (Quasistatic Forward)",
+            drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward)
+        );
+        autoChooser.addOption(
+            "Drive SysId (Quasistatic Reverse)",
+            drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
+        );
+        autoChooser.addOption("Drive SysId (Dynamic Forward)",
+            drive.sysIdDynamic(SysIdRoutine.Direction.kForward)
+        );
+        autoChooser.addOption("Drive SysId (Dynamic Reverse)",
+            drive.sysIdDynamic(SysIdRoutine.Direction.kReverse)
+        );
         // autoChooser.addOption("leftOnlyPathing",
         //     drive.sysIdDynamic(SysIdRoutine.Direction.kReverse)
         // );
@@ -195,8 +198,9 @@ public class RobotContainer {
         //     () -> MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftX(),-maxSpeed,maxSpeed), 0.1),
         //     () -> MathUtil.applyDeadband(MathUtil.clamp(driver.getRightX(),-maxSpeed,maxSpeed), 0.1))
         // );
-
         double standardSpeed = 0.7;
+
+        double turnSpeed = 0.5;
         drive.setDefaultCommand(DriveCommands.joystickDrive(
          drive,
             () -> {
@@ -208,7 +212,7 @@ public class RobotContainer {
                 return MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftX(), -maxSpeedY, maxSpeedY), 0.1);
             },
             () -> {
-                double maxSpeedTheta = (1 - driver.getLeftTriggerAxis()) * (standardSpeed + (1-standardSpeed) * driver.getRightTriggerAxis());
+                double maxSpeedTheta = (1 - driver.getLeftTriggerAxis()) * (turnSpeed + (1-turnSpeed) * driver.getRightTriggerAxis());
                 return MathUtil.applyDeadband(MathUtil.clamp(-driver.getRightX(), -maxSpeedTheta, maxSpeedTheta), 0.1);
             }
         ));
@@ -229,7 +233,9 @@ public class RobotContainer {
         () -> MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftX(),-maxSpeed,maxSpeed), 0.1),
         () -> new Rotation2d(Math.toRadians(125)) ));
 
-        driver.x().whileTrue(new AlignToReefTagRelative(true, drive));
+        //driver.x().whileTrue(new AlignToReefTagRelative(true, drive));
+        driver.x().whileTrue(new DriveToCurrentReef(drive));
+
         
         //driver.a().whileTrue(new DriveToCurrentReef(drive, vision));
 
@@ -398,8 +404,8 @@ public class RobotContainer {
          * Pivot Endeffector to L2
          */
         NamedCommands.registerCommand("Prep_L2", 
-        elevator.runOnceHeight(.92)
-        .alongWith(EndEffector.angle(0.5))
+        elevator.runOnceHeight(ElevatorHeights.L2)
+        .alongWith(EndEffector.angle(PivotAngles.L2))
         .alongWith(Commands.print("NamedCommand: Prep_L2"))
         );
 
