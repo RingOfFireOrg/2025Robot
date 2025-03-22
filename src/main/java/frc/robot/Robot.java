@@ -16,6 +16,8 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.util.LimelightHelpers;
+
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -82,7 +84,19 @@ public class Robot extends LoggedRobot {
         CommandScheduler.getInstance().run();
 
         // Return to normal thread priority
+
+
         Threads.setCurrentThreadPriority(false, 10);
+        if (Constants.currentMode == Constants.Mode.REAL) {
+            if (LimelightHelpers.getFiducialID("limelight-tag") != 0) {
+                LimelightHelpers.setLEDMode_ForceOn("limelight-tag");
+            }
+            else {
+                LimelightHelpers.setLEDMode_ForceOff("limelight-tag");
+
+            }
+        }
+
     }
 
     /** This function is called once when the robot is disabled. */

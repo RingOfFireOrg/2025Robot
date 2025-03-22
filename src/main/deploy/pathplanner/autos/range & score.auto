@@ -7,19 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "1) Center to H"
+            "pathName": "Right_Range walk up"
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "2) H to EF Algae"
+            "name": "Ejecter_EjectMAX"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Center Auto",
+  "folder": "Right",
   "choreoAuto": false
 }

@@ -20,6 +20,7 @@ import static frc.robot.subsystems.vision.VisionConstants.robotToCamera1;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeAlgaeOnField;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -40,9 +41,10 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.AlgaeAngles;
 import frc.robot.Constants.ElevatorHeights;
 import frc.robot.Constants.PivotAngles;
-import frc.robot.commands.AlignToReefTagRelative;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.DriveToCurrentReef;
+import frc.robot.commands.AlignToReef;
+import frc.robot.commands.AlignToReef.reefSide;
 import frc.robot.subsystems.Algae.Algae;
 import frc.robot.subsystems.Algae.AlgaeIOReal;
 import frc.robot.subsystems.Climber.Climber;
@@ -65,7 +67,6 @@ import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOSpark;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
-import frc.robot.subsystems.vision.VisionIOLimelight;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 
 public class RobotContainer {
@@ -234,7 +235,6 @@ public class RobotContainer {
         () -> new Rotation2d(Math.toRadians(125)) ));
 
         //driver.x().whileTrue(new AlignToReefTagRelative(true, drive));
-        driver.x().whileTrue(new DriveToCurrentReef(drive));
 
         
         //driver.a().whileTrue(new DriveToCurrentReef(drive, vision));
@@ -252,20 +252,25 @@ public class RobotContainer {
 
         if (Constants.currentMode == Constants.Mode.REAL) {
 
+            driver.x()
+            .whileTrue(new AlignToReef(drive, reefSide.LEFT));
+            driver.y()
+            .whileTrue(new AlignToReef(drive, reefSide.CENTER));
+            driver.b()
+            .whileTrue(new AlignToReef(drive, reefSide.RIGHT));
+            // spareTest.x()
+            // .whileTrue(algae.runPosition(() -> AlgaeAngles.STOWED))
+            // .onFalse(algae.runTeleop(() -> 0.0));
+            // spareTest.b()
+            // .whileTrue(algae.runPosition(() -> AlgaeAngles.LOWER_ALGAE))
+            // .onFalse(algae.runTeleop(() -> 0.0));
 
-            spareTest.x()
-            .whileTrue(algae.runPosition(() -> AlgaeAngles.STOWED))
-            .onFalse(algae.runTeleop(() -> 0.0));
-            spareTest.b()
-            .whileTrue(algae.runPosition(() -> AlgaeAngles.LOWER_ALGAE))
-            .onFalse(algae.runTeleop(() -> 0.0));
-
-            spareTest.y()
-            .whileTrue(algae.runTeleop(() -> 0.4))
-            .onFalse(algae.runTeleop(() -> 0.0));
-            spareTest.a()
-            .whileTrue(algae.runTeleop(() -> -0.4))
-            .onFalse(algae.runTeleop(() -> 0.0));
+            // spareTest.y()
+            // .whileTrue(algae.runTeleop(() -> 0.4))
+            // .onFalse(algae.runTeleop(() -> 0.0));
+            // spareTest.a()
+            // .whileTrue(algae.runTeleop(() -> -0.4))
+            // .onFalse(algae.runTeleop(() -> 0.0));
 
 
             operator.y()

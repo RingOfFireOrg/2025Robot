@@ -1,5 +1,12 @@
 package frc.robot.commands;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -10,6 +17,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
@@ -18,26 +26,22 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
 
 public class DriveCommands {
     public static final double DEADBAND = 0.1;
 
-    public static final double ANGLE_KP = 5.0;
+    public static final double ANGLE_KP = 5.4;
     public static final double ANGLE_KD = 0.4;
-    public static final double ANGLE_MAX_VELOCITY = 8.0/3;
-    public static final double ANGLE_MAX_ACCELERATION = 20.0/3;
+    public static final double ANGLE_MAX_VELOCITY = 8.0/2;
+    public static final double ANGLE_MAX_ACCELERATION = 20.0/2;
 
 
     public static final double FF_START_DELAY = 2.0; // Secs
     public static final double FF_RAMP_RATE = 0.1; // Volts/Sec
     public static final double WHEEL_RADIUS_MAX_VELOCITY = 0.25; // Rad/Sec
     public static final double WHEEL_RADIUS_RAMP_RATE = 0.05; // Rad/Sec^2
+
+
 
     private DriveCommands() {
 
@@ -187,35 +191,6 @@ public class DriveCommands {
             .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians())
         );
     }
-
-
-
-
-    public static Command driveToReef(Drive drive, boolean right) {
-
-
-
-        return Commands.run(() -> {}, drive);
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

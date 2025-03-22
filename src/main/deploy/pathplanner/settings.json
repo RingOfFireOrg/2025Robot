@@ -5,6 +5,7 @@
   "pathFolders": [
     "CenterIntakeCenter",
     "Center_Left",
+    "Align_Right",
     "PathGen",
     "_leftSideAuto",
     "_middleSideAuto",

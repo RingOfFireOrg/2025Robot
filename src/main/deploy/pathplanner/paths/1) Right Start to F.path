@@ -12,32 +12,32 @@
         "y": 2.3407274590133498
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "2_RightStart"
     },
     {
       "anchor": {
-        "x": 5.342895212000268,
-        "y": 2.8775762173010353
+        "x": 5.319092465753425,
+        "y": 2.8755351027397262
       },
       "prevControl": {
-        "x": 5.845180048069626,
-        "y": 1.954522938609466
+        "x": 5.821377301822782,
+        "y": 1.952481824048157
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "2_Fscore"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.5,
+      "waypointRelativePos": 0.2785571142284571,
       "rotationDegrees": 119.99999999999999
     }
   ],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.7564102564102585,
+      "minWaypointRelativePos": 0.6142857142857148,
       "maxWaypointRelativePos": 1.0,
       "constraints": {
         "maxVelocity": 1.0,
