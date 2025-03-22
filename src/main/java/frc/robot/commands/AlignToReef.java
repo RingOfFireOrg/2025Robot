@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.LimelightHelpers;
+import frc.robot.util.LoggedTunableNumber;
 
 public class AlignToReef extends Command {
   private PIDController xController, yController, rotController;
@@ -30,8 +31,12 @@ public class AlignToReef extends Command {
     RIGHT
   }
   private reefSide side;
+  private LoggedTunableNumber xP = new LoggedTunableNumber("Align/xP", Constants.X_REEF_ALIGNMENT_P);
+  private LoggedTunableNumber yP = new LoggedTunableNumber("Align/yP", Constants.Y_REEF_ALIGNMENT_P);
+  private LoggedTunableNumber zP = new LoggedTunableNumber("Align/zP", Constants.ROT_REEF_ALIGNMENT_P);
 
   public AlignToReef(Drive drive, reefSide side) {
+
     xController = new PIDController(Constants.X_REEF_ALIGNMENT_P, 0.0, 0);  // Vertical movement
     yController = new PIDController(Constants.Y_REEF_ALIGNMENT_P, 0.0, 0);  // Horitontal movement
     rotController = new PIDController(Constants.ROT_REEF_ALIGNMENT_P, 0, 0);  // Rotation
@@ -42,10 +47,15 @@ public class AlignToReef extends Command {
 
   @Override
   public void initialize() {
+    LimelightHelpers.setPipelineIndex("limelight-tag", 0);
     this.stopTimer = new Timer();
     this.stopTimer.start();
     this.dontSeeTagTimer = new Timer();
     this.dontSeeTagTimer.start();
+    xController = new PIDController(xP.getAsDouble(), 0.0, 0);  // Vertical movement
+    yController = new PIDController(yP.getAsDouble(), 0.0, 0);  // Horitontal movement
+    rotController = new PIDController(zP.getAsDouble(), 0, 0);  // Rotation
+
 
     rotController.setSetpoint(Constants.ROT_SETPOINT_REEF_ALIGNMENT);
     rotController.setTolerance(Constants.ROT_TOLERANCE_REEF_ALIGNMENT);
@@ -73,6 +83,17 @@ public class AlignToReef extends Command {
 
   @Override
   public void execute() {
+    LoggedTunableNumber.ifChanged(
+      hashCode(), 
+      () -> {        
+        xController = new PIDController(xP.getAsDouble(), 0.0, 0);  // Vertical movement
+        yController = new PIDController(yP.getAsDouble(), 0.0, 0);  // Horitontal movement
+        rotController = new PIDController(zP.getAsDouble(), 0, 0);  // Rotation
+
+      }, 
+      xP, yP, zP
+    );
+
     if (LimelightHelpers.getTV("limelight-tag") && LimelightHelpers.getFiducialID("limelight-tag") == tagID) {
       this.dontSeeTagTimer.reset();
 

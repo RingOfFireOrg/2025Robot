@@ -20,12 +20,12 @@ import static frc.robot.subsystems.vision.VisionConstants.robotToCamera1;
 
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
-import org.ironmaple.simulation.seasonspecific.reefscape2025.ReefscapeAlgaeOnField;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -37,14 +37,12 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.AlgaeAngles;
 import frc.robot.Constants.ElevatorHeights;
 import frc.robot.Constants.PivotAngles;
-import frc.robot.commands.DriveCommands;
-import frc.robot.commands.DriveToCurrentReef;
 import frc.robot.commands.AlignToReef;
 import frc.robot.commands.AlignToReef.reefSide;
+import frc.robot.commands.DriveCommands;
 import frc.robot.subsystems.Algae.Algae;
 import frc.robot.subsystems.Algae.AlgaeIOReal;
 import frc.robot.subsystems.Climber.Climber;
@@ -156,32 +154,51 @@ public class RobotContainer {
 
         // Set up auto routines
         autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+        
+        autoChooser.addOption("MECK) UNTESTED Align Right",
+        new PathPlannerAuto("range into reef", false) // Get in Vision Range of the reef & prep L2
+            .andThen( new AlignToReef(drive, reefSide.RIGHT).withTimeout(3)) // Align using LL
+            .andThen( new PathPlannerAuto("range & station", false)) //Resetting Odo, run up on the reef and drop, and then back out and go to feeder station
+            .andThen( new PathPlannerAuto("range & score", false)) //Resetting Odo, run up on the reef and drop, and then back out and go to feeder station
 
-        // Set up SysId routines
-        autoChooser.addOption("Drive Wheel Radius Characterization",
-            DriveCommands.wheelRadiusCharacterization(drive)
         );
-        autoChooser.addOption("Drive Simple FF Characterization",
-            DriveCommands.feedforwardCharacterization(drive)
+
+        autoChooser.addOption("MECK) UNTESTED Align Left",
+        new PathPlannerAuto("range into reef", true) // Get in Vision Range of the reef & prep L2
+            .andThen( new AlignToReef(drive, reefSide.RIGHT).withTimeout(3)) // Align using LL
+            .andThen( new PathPlannerAuto("range & station", true)) //Resetting Odo, run up on the reef and drop, and then back out and go to feeder station
+            .andThen( new PathPlannerAuto("range & score", true)) //Resetting Odo, run up on the reef and drop, and then back out and go to feeder station
+
         );
-        autoChooser.addOption(
-            "Drive SysId (Quasistatic Forward)",
-            drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward)
+
+        autoChooser.addOption("MECK) LeftSide Auto",
+        new PathPlannerAuto("MECK) RightSide Auto", true) // Get in Vision Range of the reef & prep L2
+          
+
         );
-        autoChooser.addOption(
-            "Drive SysId (Quasistatic Reverse)",
-            drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
-        );
-        autoChooser.addOption("Drive SysId (Dynamic Forward)",
-            drive.sysIdDynamic(SysIdRoutine.Direction.kForward)
-        );
-        autoChooser.addOption("Drive SysId (Dynamic Reverse)",
-            drive.sysIdDynamic(SysIdRoutine.Direction.kReverse)
-        );
-        // autoChooser.addOption("leftOnlyPathing",
+
+        // // Set up SysId routines
+        // autoChooser.addOption("Drive Wheel Radius Characterization",
+        //     DriveCommands.wheelRadiusCharacterization(drive)
+        // );
+        // autoChooser.addOption("Drive Simple FF Characterization",
+        //     DriveCommands.feedforwardCharacterization(drive)
+        // );
+        // autoChooser.addOption(
+        //     "Drive SysId (Quasistatic Forward)",
+        //     drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward)
+        // );
+        // autoChooser.addOption(
+        //     "Drive SysId (Quasistatic Reverse)",
+        //     drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse)
+        // );
+        // autoChooser.addOption("Drive SysId (Dynamic Forward)",
+        //     drive.sysIdDynamic(SysIdRoutine.Direction.kForward)
+        // );
+        // autoChooser.addOption("Drive SysId (Dynamic Reverse)",
         //     drive.sysIdDynamic(SysIdRoutine.Direction.kReverse)
         // );
-        
+
         // autoChooser.addOption("rightSideAuto",
         //     new PathPlannerAuto("Auto Name", true);
         // );
@@ -234,10 +251,6 @@ public class RobotContainer {
         () -> MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftX(),-maxSpeed,maxSpeed), 0.1),
         () -> new Rotation2d(Math.toRadians(125)) ));
 
-        //driver.x().whileTrue(new AlignToReefTagRelative(true, drive));
-
-        
-        //driver.a().whileTrue(new DriveToCurrentReef(drive, vision));
 
         //Reset gyro / odometry
         final Runnable resetGyro = Constants.currentMode == Constants.Mode.SIM
@@ -253,11 +266,11 @@ public class RobotContainer {
         if (Constants.currentMode == Constants.Mode.REAL) {
 
             driver.x()
-            .whileTrue(new AlignToReef(drive, reefSide.LEFT));
+            .onTrue(new AlignToReef(drive, reefSide.LEFT).withTimeout(2));
             driver.y()
-            .whileTrue(new AlignToReef(drive, reefSide.CENTER));
+            .onTrue(new AlignToReef(drive, reefSide.CENTER).withTimeout(2));
             driver.b()
-            .whileTrue(new AlignToReef(drive, reefSide.RIGHT));
+            .onTrue(new AlignToReef(drive, reefSide.RIGHT).withTimeout(2));
             // spareTest.x()
             // .whileTrue(algae.runPosition(() -> AlgaeAngles.STOWED))
             // .onFalse(algae.runTeleop(() -> 0.0));
@@ -302,7 +315,7 @@ public class RobotContainer {
             operator.povRight()
             .whileTrue(elevator.setHeight(ElevatorHeights.LOWER_ALGAE))
             .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.LOWER_ALGAE, () -> -.9))
-            //.whileTrue(algae.runPosition(() -> AlgaeAngles.LOWER_ALGAE))
+            .whileTrue(algae.runPosition(() -> AlgaeAngles.LOWER_ALGAE))
             .onTrue(EndEffector.angle(PivotAngles.STOWED))
             // .andThen(new InstantCommand()))
             // .onTrue(getAutonomousCommand())
@@ -359,9 +372,9 @@ public class RobotContainer {
             .onFalse(EndEffector.runTeleop(() -> 0, ()-> 0, () -> 0));
             //EndEffector.setDefaultCommand(EndEffector.runTeleop(() -> operator.getLeftTriggerAxis()/4, ()-> operator.getRightTriggerAxis()/4, () -> operator.getLeftY()));
 
-            climberController.button(9)
-            .onTrue(algae.runTeleopLaunch(() -> -1, () -> 0))
-            .onFalse(algae.runTeleopLaunch(() -> 0.2, () -> 1));
+            // climberController.button(9)
+            // .onTrue(algae.runTeleopLaunch(() -> -1, () -> 0))
+            // .onFalse(algae.runTeleopLaunch(() -> 0.2, () -> 1));
 
             /* Climbing Controls */
             climberController.axisMagnitudeGreaterThan(Joystick.AxisType.kY.value, 0.2)
@@ -401,6 +414,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("Prep_L3", 
         elevator.runOnceHeight(ElevatorHeights.L3)
         .alongWith(EndEffector.angle(PivotAngles.L3))
+        //.alongWith(algae.runPosition(() -> AlgaeAngles.STOWED))
         .alongWith(Commands.print("Prep_L3"))
         );
         
@@ -411,6 +425,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("Prep_L2", 
         elevator.runOnceHeight(ElevatorHeights.L2)
         .alongWith(EndEffector.angle(PivotAngles.L2))
+        //.alongWith(algae.runPosition(() -> AlgaeAngles.STOWED))
         .alongWith(Commands.print("NamedCommand: Prep_L2"))
         );
 
@@ -422,14 +437,27 @@ public class RobotContainer {
         NamedCommands.registerCommand("Intake", 
         elevator.runOnceHeight(ElevatorHeights.INTAKE_HEIGHT)
         .alongWith(EndEffector.angle(PivotAngles.INTAKE))
+        //-.alongWith(algae.runPosition(() -> AlgaeAngles.STOWED))
         .andThen(EndEffector.ejecter(0.7))
         .alongWith(Commands.print("NamedCommand: Intake"))
+        );
+
+        /*
+         * Raise Elevator to ALgae Lower
+         * Pivot Endeffector to Stowed
+         */
+        NamedCommands.registerCommand("Prep_Algae", 
+        elevator.runOnceHeight(ElevatorHeights.LOWER_ALGAE)
+        .alongWith(EndEffector.angle(PivotAngles.STOWED))
+        .alongWith(algae.runPositionandIntake(() -> AlgaeAngles.LOWER_ALGAE, () -> -.9))
+        .alongWith(Commands.print("NamedCommand: Lower ALgae"))
         );
         
 
         NamedCommands.registerCommand("Reset",
         elevator.runOnceHeight(ElevatorHeights.STOWED)
         .andThen(EndEffector.angle(PivotAngles.STOWED))
+        //.alongWith(algae.runPosition(() -> AlgaeAngles.STOWED))
         .andThen(EndEffector.ejecter(PivotAngles.Maintain_Coral))
         .alongWith(Commands.print("NamedCommand: Reset"))
         ); 
@@ -440,14 +468,27 @@ public class RobotContainer {
         ); 
 
         NamedCommands.registerCommand("Ejecter_Eject",
-        EndEffector.ejecter(-0.8)
+        EndEffector.ejecter(-0.9)
         .alongWith(Commands.print("NamedCommand: Ejecter_Eject"))
         ); 
+
+        NamedCommands.registerCommand("Ejecter_EjectMAX",
+        EndEffector.ejecter(-1)
+        .alongWith(Commands.print("NamedCommand: Ejecter_EjectMAX"))
+        ); 
+
 
         NamedCommands.registerCommand("Ejecter_Stop",
         EndEffector.ejecter(0)
         .alongWith(Commands.print("NamedCommand: Ejecter_Stop"))
         ); 
+
+        NamedCommands.registerCommand("Align Center", new AlignToReef(drive, reefSide.CENTER).withTimeout(2));
+
+        NamedCommands.registerCommand("Align Left", new AlignToReef(drive, reefSide.LEFT).withTimeout(2));
+
+        NamedCommands.registerCommand("Align Right", new AlignToReef(drive, reefSide.RIGHT).withTimeout(2));
+
 
     }
     

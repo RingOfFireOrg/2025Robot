@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.9799999999999995,
-        "y": 4.175
+        "x": 7.167251712328767,
+        "y": 5.069285102739726
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.304037667145358,
-        "y": 4.109898973103451
+        "x": 6.6864297945205475,
+        "y": 5.565132705479453
       },
       "isLocked": false,
-      "linkedName": "2_Hscore"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 6.626327054794521,
-        "y": 4.017487157534247
+        "x": 5.454323630136986,
+        "y": 5.369798801369864
       },
       "prevControl": {
-        "x": 6.381699161059823,
-        "y": 4.069035131373431
+        "x": 6.2356592465753415,
+        "y": 5.925749143835617
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "2_GH_Algae LineUp"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -119.99999999999999
   },
   "reversed": false,
   "folder": "CenterIntakeCenter",

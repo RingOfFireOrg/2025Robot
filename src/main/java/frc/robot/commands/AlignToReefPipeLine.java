@@ -17,7 +17,7 @@ import frc.robot.Constants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.LimelightHelpers;
 
-public class AlignToReef extends Command {
+public class AlignToReefPipeLine extends Command {
   private PIDController xController, yController, rotController;
   private boolean isRightScore;
   private Timer dontSeeTagTimer, stopTimer;
@@ -31,7 +31,7 @@ public class AlignToReef extends Command {
   }
   private reefSide side;
 
-  public AlignToReef(Drive drive, reefSide side) {
+  public AlignToReefPipeLine(Drive drive, reefSide side) {
     xController = new PIDController(Constants.X_REEF_ALIGNMENT_P, 0.0, 0);  // Vertical movement
     yController = new PIDController(Constants.Y_REEF_ALIGNMENT_P, 0.0, 0);  // Horitontal movement
     rotController = new PIDController(Constants.ROT_REEF_ALIGNMENT_P, 0, 0);  // Rotation
@@ -52,19 +52,24 @@ public class AlignToReef extends Command {
 
     xController.setSetpoint(Constants.X_SETPOINT_REEF_ALIGNMENT);
     xController.setTolerance(Constants.X_TOLERANCE_REEF_ALIGNMENT);
+    yController.setSetpoint(0);
 
     if (side == reefSide.CENTER) {
-      yController.setSetpoint(0);
+      // yController.setSetpoint(0);
+      LimelightHelpers.setPipelineIndex("limelight-tag", 0);
     }
     else if (side == reefSide.RIGHT) {
-      yController.setSetpoint(Constants.Y_SETPOINT_REEF_ALIGNMENT);
-
+      // yController.setSetpoint(Constants.Y_SETPOINT_REEF_ALIGNMENT);
+      LimelightHelpers.setPipelineIndex("limelight-tag", 1);
     }
     else if (side == reefSide.LEFT) {
-      yController.setSetpoint(-Constants.Y_SETPOINT_REEF_ALIGNMENT);
+      // yController.setSetpoint(-Constants.Y_SETPOINT_REEF_ALIGNMENT);
+      LimelightHelpers.setPipelineIndex("limelight-tag", 2);
+
     }
     else {
-      yController.setSetpoint(0);
+      // yController.setSetpoint(0);
+      LimelightHelpers.setPipelineIndex("limelight-tag", 0);
 
     }
     yController.setTolerance(Constants.Y_TOLERANCE_REEF_ALIGNMENT);

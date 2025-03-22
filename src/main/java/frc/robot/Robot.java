@@ -88,12 +88,11 @@ public class Robot extends LoggedRobot {
 
         Threads.setCurrentThreadPriority(false, 10);
         if (Constants.currentMode == Constants.Mode.REAL) {
-            if (LimelightHelpers.getFiducialID("limelight-tag") != 0) {
+            double fiducialID = LimelightHelpers.getFiducialID("limelight-tag");
+            if (fiducialID > 0) {
                 LimelightHelpers.setLEDMode_ForceOn("limelight-tag");
-            }
-            else {
+            } else {
                 LimelightHelpers.setLEDMode_ForceOff("limelight-tag");
-
             }
         }
 

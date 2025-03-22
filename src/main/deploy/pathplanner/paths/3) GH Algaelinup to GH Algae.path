@@ -16,11 +16,11 @@
     },
     {
       "anchor": {
-        "x": 5.72478595890411,
+        "x": 5.890000000000001,
         "y": 4.017487157534247
       },
       "prevControl": {
-        "x": 6.441771293820373,
+        "x": 6.6069853349162635,
         "y": 4.01547850629999
       },
       "nextControl": null,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -171.38435181583583
+    "rotation": 180.0
   },
   "reversed": false,
   "folder": "CenterIntakeCenter",
