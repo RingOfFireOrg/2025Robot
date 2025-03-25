@@ -16,44 +16,12 @@
     },
     {
       "anchor": {
-        "x": 7.152226027397259,
-        "y": 4.077589897260274
+        "x": 6.656378424657535,
+        "y": 4.017487157534247
       },
       "prevControl": {
-        "x": 6.152226027397259,
-        "y": 4.077589897260274
-      },
-      "nextControl": {
-        "x": 7.402226027397259,
-        "y": 4.077589897260274
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 7.062071917808218,
-        "y": 1.3278895547945206
-      },
-      "prevControl": {
-        "x": 7.242380136986301,
-        "y": 1.628403253424658
-      },
-      "nextControl": {
-        "x": 6.9227056227850845,
-        "y": 1.0956123964226308
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 6.025299657534247,
-        "y": 0.7869648972602739
-      },
-      "prevControl": {
-        "x": 6.761558219178082,
-        "y": 1.4180436643835619
+        "x": 5.656378424657535,
+        "y": 4.017487157534247
       },
       "nextControl": null,
       "isLocked": false,
@@ -62,7 +30,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 1.623246492985973,
+      "waypointRelativePos": 1,
       "rotationDegrees": 180.0
     }
   ],
@@ -70,9 +38,9 @@
     {
       "name": "Constraints Zone",
       "minWaypointRelativePos": 0,
-      "maxWaypointRelativePos": 0.7999999999999998,
+      "maxWaypointRelativePos": 1.0,
       "constraints": {
-        "maxVelocity": 1.0,
+        "maxVelocity": 0.8,
         "maxAcceleration": 1.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
@@ -93,7 +61,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": 180.0
   },
   "reversed": false,
   "folder": "CenterIntakeCenter",
