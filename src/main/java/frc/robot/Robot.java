@@ -67,6 +67,8 @@ public class Robot extends LoggedRobot {
         // Instantiate our RobotContainer. This will perform all our button bindings,
         // and put our autonomous chooser on the dashboard.
         robotContainer = new RobotContainer();
+        LimelightHelpers.setLEDMode_ForceOff("limelight-tag");
+
     }
 
     /** This function is called periodically during all modes. */
@@ -87,14 +89,7 @@ public class Robot extends LoggedRobot {
 
 
         Threads.setCurrentThreadPriority(false, 10);
-        if (Constants.currentMode == Constants.Mode.REAL) {
-            double fiducialID = LimelightHelpers.getFiducialID("limelight-tag");
-            if (fiducialID > 0) {
-                LimelightHelpers.setLEDMode_ForceOn("limelight-tag");
-            } else {
-                LimelightHelpers.setLEDMode_ForceOff("limelight-tag");
-            }
-        }
+
 
     }
 
@@ -102,6 +97,7 @@ public class Robot extends LoggedRobot {
     @Override
     public void disabledInit() {
         //robotContainer.resetSimulationField();
+        LimelightHelpers.setLEDMode_ForceOff("limelight-tag");
     }
 
     /** This function is called periodically when disabled. */
@@ -144,6 +140,14 @@ public class Robot extends LoggedRobot {
     /** This function is called periodically during operator control. */
     @Override
     public void teleopPeriodic() {
+        if (Constants.currentMode == Constants.Mode.REAL) {
+            double fiducialID = LimelightHelpers.getFiducialID("limelight-tag");
+            if (fiducialID > 0) {
+                LimelightHelpers.setLEDMode_ForceOn("limelight-tag");
+            } else {
+                LimelightHelpers.setLEDMode_ForceOff("limelight-tag");
+            }
+        }
         
     }
 
