@@ -23,7 +23,6 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.AlgaeAngles;
@@ -299,7 +298,7 @@ public class RobotContainer {
             operator.povRight()
             .whileTrue(elevator.setHeight(ElevatorHeights.LOWER_ALGAE))
             .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.LOWER_ALGAE, () -> -.9))
-            .whileTrue(algae.runPosition(() -> AlgaeAngles.LOWER_ALGAE))
+            .whileTrue(algae.runPosition(() -> AlgaeAngles.LOWER_ALGAE)) // Not supposed to be called twice, but it works so I will leave it alone
             .onTrue(EndEffector.angle(PivotAngles.STOWED))
             ;
 
@@ -347,17 +346,68 @@ public class RobotContainer {
             /* Climbing Controls */
             climberController.axisMagnitudeGreaterThan(Joystick.AxisType.kY.value, 0.2)
             .and(climberController.button(1))
+            .and(climberController.povCenter())
             .whileTrue(climber.runTeleop(() -> -climberController.getY()))
             .onFalse(climber.runTeleop(() -> 0));
 
             climberController.button(8).onTrue(climber.runLauncher(-0.3));
             climberController.button(9).onTrue(climber.runLauncher(0.3));
 
+            //delete later:
+            operator.povRight()
+            .whileTrue(elevator.setHeight(ElevatorHeights.LOWER_ALGAE))
+            .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.LOWER_ALGAE, () -> -.9))
+            .whileTrue(algae.runPosition(() -> AlgaeAngles.LOWER_ALGAE))
+            .onTrue(EndEffector.angle(PivotAngles.STOWED))
+            ;
 
-            //climberController pov up, L3
-            //climberController pov down, ground
-            //climber controller povleft, scoring position
-            //climber controller povRight, scoring position + turn to processor
+
+            //climberController {pov up}, Stow Intake, Higher Algae
+
+            /*
+             * Elevator: Move to Upper Algae Level
+             * EndEffector: Angle to Stow
+             * Algae: Move to Upper Algae Level, Spin Wheels in
+             */
+            climberController.povUp()
+            .whileTrue(elevator.setHeight(ElevatorHeights.UPPER_ALGAE))
+            .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.UPPER_ALGAE, () -> -.9))
+            .whileTrue(algae.runPosition(() -> AlgaeAngles.UPPER_ALGAE))
+            .onTrue(EndEffector.angle(PivotAngles.STOWED))
+            ;
+
+            //climberController {pov down}, ground algae
+
+            /*
+             * Elevator: Move to Ground Algae Level
+             * EndEffector: Angle to Stow
+             * Algae: Move to Ground Algae Level, Spin Wheels in
+             */
+            climberController.povDown()
+            .whileTrue(elevator.setHeight(ElevatorHeights.GROUND_ALGAE))
+            .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.GROUND_ALGAE, () -> -.9))
+            .whileTrue(algae.runPosition(() -> AlgaeAngles.GROUND_ALGAE))
+            .onTrue(EndEffector.angle(PivotAngles.STOWED))
+            ;
+
+            // climberController.povDown()
+            // .whileTrue(elevator.setHeight(/* Ground Algae position */))
+            // .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.LOWER_ALGAE, () -> -.9))
+            // .whileTrue(algae.runPosition(() -> /* Upper Algae position */))
+            // .onTrue(EndEffector.angle(PivotAngles.STOWED))
+            // ;
+
+
+            
+            //climbercontroller {pov left}, Lower Algae
+            //climbercontroller {pov right}, scoring position + wheel spin in
+            //climbercontroller {pov right + Back Button}, scoring position + wheel spin in + Rotatate Robot to processor
+
+            //climbercontroller {pov right + right bumper on driver}, scoring position + wheel spin in + Rotatate Robot to processor
+
+
+            //Left Button, Wheel Spin in
+            ///Right Button Wheen spin out
 
 
         }         

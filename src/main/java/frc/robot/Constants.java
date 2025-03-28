@@ -40,7 +40,6 @@ public final class Constants {
     }
 
     public static class ElevatorHeights {
-        public static final double OFF_THE_GROUND = 0;
         public static final double STOWED = 0;
         public static final double INTAKE_HEIGHT = 0.582;
         public static final double L2 = .535;
@@ -48,6 +47,10 @@ public final class Constants {
         public static final double L3 = 3.05;
         public static final double L4 = 0;
         public static final double LOWER_ALGAE = 2.79;
+        public static final double GROUND_ALGAE = 0.1;
+        public static final double SCORE_ALGAE = 0.1;
+        public static final double UPPER_ALGAE = 0.1;
+
 
 
 
@@ -57,7 +60,7 @@ public final class Constants {
         public static final double INTAKE = 0.4563;
         public static final double L2 = 0.56;
         public static final double L3 = 0.56;
-        public static final double ALGAE = 0.36;
+        public static final double ALGAE = 0.39;
 
 
 
@@ -71,7 +74,9 @@ public final class Constants {
     public static class AlgaeAngles {
         public static final double STOWED = 0.82;
         public static final double LOWER_ALGAE = 0.60;
-        public static final double UPPER_ALGAE = 0.78;
+        public static final double UPPER_ALGAE = LOWER_ALGAE; //TODO: Find value
+        public static final double GROUND_ALGAE = LOWER_ALGAE; //TODO: Find value
+        public static final double SCORE_ALGAE = LOWER_ALGAE; //TODO: Find value
 
 
     }
