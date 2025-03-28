@@ -1,16 +1,3 @@
-// Copyright 2021-2025 FRC 6328
-// http://github.com/Mechanical-Advantage
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// version 3 as published by the Free Software Foundation or
-// available in the root directory of this project.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-
 package frc.robot;
 
 import edu.wpi.first.wpilibj.RobotBase;
@@ -95,7 +82,7 @@ public final class Constants {
 
 	public static final double ROT_SETPOINT_REEF_ALIGNMENT = 0;  // Rotation
 	public static final double ROT_TOLERANCE_REEF_ALIGNMENT = 1.2;
-	public static final double X_SETPOINT_REEF_ALIGNMENT = 0.14;  // Verticuual pose
+	public static final double X_SETPOINT_REEF_ALIGNMENT = 0.14;  // Vertical pose
 	public static final double X_TOLERANCE_REEF_ALIGNMENT = 0.02;
 	public static final double Y_SETPOINT_REEF_ALIGNMENT = 0.275;  // Horizontal pose
 	public static final double Y_TOLERANCE_REEF_ALIGNMENT = 0.04;

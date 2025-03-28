@@ -29,5 +29,9 @@ public class Climber extends SubsystemBase {
         return run(() -> io.setVoltage((input.getAsDouble()) * 12.0));
     }
 
+    public Command runLauncher(double percent) {
+        return runEnd(() -> io.moveLauncher(percent * 12.0), () -> io.setVoltage(0.0));
+    }
+
 
 }

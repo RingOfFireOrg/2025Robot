@@ -12,5 +12,6 @@ public interface ClimberIO {
 
   public default void updateInputs(ClimberIOInputs inputs) {}
   public default void setVoltage(double volts) {}
+  public default void moveLauncher(double volts) {}
 
 }

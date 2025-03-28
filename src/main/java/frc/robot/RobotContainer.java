@@ -1,16 +1,3 @@
-// Copyright 2021-2025 FRC 6328
-// http://github.com/Mechanical-Advantage
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// version 3 as published by the Free Software Foundation or
-// available in the root directory of this project.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-
 package frc.robot;
 
 import static frc.robot.subsystems.vision.VisionConstants.camera0Name;
@@ -30,6 +17,8 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -241,15 +230,23 @@ public class RobotContainer {
         driver.povUp().whileTrue(DriveCommands.joystickDriveRobotOriented(drive, () -> 0.4 + (driver.getRightTriggerAxis()/2), () -> 0, () -> 0));
         driver.povDown().whileTrue(DriveCommands.joystickDriveRobotOriented(drive, () -> -0.4 + -(driver.getRightTriggerAxis()/2), () -> 0, () -> 0));
 
+
+        
         driver.rightBumper().whileTrue(DriveCommands.joystickDriveAtAngle(drive, 
         () -> MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftY(),-maxSpeed,maxSpeed), 0.1),
         () -> MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftX(),-maxSpeed,maxSpeed), 0.1),
-        () -> new Rotation2d(Math.toRadians(-125)) ));
+        () -> {
+            boolean isFlipped = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red;
+            return new Rotation2d(Math.toRadians(isFlipped ? -125 + 180 : -125));
+        }));
 
         driver.leftBumper().whileTrue(DriveCommands.joystickDriveAtAngle(drive, 
         () -> MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftY(),-maxSpeed,maxSpeed), 0.1),
         () -> MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftX(),-maxSpeed,maxSpeed), 0.1),
-        () -> new Rotation2d(Math.toRadians(125)) ));
+        () -> {
+            boolean isFlipped = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red;
+            return new Rotation2d(Math.toRadians(isFlipped ? 125 + 180 : 125));
+        }));
 
 
         //Reset gyro / odometry
@@ -271,20 +268,6 @@ public class RobotContainer {
             .onTrue(new AlignToReef(drive, reefSide.CENTER).withTimeout(2));
             driver.b()
             .onTrue(new AlignToReef(drive, reefSide.RIGHT).withTimeout(2));
-            // spareTest.x()
-            // .whileTrue(algae.runPosition(() -> AlgaeAngles.STOWED))
-            // .onFalse(algae.runTeleop(() -> 0.0));
-            // spareTest.b()
-            // .whileTrue(algae.runPosition(() -> AlgaeAngles.LOWER_ALGAE))
-            // .onFalse(algae.runTeleop(() -> 0.0));
-
-            // spareTest.y()
-            // .whileTrue(algae.runTeleop(() -> 0.4))
-            // .onFalse(algae.runTeleop(() -> 0.0));
-            // spareTest.a()
-            // .whileTrue(algae.runTeleop(() -> -0.4))
-            // .onFalse(algae.runTeleop(() -> 0.0));
-
 
             operator.y()
             .whileTrue(algae.runTeleop(() -> 0.4))
@@ -292,6 +275,7 @@ public class RobotContainer {
             operator.a()
             .whileTrue(algae.runTeleop(() -> -0.4))
             .onFalse(algae.runTeleop(() -> 0.0));
+
             operator.x()
             .whileTrue(algae.runTeleopIntake(() -> 1))
             .onFalse(algae.runTeleopIntake(() -> 0.0));
@@ -317,8 +301,6 @@ public class RobotContainer {
             .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.LOWER_ALGAE, () -> -.9))
             .whileTrue(algae.runPosition(() -> AlgaeAngles.LOWER_ALGAE))
             .onTrue(EndEffector.angle(PivotAngles.STOWED))
-            // .andThen(new InstantCommand()))
-            // .onTrue(getAutonomousCommand())
             ;
 
             operator.povDown()
@@ -326,12 +308,6 @@ public class RobotContainer {
             .whileTrue(algae.runPosition(() -> AlgaeAngles.STOWED))
             .onTrue(EndEffector.angle(PivotAngles.STOWED))
            ;
-
-    
-
-            // operator.y().onTrue(EndEffector.angle(PivotAngles.STOWED));
-            // operator.x().onTrue(EndEffector.angle(0.45));
-            // operator.a().onTrue(EndEffector.angle(PivotAngles.STANDARD_CORAL));
 
             /* Intake Coral */
             operator.leftBumper()
@@ -351,9 +327,6 @@ public class RobotContainer {
             .onFalse(EndEffector.ejecter(0))
             ;
 
-
-
-
             /* Manual Control for Elevator */
             operator.axisMagnitudeGreaterThan(XboxController.Axis.kLeftY.value, 0.1)
             .whileTrue(elevator.runTeleop(() -> -operator.getLeftY()/1.4))
@@ -370,17 +343,21 @@ public class RobotContainer {
             operator.axisMagnitudeGreaterThan(XboxController.Axis.kRightTrigger.value, 0.1)
             .whileTrue(EndEffector.runTeleop(() -> 0, ()-> 0, () -> -operator.getRightTriggerAxis()))
             .onFalse(EndEffector.runTeleop(() -> 0, ()-> 0, () -> 0));
-            //EndEffector.setDefaultCommand(EndEffector.runTeleop(() -> operator.getLeftTriggerAxis()/4, ()-> operator.getRightTriggerAxis()/4, () -> operator.getLeftY()));
-
-            // climberController.button(9)
-            // .onTrue(algae.runTeleopLaunch(() -> -1, () -> 0))
-            // .onFalse(algae.runTeleopLaunch(() -> 0.2, () -> 1));
 
             /* Climbing Controls */
             climberController.axisMagnitudeGreaterThan(Joystick.AxisType.kY.value, 0.2)
             .and(climberController.button(1))
             .whileTrue(climber.runTeleop(() -> -climberController.getY()))
             .onFalse(climber.runTeleop(() -> 0));
+
+            climberController.button(8).onTrue(climber.runLauncher(-0.3));
+            climberController.button(9).onTrue(climber.runLauncher(0.3));
+
+
+            //climberController pov up, L3
+            //climberController pov down, ground
+            //climber controller povleft, scoring position
+            //climber controller povRight, scoring position + turn to processor
 
 
         }         
@@ -450,7 +427,8 @@ public class RobotContainer {
         elevator.runOnceHeight(ElevatorHeights.LOWER_ALGAE)
         .alongWith(EndEffector.angle(PivotAngles.STOWED))
         .alongWith(algae.runPositionandIntake(() -> AlgaeAngles.LOWER_ALGAE, () -> -.9))
-        .alongWith(Commands.print("NamedCommand: Lower ALgae"))
+        .alongWith(Commands.print("NamedCommand: Lower Algae"))
+        .withTimeout(2)
         );
         
 
@@ -460,12 +438,7 @@ public class RobotContainer {
         //.alongWith(algae.runPosition(() -> AlgaeAngles.STOWED))
         .andThen(EndEffector.ejecter(PivotAngles.Maintain_Coral))
         .alongWith(Commands.print("NamedCommand: Reset"))
-        ); 
-
-        NamedCommands.registerCommand("Ejecter_Maintain",
-        new InstantCommand()
-        .alongWith(Commands.print("NamedCommand: Ejecter_Maintain"))
-        ); 
+        );  
 
         NamedCommands.registerCommand("Ejecter_Eject",
         EndEffector.ejecter(-0.9)
@@ -484,9 +457,7 @@ public class RobotContainer {
         ); 
 
         NamedCommands.registerCommand("Align Center", new AlignToReef(drive, reefSide.CENTER).withTimeout(2));
-
         NamedCommands.registerCommand("Align Left", new AlignToReef(drive, reefSide.LEFT).withTimeout(2));
-
         NamedCommands.registerCommand("Align Right", new AlignToReef(drive, reefSide.RIGHT).withTimeout(2));
 
 
