@@ -23,7 +23,7 @@ public class ClimberIOReal implements ClimberIO {
         climberMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
         launcherConfig.idleMode(IdleMode.kBrake);
-        launcherMotor = new SparkMax(launcherCanID, MotorType.kBrushed);
+        launcherMotor = new SparkMax(launcherCanID, MotorType.kBrushless);
 
 
     }

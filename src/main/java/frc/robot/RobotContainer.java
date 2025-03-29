@@ -276,10 +276,10 @@ public class RobotContainer {
             .onFalse(algae.runTeleop(() -> 0.0));
 
             operator.x()
-            .whileTrue(algae.runTeleopIntake(() -> 1))
+            .whileTrue(algae.runTeleopIntake(() -> -1))
             .onFalse(algae.runTeleopIntake(() -> 0.0));
             operator.b()
-            .whileTrue(algae.runTeleopIntake(() -> -1))
+            .whileTrue(algae.runTeleopIntake(() -> 1))
             .onFalse(algae.runTeleopIntake(() -> 0.0));
 
 
@@ -350,16 +350,16 @@ public class RobotContainer {
             .whileTrue(climber.runTeleop(() -> -climberController.getY()))
             .onFalse(climber.runTeleop(() -> 0));
 
-            climberController.button(8).onTrue(climber.runLauncher(-0.3));
-            climberController.button(9).onTrue(climber.runLauncher(0.3));
+            climberController.button(11).onTrue(climber.runLauncher(-0.3)).onFalse(climber.runLauncher(0.0));
+            climberController.button(12).onTrue(climber.runLauncher(0.3)).onFalse(climber.runLauncher(0.0));
 
             //delete later:
-            operator.povRight()
-            .whileTrue(elevator.setHeight(ElevatorHeights.LOWER_ALGAE))
-            .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.LOWER_ALGAE, () -> -.9))
-            .whileTrue(algae.runPosition(() -> AlgaeAngles.LOWER_ALGAE))
-            .onTrue(EndEffector.angle(PivotAngles.STOWED))
-            ;
+            // operator.povRight()
+            // .whileTrue(elevator.setHeight(ElevatorHeights.LOWER_ALGAE))
+            // .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.LOWER_ALGAE, () -> -.9))
+            // .whileTrue(algae.runPosition(() -> AlgaeAngles.LOWER_ALGAE))
+            // .onTrue(EndEffector.angle(PivotAngles.STOWED))
+            // ;
 
 
             //climberController {pov up}, Stow Intake, Higher Algae
@@ -369,14 +369,14 @@ public class RobotContainer {
              * EndEffector: Angle to Stow
              * Algae: Move to Upper Algae Level, Spin Wheels in
              */
-            climberController.povUp()
-            .whileTrue(elevator.setHeight(ElevatorHeights.UPPER_ALGAE))
-            .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.UPPER_ALGAE, () -> -.9))
-            .whileTrue(algae.runPosition(() -> AlgaeAngles.UPPER_ALGAE))
-            .onTrue(EndEffector.angle(PivotAngles.STOWED))
-            ;
+            // climberController.povUp()
+            // .whileTrue(elevator.setHeight(ElevatorHeights.UPPER_ALGAE))
+            // .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.UPPER_ALGAE, () -> -.9))
+            // .whileTrue(algae.runPosition(() -> AlgaeAngles.UPPER_ALGAE))
+            // .onTrue(EndEffector.angle(PivotAngles.STOWED))
+            // ;
 
-            //climberController {pov down}, ground algae
+            // //climberController {pov down}, ground algae
 
             /*
              * Elevator: Move to Ground Algae Level
@@ -385,23 +385,50 @@ public class RobotContainer {
              */
             climberController.povDown()
             .whileTrue(elevator.setHeight(ElevatorHeights.GROUND_ALGAE))
-            .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.GROUND_ALGAE, () -> -.9))
+            .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.GROUND_ALGAE, () -> .7))
             .whileTrue(algae.runPosition(() -> AlgaeAngles.GROUND_ALGAE))
-            .onTrue(EndEffector.angle(PivotAngles.STOWED))
+            .onTrue(EndEffector.angle(PivotAngles.GROUND_ALGAE))
             ;
 
-            // climberController.povDown()
-            // .whileTrue(elevator.setHeight(/* Ground Algae position */))
+
+            
+            // //climbercontroller {pov left}, Lower Algae
+            // /*
+            //  * Elevator: Move to Lower Algae Level
+            //  * EndEffector: Angle to Stow
+            //  * Algae: Move to Lower Algae Level, Spin Wheels in
+            //  */
+            // climberController.povLeft()
+            // .whileTrue(elevator.setHeight(ElevatorHeights.LOWER_ALGAE))
             // .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.LOWER_ALGAE, () -> -.9))
-            // .whileTrue(algae.runPosition(() -> /* Upper Algae position */))
+            // .whileTrue(algae.runPosition(() -> AlgaeAngles.LOWER_ALGAE))
             // .onTrue(EndEffector.angle(PivotAngles.STOWED))
             // ;
 
 
-            
-            //climbercontroller {pov left}, Lower Algae
-            //climbercontroller {pov right}, scoring position + wheel spin in
+            // //climbercontroller {pov right}, scoring position + wheel spin in
+            // climberController.povRight()
+            // .whileTrue(elevator.setHeight(ElevatorHeights.SCORE_ALGAE))
+            // .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.SCORE_ALGAE, () -> -.9))
+            // .whileTrue(algae.runPosition(() -> AlgaeAngles.SCORE_ALGAE))
+            // .onTrue(EndEffector.angle(PivotAngles.STOWED))
+            ;
+
             //climbercontroller {pov right + Back Button}, scoring position + wheel spin in + Rotatate Robot to processor
+            // Test if both Trigger can be active at once
+
+            // climberController.povRight()
+            //     .and(climberController.button(0)
+            //     .or(driver.rightBumper()))
+            //         .whileTrue(DriveCommands.joystickDriveAtAngle(
+            //         drive, 
+            //         () -> MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftY(),-maxSpeed,maxSpeed), 0.1),
+            //         () -> MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftX(),-maxSpeed,maxSpeed), 0.1),
+            //         () -> {
+            //             boolean isFlipped = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red;
+            //             return new Rotation2d(Math.toRadians(isFlipped ? -90 + 180 : -90));
+            //         }));
+                
 
             //climbercontroller {pov right + right bumper on driver}, scoring position + wheel spin in + Rotatate Robot to processor
 

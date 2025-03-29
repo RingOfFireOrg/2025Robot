@@ -30,7 +30,7 @@ public class Climber extends SubsystemBase {
     }
 
     public Command runLauncher(double percent) {
-        return runEnd(() -> io.moveLauncher(percent * 12.0), () -> io.setVoltage(0.0));
+        return runEnd(() -> io.moveLauncher(percent * 12.0), () -> io.moveLauncher(0.0));
     }
 
 

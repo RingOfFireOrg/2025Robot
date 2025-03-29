@@ -185,7 +185,7 @@ public class AlgaeIOReal implements AlgaeIO {
     @Override
     public void setReference(double position) {
         // Removed conversion settings, use raw encoder values
-        System.out.println("Algae Position Referance: "+position);
+        //System.out.println("Algae Position Referance: "+position);
         if (Math.abs(position - absEncoder.getPosition()) > 0.01) {
             System.out.println("Not Reached");
 
@@ -193,7 +193,7 @@ public class AlgaeIOReal implements AlgaeIO {
             
         }
         else {
-            algaePivotMotor.setVoltage(0);
+            algaePivotMotor.setVoltage(0/*+feedforward.calculate(position, 0)*/);
         }
     }
 
