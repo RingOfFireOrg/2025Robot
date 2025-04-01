@@ -55,7 +55,7 @@ public class AlgaeIOReal implements AlgaeIO {
         1.4, 0.0, 0.00, // PID gains (adjust as needed)
         new TrapezoidProfile.Constraints(MAX_VELOCITY, MAX_ACCELERATION)
     );
-    ArmFeedforward feedforward = new ArmFeedforward(0, .6, 0, 0);
+    ArmFeedforward feedforward = new ArmFeedforward(0, .16, 0, 0);
 
     double output = 0;
     SparkClosedLoopController closedLoopController;
@@ -133,7 +133,7 @@ public class AlgaeIOReal implements AlgaeIO {
         inputs.atGoal = profiledPidController.atGoal();
         Logger.recordOutput("Algae/AlgaePivot Value", algaePivotMotor.getAbsoluteEncoder().getPosition());
         Logger.recordOutput("Algae/Abs Encoder Raw", absEncoder.getPosition());
-        Logger.recordOutput("Algae/Abs Encoder Offset", getAbsOffset());
+        Logger.recordOutput("Algae/Abs Encoder Offset FF", getAbsFFOffset());
         Logger.recordOutput("Algae/profiled output", output);
         //Logger.recordOutput("Algae/profiled output", );
         //System.out.println(algaePivotMotor.getAppliedOutput());
@@ -170,17 +170,17 @@ public class AlgaeIOReal implements AlgaeIO {
         rightAlgaeIntakeMotor.setVoltage(right);
     }
 
-    @Override
-    public void setAngle(DoubleSupplier angle) {
-        targetAngle = angle.getAsDouble();
-        double thisOutput = profiledPidController.calculate(getAbsOffset(), angle.getAsDouble());
-        System.out.println(angle);
-        if (profiledPidController.atGoal()) {
-            thisOutput = 0;
-        }
-        algaePivotMotor.setVoltage(-thisOutput*12);
-        System.out.println(-thisOutput*12);
-    }
+    // @Override
+    // public void setAngle(DoubleSupplier angle) {
+    //     targetAngle = angle.getAsDouble();
+    //     double thisOutput = profiledPidController.calculate(getAbsOffset(), angle.getAsDouble());
+    //     System.out.println(angle);
+    //     if (profiledPidController.atGoal()) {
+    //         thisOutput = 0;
+    //     }
+    //     algaePivotMotor.setVoltage(-thisOutput*12);
+    //     System.out.println(-thisOutput*12);
+    // }
 
     @Override
     public void setReference(double position) {
@@ -193,7 +193,7 @@ public class AlgaeIOReal implements AlgaeIO {
             
         }
         else {
-            algaePivotMotor.setVoltage(0/*+feedforward.calculate(position, 0)*/);
+            algaePivotMotor.setVoltage(0+feedforward.calculate(absEncoder.getPosition(), 0));
         }
     }
 
@@ -208,7 +208,7 @@ public class AlgaeIOReal implements AlgaeIO {
     /* Get Absolute Encoder Offset for Feedforward Upon Startup wrapped around 0 to 1 
      * 0 should be parrallel to floor */
     public double getAbsFFOffset() {
-        return  ((absEncoder.getPosition()- zeroOffset - (.2)) % 1 + 1) % 1; 
+        return  ((absEncoder.getPosition() - .6) % 1 + 1) % 1; 
     }
 
 }

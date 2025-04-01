@@ -297,7 +297,7 @@ public class RobotContainer {
 
             operator.povRight()
             .whileTrue(elevator.setHeight(ElevatorHeights.LOWER_ALGAE))
-            .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.LOWER_ALGAE, () -> -.9))
+            .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.LOWER_ALGAE, () -> .9))
             .whileTrue(algae.runPosition(() -> AlgaeAngles.LOWER_ALGAE)) // Not supposed to be called twice, but it works so I will leave it alone
             .onTrue(EndEffector.angle(PivotAngles.STOWED))
             ;
@@ -385,25 +385,25 @@ public class RobotContainer {
              */
             climberController.povDown()
             .whileTrue(elevator.setHeight(ElevatorHeights.GROUND_ALGAE))
-            .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.GROUND_ALGAE, () -> .7))
+            .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.GROUND_ALGAE, () -> .9))
             .whileTrue(algae.runPosition(() -> AlgaeAngles.GROUND_ALGAE))
             .onTrue(EndEffector.angle(PivotAngles.GROUND_ALGAE))
             ;
 
 
             
-            // //climbercontroller {pov left}, Lower Algae
-            // /*
-            //  * Elevator: Move to Lower Algae Level
-            //  * EndEffector: Angle to Stow
-            //  * Algae: Move to Lower Algae Level, Spin Wheels in
-            //  */
-            // climberController.povLeft()
-            // .whileTrue(elevator.setHeight(ElevatorHeights.LOWER_ALGAE))
-            // .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.LOWER_ALGAE, () -> -.9))
-            // .whileTrue(algae.runPosition(() -> AlgaeAngles.LOWER_ALGAE))
-            // .onTrue(EndEffector.angle(PivotAngles.STOWED))
-            // ;
+            //climbercontroller {pov left}, Lower Algae
+            /*
+             * Elevator: Move to Lower Algae Level
+             * EndEffector: Angle to Stow
+             * Algae: Move to Lower Algae Level, Spin Wheels in
+             */
+            climberController.povLeft()
+            .whileTrue(elevator.setHeight(ElevatorHeights.LOWER_ALGAE))
+            .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.LOWER_ALGAE, () -> .9))
+            .whileTrue(algae.runPosition(() -> AlgaeAngles.LOWER_ALGAE))
+            .onTrue(EndEffector.angle(PivotAngles.STOWED))
+            ;
 
 
             // //climbercontroller {pov right}, scoring position + wheel spin in

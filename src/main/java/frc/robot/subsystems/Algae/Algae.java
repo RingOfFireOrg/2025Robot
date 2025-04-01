@@ -34,13 +34,6 @@ public class Algae extends SubsystemBase {
     public Command runTeleopLaunch(DoubleSupplier left, DoubleSupplier right) {
         return run(() -> io.setVoltageLaunch((left.getAsDouble()) * 12.0, (right.getAsDouble()) * 12.0));
     }
-    public Command runAngle(DoubleSupplier angle) {
-        return run(() -> io.setAngle(angle))
-            .until(() -> inputs.atGoal)
-            // .andThen(() ->  io.setVoltage((0)))
-            ;
-            //.finallyDo(runOnce(() -> io.setVoltage((0))));
-    }
 
     public Command runPosition(DoubleSupplier position) {
         return run(() -> io.setReference(position.getAsDouble()));
