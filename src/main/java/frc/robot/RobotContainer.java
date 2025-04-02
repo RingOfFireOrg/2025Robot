@@ -282,6 +282,13 @@ public class RobotContainer {
             .whileTrue(algae.runTeleopIntake(() -> 1))
             .onFalse(algae.runTeleopIntake(() -> 0.0));
 
+            climberController.button(6)
+            .whileTrue(algae.runTeleopIntake(() -> -1))
+            .onFalse(algae.runTeleopIntake(() -> 0.0));
+
+            climberController.button(5)
+            .whileTrue(algae.runTeleopIntake(() -> 1))
+            .onFalse(algae.runTeleopIntake(() -> 0.0));
 
             operator.povUp()
             .whileTrue(elevator.setHeight(ElevatorHeights.L3))
@@ -378,6 +385,18 @@ public class RobotContainer {
 
             // //climberController {pov down}, ground algae
 
+                        //climbercontroller {pov left}, Lower Algae
+            /*
+             * Elevator: Move to Lower Algae Level
+             * EndEffector: Angle to Stow
+             * Algae: Move to Lower Algae Level, Spin Wheels in
+             */
+            climberController.povUp()
+            .whileTrue(elevator.setHeight(ElevatorHeights.UPPER_ALGAE))
+            .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.UPPER_ALGAE, () -> .9))
+            .whileTrue(algae.runPosition(() -> AlgaeAngles.UPPER_ALGAE))
+            .onTrue(EndEffector.angle(PivotAngles.STOWED))
+            ;
             /*
              * Elevator: Move to Ground Algae Level
              * EndEffector: Angle to Stow
@@ -385,7 +404,7 @@ public class RobotContainer {
              */
             climberController.povDown()
             .whileTrue(elevator.setHeight(ElevatorHeights.GROUND_ALGAE))
-            .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.GROUND_ALGAE, () -> .9))
+            .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.GROUND_ALGAE, () -> .75))
             .whileTrue(algae.runPosition(() -> AlgaeAngles.GROUND_ALGAE))
             .onTrue(EndEffector.angle(PivotAngles.GROUND_ALGAE))
             ;
@@ -407,11 +426,11 @@ public class RobotContainer {
 
 
             // //climbercontroller {pov right}, scoring position + wheel spin in
-            // climberController.povRight()
-            // .whileTrue(elevator.setHeight(ElevatorHeights.SCORE_ALGAE))
-            // .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.SCORE_ALGAE, () -> -.9))
-            // .whileTrue(algae.runPosition(() -> AlgaeAngles.SCORE_ALGAE))
-            // .onTrue(EndEffector.angle(PivotAngles.STOWED))
+            climberController.povRight()
+            .whileTrue(elevator.setHeight(ElevatorHeights.SCORE_ALGAE))
+            .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.SCORE_ALGAE, () -> .9))
+            .whileTrue(algae.runPosition(() -> AlgaeAngles.SCORE_ALGAE))
+            .onTrue(EndEffector.angle(PivotAngles.STOWED))
             ;
 
             //climbercontroller {pov right + Back Button}, scoring position + wheel spin in + Rotatate Robot to processor
@@ -503,7 +522,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("Prep_Algae", 
         elevator.runOnceHeight(ElevatorHeights.LOWER_ALGAE)
         .alongWith(EndEffector.angle(PivotAngles.STOWED))
-        .alongWith(algae.runPositionandIntake(() -> AlgaeAngles.LOWER_ALGAE, () -> -.9))
+        .alongWith(algae.runPositionandIntake(() -> AlgaeAngles.LOWER_ALGAE, () -> .9))
         .alongWith(Commands.print("NamedCommand: Lower Algae"))
         .withTimeout(2)
         );

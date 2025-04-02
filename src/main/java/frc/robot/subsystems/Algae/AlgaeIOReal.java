@@ -156,7 +156,8 @@ public class AlgaeIOReal implements AlgaeIO {
 
     @Override
     public void setVoltage(double volts) {
-        algaePivotMotor.setVoltage(volts/1.5);}
+        algaePivotMotor.setVoltage(volts/1.5 + feedforward.calculate(absEncoder.getPosition(), 0));
+    }
     
     @Override
     public void setVoltageIntake(double volts) {
