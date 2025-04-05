@@ -419,7 +419,7 @@ public class RobotContainer {
              */
             climberController.povLeft()
             .whileTrue(elevator.setHeight(ElevatorHeights.LOWER_ALGAE))
-            .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.LOWER_ALGAE, () -> .9))
+            .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.LOWER_ALGAE, () -> .75))
             .whileTrue(algae.runPosition(() -> AlgaeAngles.LOWER_ALGAE))
             .onTrue(EndEffector.angle(PivotAngles.STOWED))
             ;
@@ -428,7 +428,7 @@ public class RobotContainer {
             // //climbercontroller {pov right}, scoring position + wheel spin in
             climberController.povRight()
             .whileTrue(elevator.setHeight(ElevatorHeights.SCORE_ALGAE))
-            .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.SCORE_ALGAE, () -> .9))
+            .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.SCORE_ALGAE, () -> .75))
             .whileTrue(algae.runPosition(() -> AlgaeAngles.SCORE_ALGAE))
             .onTrue(EndEffector.angle(PivotAngles.STOWED))
             ;

@@ -92,7 +92,7 @@ public class AlgaeIOReal implements AlgaeIO {
         ;
         intakeConfig
             .idleMode(IdleMode.kBrake)
-            .smartCurrentLimit(20)
+            .smartCurrentLimit(17)
         ;
 
         
