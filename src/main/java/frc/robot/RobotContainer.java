@@ -486,13 +486,13 @@ public class RobotContainer {
          */
         NamedCommands.registerCommand("Prep_L3", 
         elevator.runOnceHeight(ElevatorHeights.L3)
-        .alongWith(EndEffector.angle(PivotAngles.L3))
+        .alongWith(EndEffector.angle(0.52))
         //.alongWith(algae.runPosition(() -> AlgaeAngles.STOWED))
         .alongWith(Commands.print("Prep_L3"))
         );
         
         /*
-         * Raise Elevator to L2
+         * Raise Elevator to L2d
          * Pivot Endeffector to L2
          */
         NamedCommands.registerCommand("Prep_L2", 
