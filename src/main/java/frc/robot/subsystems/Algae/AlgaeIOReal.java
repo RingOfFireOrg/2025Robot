@@ -92,7 +92,7 @@ public class AlgaeIOReal implements AlgaeIO {
         ;
         intakeConfig
             .idleMode(IdleMode.kBrake)
-            .smartCurrentLimit(20)
+            .smartCurrentLimit(17)
         ;
 
         
@@ -188,7 +188,6 @@ public class AlgaeIOReal implements AlgaeIO {
         // Removed conversion settings, use raw encoder values
         //System.out.println("Algae Position Referance: "+position);
         if (Math.abs(position - absEncoder.getPosition()) > 0.01) {
-            System.out.println("Not Reached");
 
             closedLoopController.setReference(position, ControlType.kPosition); 
             
