@@ -360,32 +360,7 @@ public class RobotContainer {
             climberController.button(11).onTrue(climber.runLauncher(-0.3)).onFalse(climber.runLauncher(0.0));
             climberController.button(12).onTrue(climber.runLauncher(0.3)).onFalse(climber.runLauncher(0.0));
 
-            //delete later:
-            // operator.povRight()
-            // .whileTrue(elevator.setHeight(ElevatorHeights.LOWER_ALGAE))
-            // .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.LOWER_ALGAE, () -> -.9))
-            // .whileTrue(algae.runPosition(() -> AlgaeAngles.LOWER_ALGAE))
-            // .onTrue(EndEffector.angle(PivotAngles.STOWED))
-            // ;
 
-
-            //climberController {pov up}, Stow Intake, Higher Algae
-
-            /*
-             * Elevator: Move to Upper Algae Level
-             * EndEffector: Angle to Stow
-             * Algae: Move to Upper Algae Level, Spin Wheels in
-             */
-            // climberController.povUp()
-            // .whileTrue(elevator.setHeight(ElevatorHeights.UPPER_ALGAE))
-            // .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.UPPER_ALGAE, () -> -.9))
-            // .whileTrue(algae.runPosition(() -> AlgaeAngles.UPPER_ALGAE))
-            // .onTrue(EndEffector.angle(PivotAngles.STOWED))
-            // ;
-
-            // //climberController {pov down}, ground algae
-
-                        //climbercontroller {pov left}, Lower Algae
             /*
              * Elevator: Move to Lower Algae Level
              * EndEffector: Angle to Stow
@@ -433,31 +408,18 @@ public class RobotContainer {
             .onTrue(EndEffector.angle(PivotAngles.STOWED))
             ;
 
-            //climbercontroller {pov right + Back Button}, scoring position + wheel spin in + Rotatate Robot to processor
-            // Test if both Trigger can be active at once
-
-            // climberController.povRight()
-            //     .and(climberController.button(0)
-            //     .or(driver.rightBumper()))
-            //         .whileTrue(DriveCommands.joystickDriveAtAngle(
-            //         drive, 
-            //         () -> MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftY(),-maxSpeed,maxSpeed), 0.1),
-            //         () -> MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftX(),-maxSpeed,maxSpeed), 0.1),
-            //         () -> {
-            //             boolean isFlipped = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red;
-            //             return new Rotation2d(Math.toRadians(isFlipped ? -90 + 180 : -90));
-            //         }));
-                
-
-            //climbercontroller {pov right + right bumper on driver}, scoring position + wheel spin in + Rotatate Robot to processor
+            climberController.button(5)
+            .onTrue(algae.runTeleopLaunch(() -> .3, () -> .75))  // Spin Both in, left side slower
+            .onFalse(algae.runTeleopLaunch(() -> 0, () -> .75)); // Spin right in, left stop
 
 
-            //Left Button, Wheel Spin in
-            ///Right Button Wheen spin out
-
+            climberController.button(6)
+            .onTrue(algae.runTeleopLaunch(() -> -.9, () -> .75))  
+            .onFalse(algae.runTeleopLaunch(() -> -.9, () -> -.3)); 
 
         }         
         else if (Constants.currentMode == Constants.Mode.SIM) {
+
             // PathConstraints constraints = new PathConstraints(3.0, 4.0,
             //     Units.degreesToRadians(540), Units.degreesToRadians(720)
             // );

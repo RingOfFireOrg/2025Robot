@@ -1,7 +1,5 @@
 package frc.robot.subsystems.Algae;
 
-import java.util.function.DoubleSupplier;
-
 import org.littletonrobotics.junction.AutoLog;
 
 public interface AlgaeIO {

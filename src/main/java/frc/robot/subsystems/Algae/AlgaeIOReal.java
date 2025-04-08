@@ -1,8 +1,5 @@
 package frc.robot.subsystems.Algae;
 
-
-import java.util.function.DoubleSupplier;
-
 import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.AbsoluteEncoder;
@@ -40,8 +37,6 @@ public class AlgaeIOReal implements AlgaeIO {
     private LoggedTunableNumber kP = new LoggedTunableNumber("Algae/kP", 2.4);
     private LoggedTunableNumber kI = new LoggedTunableNumber("Algae/kI", 0.0);
     private LoggedTunableNumber kD = new LoggedTunableNumber("Algae/kD", 0.02);
-
-    private LoggedTunableNumber kG = new LoggedTunableNumber("Algae/kG", 0.0);
 
     public double zeroOffset = 0.0;
 
@@ -135,8 +130,7 @@ public class AlgaeIOReal implements AlgaeIO {
         Logger.recordOutput("Algae/Abs Encoder Raw", absEncoder.getPosition());
         Logger.recordOutput("Algae/Abs Encoder Offset FF", getAbsFFOffset());
         Logger.recordOutput("Algae/profiled output", output);
-        //Logger.recordOutput("Algae/profiled output", );
-        //System.out.println(algaePivotMotor.getAppliedOutput());
+
 
         
         if (DriverStation.isDisabled()) {
@@ -146,9 +140,6 @@ public class AlgaeIOReal implements AlgaeIO {
         }
 
 
-        // if (profiledPidController.atGoal()) {
-        //     algaePivotMotor.setVoltage(0);
-        // }
 
     }
 
@@ -171,22 +162,9 @@ public class AlgaeIOReal implements AlgaeIO {
         rightAlgaeIntakeMotor.setVoltage(right);
     }
 
-    // @Override
-    // public void setAngle(DoubleSupplier angle) {
-    //     targetAngle = angle.getAsDouble();
-    //     double thisOutput = profiledPidController.calculate(getAbsOffset(), angle.getAsDouble());
-    //     System.out.println(angle);
-    //     if (profiledPidController.atGoal()) {
-    //         thisOutput = 0;
-    //     }
-    //     algaePivotMotor.setVoltage(-thisOutput*12);
-    //     System.out.println(-thisOutput*12);
-    // }
-
     @Override
     public void setReference(double position) {
         // Removed conversion settings, use raw encoder values
-        //System.out.println("Algae Position Referance: "+position);
         if (Math.abs(position - absEncoder.getPosition()) > 0.01) {
             System.out.println("Not Reached");
 

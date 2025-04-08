@@ -1,16 +1,3 @@
-// Copyright 2021-2025 FRC 6328
-// http://github.com/Mechanical-Advantage
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// version 3 as published by the Free Software Foundation or
-// available in the root directory of this project.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-
 package frc.robot.subsystems.drive;
 
 import static edu.wpi.first.units.Units.Radians;
@@ -36,12 +23,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import java.util.Queue;
 import java.util.function.DoubleSupplier;
 
-import org.littletonrobotics.junction.Logger;
-
-/**
- * Module IO implementation for Spark Flex drive motor controller, Spark Max turn motor controller, and duty cycle
- * absolute encoder.
- */
 public class ModuleIOSpark implements ModuleIO {
     private final Rotation2d zeroRotation;
 
@@ -193,21 +174,11 @@ public class ModuleIOSpark implements ModuleIO {
 
     @Override
     public void updateInputs(ModuleIOInputs inputs) {
-
-        Logger.recordOutput(modulePrefix+"1_turnEncoder", turnEncoder.getPosition());
-        Logger.recordOutput(modulePrefix+"2_turnEncoder di posfactor", turnEncoder.getPosition()/turnEncoderPositionFactor);
-        // Logger.recordOutput(modulePrefix+"3_cancoder div posfactor", canCoder.getAbsolutePosition().getValueAsDouble()/turnEncoderPositionFactor);
-        // Logger.recordOutput(modulePrefix+"4_cancoder mult posfactor", canCoder.getAbsolutePosition().getValueAsDouble()*turnEncoderPositionFactor);
-        Logger.recordOutput(modulePrefix+"5_cancoder to rads ", canCoder.getAbsolutePosition().getValue().in(Radians));
-        Logger.recordOutput(modulePrefix+"6_cancoder to rads posfactor", canCoder.getAbsolutePosition().getValue().in(Radians)/turnEncoderPositionFactor);
-        //Logger.recordOutput(modulePrefix+"7_cancoder mult old", canCoder.getAbsolutePosition().getValueAsDouble()*oldTurnEncoderPositionFactor);
-        Logger.recordOutput(modulePrefix+"8_cancoder mult pi", (canCoder.getAbsolutePosition().getValueAsDouble()*2*Math.PI)/turnEncoderPositionFactor);
-
-
-
         double cancoderAngle = canCoder.getAbsolutePosition().getValue().in(Radians);
         double encoderAngle = turnEncoder.getPosition();
-        if (Math.abs(encoderAngle - cancoderAngle) > 0.035) { // Only correct significant drift
+
+        /* Correct any SparkMax Drift by comparing it to the CANcoder Value */
+        if (Math.abs(encoderAngle - cancoderAngle) > 0.015) { 
             turnEncoder.setPosition(cancoderAngle);
         }
         // Update drive inputs

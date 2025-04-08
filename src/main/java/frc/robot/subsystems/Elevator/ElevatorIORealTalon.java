@@ -48,8 +48,7 @@ public class ElevatorIORealTalon implements ElevatorIO {
 
     public double kIz, kFF, kMaxOutput, kMinOutput, maxRPM, kG;
 
-    //public static final int elevatorCanIDleft = 14;
-    public static final int elevatorCanID/*right*/ = 15;
+    public static final int elevatorCanID = 15;
 
     public ElevatorIORealTalon() {
         elevatorMotor = new TalonFX(elevatorCanID);
@@ -142,7 +141,6 @@ public class ElevatorIORealTalon implements ElevatorIO {
             elevatorMotor.getConfigurator().apply(talonFXConfigs.Slot1, 1);
         }
         // its calling this periodically, need to fix this
-
         elevatorMotor.setControl(elevatorRequest.withOutput(volts/2));
     }
 
@@ -159,9 +157,6 @@ public class ElevatorIORealTalon implements ElevatorIO {
 
     @Override
     public void setHeight(double userGoal) {
-       // double rots = -(userGoal/(2 *Math.PI)) * /*gear ratio */ 36;
-       // double rots = -(userGoal / (2 * Math.PI * Units.inchesToMeters(1.5))) * 36; // Convert meters to rotations
-
         //elevatorMotor.setPosition(Rotations.of(rots));
         //elevatorMotor.setControl(elevatorRequ.withPosition(rots));
         if (elevatorMotor.getClosedLoopSlot().getValueAsDouble() != 0) {
