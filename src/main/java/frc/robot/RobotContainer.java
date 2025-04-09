@@ -383,7 +383,7 @@ public class RobotContainer {
              */
             climberController.povLeft()
             .whileTrue(elevator.setHeight(ElevatorHeights.LOWER_ALGAE))
-            .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.LOWER_ALGAE, () -> .9))
+            .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.LOWER_ALGAE, () -> .75))
             .whileTrue(algae.runPosition(() -> AlgaeAngles.LOWER_ALGAE))
             .onTrue(EndEffector.angle(PivotAngles.STOWED))
             ;
@@ -396,7 +396,7 @@ public class RobotContainer {
              */            
             climberController.povRight()
             .whileTrue(elevator.setHeight(ElevatorHeights.SCORE_ALGAE))
-            .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.SCORE_ALGAE, () -> .9))
+            .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.SCORE_ALGAE, () -> .75))
             .whileTrue(algae.runPosition(() -> AlgaeAngles.SCORE_ALGAE))
             .onTrue(EndEffector.angle(PivotAngles.STOWED))
             ;
@@ -441,13 +441,13 @@ public class RobotContainer {
          */
         NamedCommands.registerCommand("Prep_L3", 
         elevator.runOnceHeight(ElevatorHeights.L3)
-        .alongWith(EndEffector.angle(PivotAngles.L3))
+        .alongWith(EndEffector.angle(0.52))
         //.alongWith(algae.runPosition(() -> AlgaeAngles.STOWED))
         .alongWith(Commands.print("Prep_L3"))
         );
         
         /*
-         * Raise Elevator to L2
+         * Raise Elevator to L2d
          * Pivot Endeffector to L2
          */
         NamedCommands.registerCommand("Prep_L2", 
