@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import frc.robot.util.LoggedTunableNumber;
 
 public class AlgaeIOReal implements AlgaeIO {
-
+    
     private final SparkMax algaePivotMotor;
     private final SparkMax leftAlgaeIntakeMotor;
     private final SparkMax rightAlgaeIntakeMotor;
@@ -42,7 +42,8 @@ public class AlgaeIOReal implements AlgaeIO {
 
     private double MAX_VELOCITY = 0.5; // in degrees per second
     private double MAX_ACCELERATION = MAX_VELOCITY*2; // degrees per second squared
-
+    
+    @SuppressWarnings("unused")
     private boolean atGoal = false;
     double targetAngle = 0.35;
 

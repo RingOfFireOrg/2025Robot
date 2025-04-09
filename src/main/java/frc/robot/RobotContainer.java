@@ -68,10 +68,13 @@ public class RobotContainer {
     private final CommandXboxController driver = new CommandXboxController(0);
     private final CommandXboxController operator = new CommandXboxController(1);
     private final CommandJoystick climberController = new CommandJoystick(2);
-    private final CommandXboxController spareTest = new CommandXboxController(4);
 
     // Dashboard inputs
     private final LoggedDashboardChooser<Command> autoChooser;
+
+    private final double maxSpeed = 0.6;
+    private final double standardSpeed = 0.7;
+    private final double turnSpeed = 0.5;
 
     public RobotContainer() {
 
@@ -148,7 +151,6 @@ public class RobotContainer {
             .andThen( new AlignToReef(drive, reefSide.RIGHT).withTimeout(3)) // Align using LL
             .andThen( new PathPlannerAuto("range & station", false)) //Resetting Odo, run up on the reef and drop, and then back out and go to feeder station
             .andThen( new PathPlannerAuto("range & score", false)) //Resetting Odo, run up on the reef and drop, and then back out and go to feeder station
-
         );
 
         autoChooser.addOption("MECK) UNTESTED Align Left",
@@ -156,13 +158,10 @@ public class RobotContainer {
             .andThen( new AlignToReef(drive, reefSide.RIGHT).withTimeout(3)) // Align using LL
             .andThen( new PathPlannerAuto("range & station", true)) //Resetting Odo, run up on the reef and drop, and then back out and go to feeder station
             .andThen( new PathPlannerAuto("range & score", true)) //Resetting Odo, run up on the reef and drop, and then back out and go to feeder station
-
         );
 
         autoChooser.addOption("MECK) LeftSide Auto",
         new PathPlannerAuto("MECK) RightSide Auto", true) // Get in Vision Range of the reef & prep L2
-          
-
         );
 
         // // Set up SysId routines
@@ -197,16 +196,8 @@ public class RobotContainer {
 
     private void configureButtonBindings() {
 
-        double maxSpeed = 0.6;
-        // drive.setDefaultCommand(DriveCommands.joystickDrive(
-        //     drive,
-        //     () -> MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftY(),-maxSpeed,maxSpeed), 0.1),
-        //     () -> MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftX(),-maxSpeed,maxSpeed), 0.1),
-        //     () -> MathUtil.applyDeadband(MathUtil.clamp(driver.getRightX(),-maxSpeed,maxSpeed), 0.1))
-        // );
-        double standardSpeed = 0.7;
 
-        double turnSpeed = 0.5;
+
         drive.setDefaultCommand(DriveCommands.joystickDrive(
          drive,
             () -> {
@@ -385,8 +376,6 @@ public class RobotContainer {
             ;
 
 
-            
-            //climbercontroller {pov left}, Lower Algae
             /*
              * Elevator: Move to Lower Algae Level
              * EndEffector: Angle to Stow
@@ -400,7 +389,11 @@ public class RobotContainer {
             ;
 
 
-            // //climbercontroller {pov right}, scoring position + wheel spin in
+            /* Robot to Scoring
+             * Elevator: Move to Lower Algae Level
+             * EndEffector: Angle to Stow
+             * Algae: Move to Lower Algae Level, Spin Wheels in
+             */            
             climberController.povRight()
             .whileTrue(elevator.setHeight(ElevatorHeights.SCORE_ALGAE))
             .whileTrue(algae.runPositionandIntake(() -> AlgaeAngles.SCORE_ALGAE, () -> .9))

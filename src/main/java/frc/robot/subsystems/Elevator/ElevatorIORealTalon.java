@@ -1,25 +1,19 @@
 package frc.robot.subsystems.Elevator;
 
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.util.LoggedTunableNumber;
 
-import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
-
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Second;
 
 import org.littletonrobotics.junction.Logger;
-import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -30,23 +24,15 @@ public class ElevatorIORealTalon implements ElevatorIO {
 
     private final TalonFX elevatorMotor;
     ElevatorFeedforward feedforward = new ElevatorFeedforward(0.0, 0.0, 0.0, 0.0);
-    private final MotionMagicVoltage m_mmReq = new MotionMagicVoltage(0);
     final VoltageOut elevatorRequest;
-    // MutVoltage appliedVoltage = Volts.mutable(0);
-    // MutAngle angle = Radians.mutable(0);
-    // MutAngularVelocity velocity = RadiansPerSecond.mutable(0);
     TalonFXConfiguration talonFXConfigs;
     final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
-
-
-    // 1.5
-    // 36:1 
 
     private LoggedTunableNumber kP = new LoggedTunableNumber("Elevator/kP", 13);
     private LoggedTunableNumber kI = new LoggedTunableNumber("Elevator/kI", 0.0);
     private LoggedTunableNumber kD = new LoggedTunableNumber("Elevator/kD", 0.1);
 
-    public double kIz, kFF, kMaxOutput, kMinOutput, maxRPM, kG;
+    public double kG;
 
     public static final int elevatorCanID = 15;
 
@@ -113,26 +99,12 @@ public class ElevatorIORealTalon implements ElevatorIO {
         );
 
         Logger.recordOutput("ElevatorPosition Rots", elevatorMotor.getPosition().getValueAsDouble());
-    
         Logger.recordOutput("ElevatorPosition Meters", (elevatorMotor.getPosition().getValueAsDouble()/36) * Math.PI * 2 );
-
-        
         Logger.recordOutput("ElevatorPosition Meters with GEAR ratio", (elevatorMotor.getPosition().getValueAsDouble()) * (2 * Math.PI * Units.inchesToMeters(1.5)));
         Logger.recordOutput("ElevatorPosition Meters with GEAR ratio fipped", (elevatorMotor.getPosition().getValueAsDouble() / (2 * Math.PI * Units.inchesToMeters(1.5))));
         Logger.recordOutput("ElevatorPosition closed loop slot", elevatorMotor.getClosedLoopSlot().getValueAsDouble());
 
         double g = SmartDashboard.getNumber("kG Gain", 0);
-    
-        //Test if this had an effect
-
-
-
-        SmartDashboard.putNumber("ElevatorPosition kG Value", talonFXConfigs.Slot1.kG);
-
-
-
-
-
     }
 
     @Override
