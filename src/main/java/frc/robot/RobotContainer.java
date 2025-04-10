@@ -401,14 +401,14 @@ public class RobotContainer {
             .onTrue(EndEffector.angle(PivotAngles.STOWED))
             ;
 
-            climberController.button(5)
-            .onTrue(algae.runTeleopLaunch(() -> .3, () -> .75))  // Spin Both in, left side slower
-            .onFalse(algae.runTeleopLaunch(() -> 0, () -> .75)); // Spin right in, left stop
+            climberController.button(3)
+            .onTrue(algae.runTeleopLaunch(() -> .3, () -> -.3))  // Spin Both in, left side slower
+            .onFalse(algae.runTeleopLaunch(() -> 0, () -> -.3)); // Spin right in, left stop
 
 
-            climberController.button(6)
-            .onTrue(algae.runTeleopLaunch(() -> -.9, () -> .75))  
-            .onFalse(algae.runTeleopLaunch(() -> -.9, () -> -.3)); 
+            climberController.button(4)
+            .onTrue(algae.runTeleopLaunch(() -> -.7, () -> -.3))  
+            .onFalse(algae.runTeleopLaunch(() -> -.7, () -> .3)); 
 
         }         
         else if (Constants.currentMode == Constants.Mode.SIM) {
