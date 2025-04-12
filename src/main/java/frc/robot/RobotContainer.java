@@ -253,11 +253,11 @@ public class RobotContainer {
         if (Constants.currentMode == Constants.Mode.REAL) {
 
             driver.x()
-            .onTrue(new AlignToReef(drive, reefSide.LEFT).withTimeout(2));
+            .onTrue(new AlignToReef(drive, reefSide.LEFT).withTimeout(1.2));
             driver.y()
-            .onTrue(new AlignToReef(drive, reefSide.CENTER).withTimeout(2));
+            .onTrue(new AlignToReef(drive, reefSide.CENTER).withTimeout(1.2));
             driver.b()
-            .onTrue(new AlignToReef(drive, reefSide.RIGHT).withTimeout(2));
+            .onTrue(new AlignToReef(drive, reefSide.RIGHT).withTimeout(1.2));
 
             operator.y()
             .whileTrue(algae.runTeleop(() -> 0.4))
@@ -308,19 +308,19 @@ public class RobotContainer {
 
             /* Intake Coral */
             operator.leftBumper()
-            .onTrue(EndEffector.ejecter(0.7))
+            .onTrue(EndEffector.ejecter(0.5))
             .onFalse(EndEffector.ejecter(0));
 
             /* Intake Coral */
             operator.rightBumper()
-            .onTrue(EndEffector.ejecter(-0.7))
+            .onTrue(EndEffector.ejecter(-0.5))
             .onFalse(EndEffector.ejecter(0));
 
             /* Intaking Setup Button - Move elevator to intake height, move intake to intake angle, and Intake coral */
             operator.axisMagnitudeGreaterThan(XboxController.Axis.kLeftTrigger.value, 0.1)
             .whileTrue(elevator.setHeight(ElevatorHeights.INTAKE_HEIGHT))
             .onTrue(algae.runPosition(() -> AlgaeAngles.STOWED))
-            .onTrue(EndEffector.setAngleandIntake(PivotAngles.INTAKE, 0.7))
+            .onTrue(EndEffector.setAngleandIntake(PivotAngles.INTAKE, 0.5))
             .onFalse(EndEffector.ejecter(0))
             ;
 
@@ -338,7 +338,7 @@ public class RobotContainer {
             
             /* Eject Coral CMD */
             operator.axisMagnitudeGreaterThan(XboxController.Axis.kRightTrigger.value, 0.1)
-            .whileTrue(EndEffector.runTeleop(() -> 0, ()-> 0, () -> -operator.getRightTriggerAxis()))
+            .whileTrue(EndEffector.runTeleop(() -> 0, ()-> 0, () -> -operator.getRightTriggerAxis()/1.4))
             .onFalse(EndEffector.runTeleop(() -> 0, ()-> 0, () -> 0));
 
             /* Climbing Controls */
@@ -401,14 +401,31 @@ public class RobotContainer {
             .onTrue(EndEffector.angle(PivotAngles.STOWED))
             ;
 
-            climberController.button(3)
-            .onTrue(algae.runTeleopLaunch(() -> .3, () -> -.3))  // Spin Both in, left side slower
-            .onFalse(algae.runTeleopLaunch(() -> 0, () -> -.3)); // Spin right in, left stop
+            climberController.button(10).whileTrue(climber.autoLaunch());
 
 
-            climberController.button(4)
-            .onTrue(algae.runTeleopLaunch(() -> -.7, () -> -.3))  
-            .onFalse(algae.runTeleopLaunch(() -> -.7, () -> .3)); 
+            //climbercontroller {pov right + Back Button}, scoring position + wheel spin in + Rotatate Robot to processor
+            // Test if both Trigger can be active at once
+
+            // climberController.povRight()
+            //     .and(climberController.button(0)
+            //     .or(driver.rightBumper()))
+            //         .whileTrue(DriveCommands.joystickDriveAtAngle(
+            //         drive, 
+            //         () -> MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftY(),-maxSpeed,maxSpeed), 0.1),
+            //         () -> MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftX(),-maxSpeed,maxSpeed), 0.1),
+            //         () -> {
+            //             boolean isFlipped = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red;
+            //             return new Rotation2d(Math.toRadians(isFlipped ? -90 + 180 : -90));
+            //         }));
+                
+
+            //climbercontroller {pov right + right bumper on driver}, scoring position + wheel spin in + Rotatate Robot to processor
+
+
+            //Left Button, Wheel Spin in
+            ///Right Button Wheen spin out
+
 
         }         
         else if (Constants.currentMode == Constants.Mode.SIM) {

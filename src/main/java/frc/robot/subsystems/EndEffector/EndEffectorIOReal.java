@@ -48,7 +48,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
         new TrapezoidProfile.Constraints(MAX_VELOCITY, MAX_ACCELERATION)
     );
     ArmFeedforward feedforward = new ArmFeedforward
-    (0, .11, 0, 0);
+    (0, .15, 0, 0);
     double output = 0;
 
 
@@ -145,6 +145,10 @@ public class EndEffectorIOReal implements EndEffectorIO {
         }
         
         
+        Logger.recordOutput("en_ Encoder Value With Offset", getAbsOffset());
+        Logger.recordOutput("en_ Encoder Value Raw", absEncoder.get());
+        Logger.recordOutput("en_ Encoder Connected", absEncoder.isConnected());
+
 
         Logger.recordOutput("test_1 Targeting Angle:", pidController.getSetpoint());
         Logger.recordOutput("test_2 Supposed to target:", targetAngle);
@@ -161,6 +165,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
         Logger.recordOutput("test_ff Angle", ffOutput);
 
         Logger.recordOutput("test_ppid + ff output", ppidOutput + ffOutput);
+
 
 
         //Logger.recordOutput("test_x Encoder Offset minus .35", zeroOffset - .35);
@@ -183,7 +188,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
     public void setVoltageEject(double volts, double ejectsVolts) {
         enableHoming = false;
         EndEffectorMotor.setVoltage(volts/3 + ffOutput);
-        EjectMotor.setVoltage(ejectsVolts/5);
+        EjectMotor.setVoltage(ejectsVolts/6);
     }
 
     @Override
@@ -222,7 +227,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
     public double resetOffset() {
 
-        System.out.println("Yo twin, what is this blasmpahey?!?");
+        //System.out.println("Yo twin, what is this blasmpahey?!?");
         return absEncoder.get() ;
     }
 

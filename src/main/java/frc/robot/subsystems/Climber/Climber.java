@@ -33,5 +33,9 @@ public class Climber extends SubsystemBase {
         return runEnd(() -> io.moveLauncher(percent * 12.0), () -> io.moveLauncher(0.0));
     }
 
-
+    public Command autoLaunch() {
+        return run(() -> io.moveLauncher(4.6))
+        .until(() -> io.checkLauncher())
+        .finallyDo(() -> io.moveLauncher(0));
+    }
 }
