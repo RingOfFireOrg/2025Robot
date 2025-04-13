@@ -308,19 +308,19 @@ public class RobotContainer {
 
             /* Intake Coral */
             operator.leftBumper()
-            .onTrue(EndEffector.ejecter(0.5))
+            .onTrue(EndEffector.ejecter(0.7))
             .onFalse(EndEffector.ejecter(0));
 
             /* Intake Coral */
             operator.rightBumper()
-            .onTrue(EndEffector.ejecter(-0.5))
+            .onTrue(EndEffector.ejecter(-0.7))
             .onFalse(EndEffector.ejecter(0));
 
             /* Intaking Setup Button - Move elevator to intake height, move intake to intake angle, and Intake coral */
             operator.axisMagnitudeGreaterThan(XboxController.Axis.kLeftTrigger.value, 0.1)
             .whileTrue(elevator.setHeight(ElevatorHeights.INTAKE_HEIGHT))
             .onTrue(algae.runPosition(() -> AlgaeAngles.STOWED))
-            .onTrue(EndEffector.setAngleandIntake(PivotAngles.INTAKE, 0.5))
+            .onTrue(EndEffector.setAngleandIntake(PivotAngles.INTAKE, 0.7))
             .onFalse(EndEffector.ejecter(0))
             ;
 
@@ -338,7 +338,7 @@ public class RobotContainer {
             
             /* Eject Coral CMD */
             operator.axisMagnitudeGreaterThan(XboxController.Axis.kRightTrigger.value, 0.1)
-            .whileTrue(EndEffector.runTeleop(() -> 0, ()-> 0, () -> -operator.getRightTriggerAxis()/1.4))
+            .whileTrue(EndEffector.runTeleop(() -> 0, ()-> 0, () -> -operator.getRightTriggerAxis()))
             .onFalse(EndEffector.runTeleop(() -> 0, ()-> 0, () -> 0));
 
             /* Climbing Controls */

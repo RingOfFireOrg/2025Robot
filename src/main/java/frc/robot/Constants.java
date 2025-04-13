@@ -41,10 +41,10 @@ public final class Constants {
 
     public static class ElevatorHeights {
         public static final double STOWED = 0;
-        public static final double INTAKE_HEIGHT = 0.523;
-        public static final double L2 = .535;
+        public static final double INTAKE_HEIGHT = 0.583;
+        public static final double L2 = 1.2;
 
-        public static final double L3 = 3.05;
+        public static final double L3 = 3.5;
         public static final double L4 = 0;
         public static final double LOWER_ALGAE = 3.35;
         public static final double GROUND_ALGAE = 0;
@@ -58,8 +58,8 @@ public final class Constants {
     public static class PivotAngles {
         public static final double STOWED = 0.42;
         public static final double INTAKE = 0.47;
-        public static final double L2 = 0.56;
-        public static final double L3 = 0.56;
+        public static final double L2 = 0.575;
+        public static final double L3 = 0.575;
         public static final double ALGAE = 0.39;
         public static final double GROUND_ALGAE = 0.535;
 

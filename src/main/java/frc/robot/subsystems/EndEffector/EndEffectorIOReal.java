@@ -188,7 +188,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
     public void setVoltageEject(double volts, double ejectsVolts) {
         enableHoming = false;
         EndEffectorMotor.setVoltage(volts/3 + ffOutput);
-        EjectMotor.setVoltage(ejectsVolts/6);
+        EjectMotor.setVoltage(ejectsVolts/4);
     }
 
     @Override
@@ -205,7 +205,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
     @Override
     public void ejecter(double volts) {
-        EjectMotor.setVoltage(volts/5);
+        EjectMotor.setVoltage(volts/3);
         System.out.println(EjectMotor.getAppliedOutput());
 
     }
