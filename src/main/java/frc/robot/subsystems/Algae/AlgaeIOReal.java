@@ -71,7 +71,7 @@ public class AlgaeIOReal implements AlgaeIO {
             .smartCurrentLimit(40)
         .absoluteEncoder
             .inverted(false)
-            .zeroOffset(0.6)
+            .zeroOffset(0.7)
             // .positionConversionFactor(4.0 * Math.PI)
             // .velocityConversionFactor(7.0 * Math.PI ) // i aint counting the number of teeth on the gears
             //.zeroOffset(((absEncoder.getPosition() + 0.6 ) % 1 + 1) % 1)
@@ -94,7 +94,7 @@ public class AlgaeIOReal implements AlgaeIO {
         
 
 
-        algaePivotMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+        algaePivotMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         leftAlgaeIntakeMotor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
         rightAlgaeIntakeMotor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
         

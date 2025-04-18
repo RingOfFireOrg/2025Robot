@@ -196,7 +196,9 @@ public class RobotContainer {
 
     private void configureButtonBindings() {
 
-
+        double maxSpeed = 0.7;
+        double standardSpeed = 0.8;
+        double turnSpeed = 0.5;
 
         drive.setDefaultCommand(DriveCommands.joystickDrive(
          drive,
@@ -215,10 +217,10 @@ public class RobotContainer {
         ));
 
 
-        driver.povRight().whileTrue(DriveCommands.joystickDriveRobotOriented(drive, () -> 0, () -> -0.4 + -(driver.getRightTriggerAxis()/2), () -> 0));
-        driver.povLeft().whileTrue(DriveCommands.joystickDriveRobotOriented(drive, () -> 0, () -> 0.4 + (driver.getRightTriggerAxis()/2), () -> 0));
-        driver.povUp().whileTrue(DriveCommands.joystickDriveRobotOriented(drive, () -> 0.4 + (driver.getRightTriggerAxis()/2), () -> 0, () -> 0));
-        driver.povDown().whileTrue(DriveCommands.joystickDriveRobotOriented(drive, () -> -0.4 + -(driver.getRightTriggerAxis()/2), () -> 0, () -> 0));
+        driver.povRight().whileTrue(DriveCommands.joystickDriveRobotOriented(drive, () -> 0, () -> -0.5 + -(driver.getRightTriggerAxis()/2), () -> 0));
+        driver.povLeft().whileTrue(DriveCommands.joystickDriveRobotOriented(drive, () -> 0, () -> 0.5 + (driver.getRightTriggerAxis()/2), () -> 0));
+        driver.povUp().whileTrue(DriveCommands.joystickDriveRobotOriented(drive, () -> 0.5 + (driver.getRightTriggerAxis()/2), () -> 0, () -> 0));
+        driver.povDown().whileTrue(DriveCommands.joystickDriveRobotOriented(drive, () -> -0.5 + -(driver.getRightTriggerAxis()/2), () -> 0, () -> 0));
 
 
         

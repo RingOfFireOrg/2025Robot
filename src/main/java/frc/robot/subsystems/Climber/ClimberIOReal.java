@@ -51,7 +51,7 @@ public class ClimberIOReal implements ClimberIO {
 
     @Override
     public void setVoltage(double volts) {
-        climberMotor.setVoltage(volts/1.2);
+        climberMotor.setVoltage(volts);
     }
 
     @Override

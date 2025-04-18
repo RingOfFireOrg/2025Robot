@@ -48,7 +48,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
         new TrapezoidProfile.Constraints(MAX_VELOCITY, MAX_ACCELERATION)
     );
     ArmFeedforward feedforward = new ArmFeedforward
-    (0, .15, 0, 0);
+    (0, .18, 0, 0);
     double output = 0;
 
 
