@@ -29,11 +29,9 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 public class ElevatorIOReal implements ElevatorIO {
 
-
-
-
     /*
-    *  Here for refrence, elevator motor has been switched to talonfx
+    *  
+     Here for refrence, elevator motor has been switched to talonfx
     *  
     */
     private final SparkMax elevatorMotor;

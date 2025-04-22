@@ -75,9 +75,9 @@ public final class Constants {
     public static class AlgaeAngles {
         public static final double STOWED = 0.88;
         public static final double LOWER_ALGAE = 0.693;
-        public static final double UPPER_ALGAE = 0.777; //TODO: Find value
-        public static final double GROUND_ALGAE = 0.595; //TODO: Find value
-        public static final double SCORE_ALGAE = 0.693; //TODO: Find value
+        public static final double UPPER_ALGAE = 0.777; 
+        public static final double GROUND_ALGAE = 0.595; 
+        public static final double SCORE_ALGAE = 0.693; 
 
 
     }

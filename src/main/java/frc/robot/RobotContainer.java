@@ -55,6 +55,7 @@ import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
 
+@SuppressWarnings("unused")
 public class RobotContainer {
     private final Drive drive;
     private Vision vision;
@@ -146,14 +147,14 @@ public class RobotContainer {
         // Set up auto routines
         autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
         
-        autoChooser.addOption("MECK) UNTESTED Align Right",
+        autoChooser.addOption("MECK) Align Right",
         new PathPlannerAuto("range into reef", false) // Get in Vision Range of the reef & prep L2
             .andThen( new AlignToReef(drive, reefSide.RIGHT).withTimeout(3)) // Align using LL
             .andThen( new PathPlannerAuto("range & station", false)) //Resetting Odo, run up on the reef and drop, and then back out and go to feeder station
             .andThen( new PathPlannerAuto("range & score", false)) //Resetting Odo, run up on the reef and drop, and then back out and go to feeder station
         );
 
-        autoChooser.addOption("MECK) UNTESTED Align Left",
+        autoChooser.addOption("MECK) Align Left",
         new PathPlannerAuto("range into reef", true) // Get in Vision Range of the reef & prep L2
             .andThen( new AlignToReef(drive, reefSide.RIGHT).withTimeout(3)) // Align using LL
             .andThen( new PathPlannerAuto("range & station", true)) //Resetting Odo, run up on the reef and drop, and then back out and go to feeder station
@@ -164,13 +165,14 @@ public class RobotContainer {
         new PathPlannerAuto("MECK) RightSide Auto", true) // Get in Vision Range of the reef & prep L2
         );
 
-        // // Set up SysId routines
-        // autoChooser.addOption("Drive Wheel Radius Characterization",
-        //     DriveCommands.wheelRadiusCharacterization(drive)
-        // );
-        // autoChooser.addOption("Drive Simple FF Characterization",
-        //     DriveCommands.feedforwardCharacterization(drive)
-        // );
+        // Set up SysId routines
+        autoChooser.addOption("Drive Wheel Radius Characterization",
+            DriveCommands.wheelRadiusCharacterization(drive)
+        );
+        autoChooser.addOption("Drive Simple FF Characterization",
+            DriveCommands.feedforwardCharacterization(drive)
+        );
+
         // autoChooser.addOption(
         //     "Drive SysId (Quasistatic Forward)",
         //     drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward)
@@ -190,13 +192,11 @@ public class RobotContainer {
         //     new PathPlannerAuto("Auto Name", true);
         // );
 
-        // Configure the button bindings
         configureButtonBindings();
     }
 
     private void configureButtonBindings() {
 
-        double maxSpeed = 0.7;
         double standardSpeed = 0.8;
         double turnSpeed = 0.5;
 
@@ -404,30 +404,6 @@ public class RobotContainer {
             ;
 
             climberController.button(10).whileTrue(climber.autoLaunch());
-
-
-            //climbercontroller {pov right + Back Button}, scoring position + wheel spin in + Rotatate Robot to processor
-            // Test if both Trigger can be active at once
-
-            // climberController.povRight()
-            //     .and(climberController.button(0)
-            //     .or(driver.rightBumper()))
-            //         .whileTrue(DriveCommands.joystickDriveAtAngle(
-            //         drive, 
-            //         () -> MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftY(),-maxSpeed,maxSpeed), 0.1),
-            //         () -> MathUtil.applyDeadband(MathUtil.clamp(-driver.getLeftX(),-maxSpeed,maxSpeed), 0.1),
-            //         () -> {
-            //             boolean isFlipped = DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red;
-            //             return new Rotation2d(Math.toRadians(isFlipped ? -90 + 180 : -90));
-            //         }));
-                
-
-            //climbercontroller {pov right + right bumper on driver}, scoring position + wheel spin in + Rotatate Robot to processor
-
-
-            //Left Button, Wheel Spin in
-            ///Right Button Wheen spin out
-
 
         }         
         else if (Constants.currentMode == Constants.Mode.SIM) {

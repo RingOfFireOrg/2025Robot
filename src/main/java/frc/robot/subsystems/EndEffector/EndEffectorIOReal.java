@@ -14,8 +14,6 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import org.littletonrobotics.junction.Logger;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
@@ -23,9 +21,7 @@ public class EndEffectorIOReal implements EndEffectorIO {
 
     private final SparkMax EndEffectorMotor;
     private final SparkMax EjectMotor;
-    private final RelativeEncoder encoder;
     private SparkMaxConfig config = new SparkMaxConfig();
-    private SparkClosedLoopController closedLoopController;
     double ffOutput;
     private static final int EndEffectorCanID = 17;
     private static final int EjectCanID = 18;
@@ -76,10 +72,8 @@ public class EndEffectorIOReal implements EndEffectorIO {
         EndEffectorMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
         EjectMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
 
-        encoder = EndEffectorMotor.getEncoder();
         absEncoder.setInverted(true);
         
-        closedLoopController = EndEffectorMotor.getClosedLoopController();
 
         pidController.disableContinuousInput();
         pidController.setTolerance(0.03);
@@ -148,29 +142,17 @@ public class EndEffectorIOReal implements EndEffectorIO {
         Logger.recordOutput("en_ Encoder Value With Offset", getAbsOffset());
         Logger.recordOutput("en_ Encoder Value Raw", absEncoder.get());
         Logger.recordOutput("en_ Encoder Connected", absEncoder.isConnected());
-
-
         Logger.recordOutput("test_1 Targeting Angle:", pidController.getSetpoint());
         Logger.recordOutput("test_2 Supposed to target:", targetAngle);
         Logger.recordOutput("test_3 Encoder Raw Value", absEncoder.get());
         Logger.recordOutput("test_4 Encoder Offset Value", getAbsOffset());
         Logger.recordOutput("test_5 Error", pidController.getError());
-
-
         Logger.recordOutput("test_4 Encoder Offset", zeroOffset);
         Logger.recordOutput("test_5 Encoder Offset With .35", zeroOffset + .35);
-
         Logger.recordOutput("test_ppid output", ppidOutput);
         Logger.recordOutput("test_ff output", getAbsFFOffset());
         Logger.recordOutput("test_ff Angle", ffOutput);
-
         Logger.recordOutput("test_ppid + ff output", ppidOutput + ffOutput);
-
-
-
-        //Logger.recordOutput("test_x Encoder Offset minus .35", zeroOffset - .35);
-
-
         Logger.recordOutput("test_x Homing Enabled", enableHoming);
         Logger.recordOutput("test_X At goal", pidController.atSetpoint());
 
@@ -226,8 +208,6 @@ public class EndEffectorIOReal implements EndEffectorIO {
          
 
     public double resetOffset() {
-
-        //System.out.println("Yo twin, what is this blasmpahey?!?");
         return absEncoder.get() ;
     }
 

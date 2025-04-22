@@ -22,6 +22,7 @@ public class EndEffectorIOSim implements EndEffectorIO {
   private DCMotorSim intakeMotor = new DCMotorSim(
     LinearSystemId.createDCMotorSystem(DCMotor.getNEO(1), 0.004, 1.0),
     DCMotor.getNEO(1));
+  @SuppressWarnings("unused")
   private final MutAngle m_angle = Degrees.mutable(0);
 
 
@@ -30,6 +31,7 @@ public class EndEffectorIOSim implements EndEffectorIO {
   Angle stowedAngle = Degrees.of(-85); //pitch
   private Supplier<Double> elevatorHeight;
   private double appliedVolts = 0.0;
+  @SuppressWarnings("unused")
   private final IntakeSimulation intakeSimulation;
 
 

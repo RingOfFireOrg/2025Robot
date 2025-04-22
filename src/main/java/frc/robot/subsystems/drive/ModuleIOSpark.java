@@ -46,6 +46,7 @@ public class ModuleIOSpark implements ModuleIO {
     // Connection debouncers
     private final Debouncer driveConnectedDebounce = new Debouncer(0.5);
     private final Debouncer turnConnectedDebounce = new Debouncer(0.5);
+    @SuppressWarnings("unused")
     private final String modulePrefix;
 
     public ModuleIOSpark(int module) {
